@@ -73,9 +73,10 @@ public class PosFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Tv Cable de Provincia - Punto de Venta ");
-        setMaximumSize(new java.awt.Dimension(1000, 600));
-        setMinimumSize(new java.awt.Dimension(1000, 600));
+        setTitle("Tv Cable Hidalguense - Punto de Venta ");
+        setMaximumSize(new java.awt.Dimension(1400, 750));
+        setMinimumSize(new java.awt.Dimension(1400, 750));
+        setPreferredSize(new java.awt.Dimension(1400, 750));
         setResizable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
