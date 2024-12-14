@@ -6,6 +6,12 @@ package mx.com.tvch.pos.viewModel;
 
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import mx.com.tvch.pos.config.DbConfig;
+import mx.com.tvch.pos.config.Sesion;
+import mx.com.tvch.pos.util.VentanaEnum;
+import static mx.com.tvch.pos.util.VentanaEnum.COBRO;
 
 /**
  *
@@ -15,19 +21,28 @@ public class PosFrame extends javax.swing.JFrame {
 
     private final LoginPanel loginPanel;
     private final MenuPanel menuPanel;
+    private final LoadingPanel loadingPanel;
+    private final AperturaCajaPanel aperturaCajaPanel;
+    private final DbConfig dbConfig;
+    private Sesion sesion;
+
+    boolean estaLoadingActivo = false;
 
     /**
      * Creates new form PosFrame
      */
     public PosFrame() {
         initComponents();
-                
+
         loginPanel = LoginPanel.getLoginPanel(this);
-        menuPanel = MenuPanel.getMenuPanel();
-        
+        menuPanel = MenuPanel.getMenuPanel(this);
+        aperturaCajaPanel = AperturaCajaPanel.getAperturaCajaPanel(this);
+        loadingPanel = LoadingPanel.getLoadingPanel();
+        dbConfig = DbConfig.getdDbConfig();
+        sesion = Sesion.getSesion();
+
         //loginPanel.setVisible(true);
         //menuPanel.setVisible(false);
-        
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
         this.setLayout(new BorderLayout());
@@ -36,30 +51,96 @@ public class PosFrame extends javax.swing.JFrame {
         this.pack();
         this.setVisible(true);
         
-        System.out.println("hashcode: "+this.hashCode());
+        if(dbConfig.existeConectorMySql()){  
+            crearEventos();
+        }else{
+            JOptionPane.showMessageDialog(rootPane, "No se ha detecto Driver MySql instalado en el equipo. "
+                    + "\n antes de continuar, verifique su instalación de la Base de Datos");
+        }
+
+        System.out.println("hashcode: " + this.hashCode());
+    }
+    
+    private void crearEventos(){
+        
     }
 
     public void cargarMenuPrincipal() {
-        
+
         this.remove(loginPanel);
         this.revalidate();
         this.repaint();
         //this.pack();
-        
+
         //this.setResizable(false);
         //this.setLayout(new BorderLayout());
         this.add(menuPanel);
         this.revalidate();
         this.repaint();
-        //this.pack();
 
-        /*this.revalidate();
-        this.remove(loginPanel);
-        this.setResizable(false);
-        this.setLayout(new BorderLayout());
-        this.add(menuPanel);
-        this.pack();
-        this.setVisible(true);*/
+    }
+
+    public void cambiarPantalla(JPanel panel, VentanaEnum nuevaVentana) {
+
+        this.remove(panel);
+
+        switch (nuevaVentana) {
+            case LOADING:
+                this.add(loadingPanel);
+                break;
+            case MENU:
+                this.add(menuPanel);
+                menuPanel.cargarDatosSesion();
+                break;
+            case COBRO:
+                break;
+            case APERTURA:
+                this.add(aperturaCajaPanel);
+                aperturaCajaPanel.cargarDatosSesion();
+                break;
+            case CORTE:
+                break;
+            case BUSQUEDA:
+                break;
+            case REIMPRESION:
+                break;
+            case LOGIN:
+                sesion = null;
+                loginPanel.limpiarPantalla();
+                this.add(loginPanel);
+                break;
+            default:
+                sesion = null;
+                loginPanel.limpiarPantalla();
+                this.add(loginPanel);
+                break;
+        }
+
+        this.revalidate();
+        this.repaint();
+
+    }
+
+    public void mostrarLoading() {
+
+        estaLoadingActivo = true;
+        this.add(loadingPanel, 0);
+        this.revalidate();
+        this.repaint();
+        //}this.setEnabled(false);
+        //this.paintAll(this.getGraphics());
+
+    }
+
+    public void ocultarLoading() {
+
+        if (estaLoadingActivo) {
+            this.remove(loadingPanel);
+            this.revalidate();
+            this.repaint();
+            //this.setEnabled(true);
+            estaLoadingActivo = false;
+        }
 
     }
 
@@ -74,20 +155,20 @@ public class PosFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tv Cable Hidalguense - Punto de Venta ");
-        setMaximumSize(new java.awt.Dimension(1400, 750));
-        setMinimumSize(new java.awt.Dimension(1400, 750));
-        setPreferredSize(new java.awt.Dimension(1400, 750));
+        setMaximumSize(new java.awt.Dimension(1500, 900));
+        setMinimumSize(new java.awt.Dimension(1500, 900));
+        setPreferredSize(new java.awt.Dimension(1500, 900));
         setResizable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1000, Short.MAX_VALUE)
+            .addGap(0, 1500, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 600, Short.MAX_VALUE)
+            .addGap(0, 900, Short.MAX_VALUE)
         );
 
         pack();
