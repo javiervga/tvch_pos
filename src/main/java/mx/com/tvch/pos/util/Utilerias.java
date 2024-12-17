@@ -51,13 +51,19 @@ public class Utilerias {
         
     }
     
-    public boolean esMontoValido(String montoCadena){
+    public boolean esMontoValido(String montoCadena, boolean sePermiteCero){
         
         boolean esValido = false;      
         try{
-            Double monto = Double.valueOf(montoCadena);
-            if(monto >= 0)
-            esValido = true;
+            if(sePermiteCero){
+                Double monto = Double.valueOf(montoCadena);
+                if(monto >= 0)
+                    esValido = true;
+            }else{
+                Double monto = Double.valueOf(montoCadena);
+                if(monto > 0)
+                    esValido = true;
+            }
         }catch(NumberFormatException e){   
         }
         return esValido;

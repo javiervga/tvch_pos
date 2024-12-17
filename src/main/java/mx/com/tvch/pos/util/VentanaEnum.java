@@ -17,6 +17,7 @@ public enum VentanaEnum {
     CORTE,
     BUSQUEDA,
     REIMPRESION,
+    SALIDA,
     LOADING
     
 }

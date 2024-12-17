@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.util.VentanaEnum;
+import static mx.com.tvch.pos.util.VentanaEnum.APERTURA;
 import static mx.com.tvch.pos.util.VentanaEnum.COBRO;
 
 /**
@@ -23,6 +24,7 @@ public class PosFrame extends javax.swing.JFrame {
     private final MenuPanel menuPanel;
     private final LoadingPanel loadingPanel;
     private final AperturaCajaPanel aperturaCajaPanel;
+    private final SalidaCajaPanel salidaCajaPanel;
     private final DbConfig dbConfig;
     private Sesion sesion;
 
@@ -37,6 +39,7 @@ public class PosFrame extends javax.swing.JFrame {
         loginPanel = LoginPanel.getLoginPanel(this);
         menuPanel = MenuPanel.getMenuPanel(this);
         aperturaCajaPanel = AperturaCajaPanel.getAperturaCajaPanel(this);
+        salidaCajaPanel = SalidaCajaPanel.getSalidaCajaPanel(this);
         loadingPanel = LoadingPanel.getLoadingPanel();
         dbConfig = DbConfig.getdDbConfig();
         sesion = Sesion.getSesion();
@@ -97,6 +100,10 @@ public class PosFrame extends javax.swing.JFrame {
             case APERTURA:
                 this.add(aperturaCajaPanel);
                 aperturaCajaPanel.cargarDatosSesion();
+                break;
+            case SALIDA:
+                this.add(salidaCajaPanel);
+                salidaCajaPanel.cargarDatosSesion();
                 break;
             case CORTE:
                 break;

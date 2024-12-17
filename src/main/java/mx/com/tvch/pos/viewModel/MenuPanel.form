@@ -83,7 +83,7 @@
                               <EmptySpace min="-2" pref="317" max="-2" attributes="0"/>
                               <Component id="botonAbrirCaja" min="-2" pref="252" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="209" max="-2" attributes="0"/>
-                              <Component id="jButton8" min="-2" pref="238" max="-2" attributes="0"/>
+                              <Component id="botonRegistrarSalida" min="-2" pref="238" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="35" max="32767" attributes="0"/>
@@ -109,7 +109,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="49" pref="49" max="-2" attributes="0"/>
-                              <Component id="jButton8" min="-2" pref="175" max="-2" attributes="0"/>
+                              <Component id="botonRegistrarSalida" min="-2" pref="175" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
@@ -307,7 +307,7 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton8">
+    <Component class="javax.swing.JButton" name="botonRegistrarSalida">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="a4" green="49" red="a3" type="rgb"/>
@@ -324,7 +324,7 @@
         </Property>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton8ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botonRegistrarSalidaActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="etiquetaLogo">

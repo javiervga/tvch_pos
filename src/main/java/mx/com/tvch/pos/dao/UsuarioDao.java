@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import javax.naming.AuthenticationException;
 import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.entity.UsuarioEntity;
@@ -65,7 +66,7 @@ public class UsuarioDao {
             }
 
             if (list.size() == 0) {
-                throw new Exception("Usuario no encontrado");
+                throw new NoSuchElementException();
             } else if (list.size() > 1) {
                 throw new Exception("Existe mas de un registros con el mismo usuario. Por favor contacte a soporte.");
             } else {
@@ -81,13 +82,19 @@ public class UsuarioDao {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
-            logger.error("Error al obtener caja en bd: \n" + sw.toString());
+            logger.error("Error de autenticacion de usuario: \n" + sw.toString());
             throw new Exception("Usuario o contraseña incorrectos. Por favor, verifique.");
-        } catch (Exception ex) {
+        } catch (NoSuchElementException ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
-            logger.error("Error al obtener caja en bd: \n" + sw.toString());
+            logger.error("usuario no encontrado en vd: \n" + sw.toString());
+            throw new Exception("Usuario no registrado.");
+        }catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al obtener usuario en bd: \n" + sw.toString());
             throw new Exception("Error al validar usuario. Por favor intente de nuevo.");
         } finally {
             try {

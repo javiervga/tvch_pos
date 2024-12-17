@@ -23,6 +23,8 @@ public class Sesion {
     private String sucursal;
 
     private Long sucursalId;
+    
+    private Long aperturaCajaId;
 
     public static Sesion getSesion() {
         if (sesion == null) {
@@ -77,6 +79,14 @@ public class Sesion {
 
     public void setSucursalId(Long sucursalId) {
         this.sucursalId = sucursalId;
+    }
+
+    public Long getAperturaCajaId() {
+        return aperturaCajaId;
+    }
+
+    public void setAperturaCajaId(Long aperturaCajaId) {
+        this.aperturaCajaId = aperturaCajaId;
     }
 
 }
