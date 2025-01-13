@@ -34,7 +34,7 @@
               <EmptySpace min="-2" pref="22" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
-                      <Component id="botonCobrar" min="-2" pref="252" max="-2" attributes="0"/>
+                      <Component id="botonCobrarServicio" min="-2" pref="252" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="etiquetaLogo" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="143" max="-2" attributes="0"/>
@@ -49,7 +49,7 @@
                                       <EmptySpace min="-2" pref="190" max="-2" attributes="0"/>
                                       <Component id="jButton2" min="-2" pref="238" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" pref="159" max="-2" attributes="0"/>
-                                      <Component id="jButton4" min="-2" pref="238" max="-2" attributes="0"/>
+                                      <Component id="botonCobrarOrden" min="-2" pref="238" max="-2" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
@@ -127,7 +127,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="etiquetaLogo" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="botonCobrar" min="-2" pref="175" max="-2" attributes="0"/>
+                              <Component id="botonCobrarServicio" min="-2" pref="175" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -140,7 +140,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <EmptySpace min="-2" pref="125" max="-2" attributes="0"/>
-                      <Component id="jButton4" min="-2" pref="175" max="-2" attributes="0"/>
+                      <Component id="botonCobrarOrden" min="-2" pref="175" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="49" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
@@ -222,7 +222,7 @@
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="botonCobrar">
+    <Component class="javax.swing.JButton" name="botonCobrarServicio">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="a4" green="49" red="a3" type="rgb"/>
@@ -233,16 +233,16 @@
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="ff" green="ff" red="ff" type="rgb"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="Cobrar"/>
+        <Property name="text" type="java.lang.String" value="Cobrar Servicio"/>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[75, 25]"/>
         </Property>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton4">
+    <Component class="javax.swing.JButton" name="botonCobrarOrden">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="a4" green="49" red="a3" type="rgb"/>
+          <Color blue="4b" green="b0" red="e3" type="rgb"/>
         </Property>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Segoe UI" size="18" style="1"/>
@@ -250,7 +250,7 @@
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="ff" green="ff" red="ff" type="rgb"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="B&#xfa;squeda de suscriptor"/>
+        <Property name="text" type="java.lang.String" value="Cobrar Ordenes"/>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
           <Dimension value="[75, 25]"/>
         </Property>

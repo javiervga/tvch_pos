@@ -51,20 +51,49 @@ public class MenuPanel extends javax.swing.JPanel {
         };
         botonSalir.addActionListener(botonSalirActionListener);
         
-        ActionListener botonCobrarListener = new ActionListener() {
+        ActionListener botonCobrarOrdenListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //posFrame.cambiarPantalla(menuPanel, VentanaEnum.LOADING);
-                posFrame.mostrarLoading();
-                /*try {
-                    Thread.sleep(30000);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(MenuPanel.class.getName()).log(Level.SEVERE, null, ex);
-                }*/
-                //posFrame.ocultarLoading();
+                //posFrame.mostrarLoading();
+                try{
+                    AperturaCajaEntity entity = aperturaCajaController.obtenerAperturaCajaActiva();
+                    if(entity != null){
+                        if(entity.getUsuarioId().longValue() == sesion.getUsuarioId().longValue()){
+                            sesion.setAperturaCajaId(entity.getAperturaCajaId());
+                            posFrame.cambiarPantalla(menuPanel, VentanaEnum.COBRO_ORDEN);
+                        }else{
+                            JOptionPane.showMessageDialog(menuPanel, "Se encontro una apertura de caja realizada por un usuario diferente, para realizar un cobro debe ingresar con el usuario que realizo la apertura","", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }else
+                        JOptionPane.showMessageDialog(menuPanel, "No se encontro una apertura de caja activa, para realizar un cobro primero debe abrir caja","", JOptionPane.WARNING_MESSAGE);
+                }catch(Exception ex){
+                    JOptionPane.showMessageDialog(menuPanel, ex.getMessage(),"", JOptionPane.ERROR_MESSAGE);
+                }
             }
         };
-        botonCobrar.addActionListener(botonCobrarListener);
+        botonCobrarOrden.addActionListener(botonCobrarOrdenListener);
+        
+        ActionListener botonCobrarServicioListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //posFrame.mostrarLoading();
+                try{
+                    AperturaCajaEntity entity = aperturaCajaController.obtenerAperturaCajaActiva();
+                    if(entity != null){
+                        if(entity.getUsuarioId().longValue() == sesion.getUsuarioId().longValue()){
+                            sesion.setAperturaCajaId(entity.getAperturaCajaId());
+                            posFrame.cambiarPantalla(menuPanel, VentanaEnum.COBRO_SERVICIO);
+                        }else{
+                            JOptionPane.showMessageDialog(menuPanel, "Se encontro una apertura de caja realizada por un usuario diferente, para realizar un cobro debe ingresar con el usuario que realizo la apertura","", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }else
+                        JOptionPane.showMessageDialog(menuPanel, "No se encontro una apertura de caja activa, para realizar un cobro primero debe abrir caja","", JOptionPane.WARNING_MESSAGE);
+                }catch(Exception ex){
+                    JOptionPane.showMessageDialog(menuPanel, ex.getMessage(),"", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        botonCobrarServicio.addActionListener(botonCobrarServicioListener);
         
         ActionListener botonAbrirCajaListener = new ActionListener() {
             @Override
@@ -126,8 +155,8 @@ public class MenuPanel extends javax.swing.JPanel {
         etiquetaUsuario = new javax.swing.JLabel();
         botonAbrirCaja = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        botonCobrar = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        botonCobrarServicio = new javax.swing.JButton();
+        botonCobrarOrden = new javax.swing.JButton();
         botonSalir = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
@@ -170,17 +199,17 @@ public class MenuPanel extends javax.swing.JPanel {
         jButton2.setText("Hacer Corte");
         jButton2.setPreferredSize(new java.awt.Dimension(75, 25));
 
-        botonCobrar.setBackground(new java.awt.Color(163, 73, 164));
-        botonCobrar.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        botonCobrar.setForeground(new java.awt.Color(255, 255, 255));
-        botonCobrar.setText("Cobrar");
-        botonCobrar.setPreferredSize(new java.awt.Dimension(75, 25));
+        botonCobrarServicio.setBackground(new java.awt.Color(163, 73, 164));
+        botonCobrarServicio.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        botonCobrarServicio.setForeground(new java.awt.Color(255, 255, 255));
+        botonCobrarServicio.setText("Cobrar Servicio");
+        botonCobrarServicio.setPreferredSize(new java.awt.Dimension(75, 25));
 
-        jButton4.setBackground(new java.awt.Color(163, 73, 164));
-        jButton4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButton4.setForeground(new java.awt.Color(255, 255, 255));
-        jButton4.setText("Búsqueda de suscriptor");
-        jButton4.setPreferredSize(new java.awt.Dimension(75, 25));
+        botonCobrarOrden.setBackground(new java.awt.Color(227, 176, 75));
+        botonCobrarOrden.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        botonCobrarOrden.setForeground(new java.awt.Color(255, 255, 255));
+        botonCobrarOrden.setText("Cobrar Ordenes");
+        botonCobrarOrden.setPreferredSize(new java.awt.Dimension(75, 25));
 
         botonSalir.setBackground(new java.awt.Color(255, 51, 0));
         botonSalir.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -231,7 +260,7 @@ public class MenuPanel extends javax.swing.JPanel {
                 .addGap(22, 22, 22)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(botonCobrar, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(botonCobrarServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(etiquetaLogo)
                         .addGap(143, 143, 143)
@@ -245,7 +274,7 @@ public class MenuPanel extends javax.swing.JPanel {
                                         .addGap(190, 190, 190)
                                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(159, 159, 159)
-                                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(botonCobrarOrden, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel1)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -303,7 +332,7 @@ public class MenuPanel extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(etiquetaLogo)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(botonCobrar, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(botonCobrarServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(23, 23, 23))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(98, 98, 98)
@@ -311,7 +340,7 @@ public class MenuPanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(125, 125, 125)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(botonCobrarOrden, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(49, 49, 49))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -336,7 +365,8 @@ public class MenuPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonAbrirCaja;
-    private javax.swing.JButton botonCobrar;
+    private javax.swing.JButton botonCobrarOrden;
+    private javax.swing.JButton botonCobrarServicio;
     private javax.swing.JButton botonRegistrarSalida;
     private javax.swing.JButton botonSalir;
     private javax.swing.JLabel etiquetaLogo;
@@ -344,7 +374,6 @@ public class MenuPanel extends javax.swing.JPanel {
     private javax.swing.JLabel etiquetaSucursal;
     private javax.swing.JLabel etiquetaUsuario;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;

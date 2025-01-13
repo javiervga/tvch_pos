@@ -1,3 +1,4 @@
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -10,8 +11,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
-import mx.com.tvch.pos.entity.SucursalEntity;
+import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
+import mx.com.tvch.pos.entity.TipoSalidaEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,21 +23,25 @@ import org.slf4j.LoggerFactory;
  *
  * @author fvega
  */
-public class SucursalDao {
+public class EstatusSuscriptorDao {
     
-    private static SucursalDao sucursalDao;
+    private static EstatusSuscriptorDao dao;
     
-    Logger logger = LoggerFactory.getLogger(SucursalDao.class);
+    Logger logger = LoggerFactory.getLogger(EstatusSuscriptorDao.class);
     
-    public static SucursalDao getSucursalDao(){
-        if(sucursalDao == null)
-            sucursalDao = new SucursalDao();
-        return sucursalDao;
+    public static EstatusSuscriptorDao getEstatusSuscriptorDao(){
+        if(dao == null)
+            dao = new EstatusSuscriptorDao();
+        return dao;
     }
     
-    public SucursalEntity obtenerSucursal() {
+    /**
+     * 
+     * @return 
+     */
+    public List<EstatusSuscriptorEntity> obtenerEstatusSuscriptor() {
 
-        SucursalEntity entity = null;
+        List<EstatusSuscriptorEntity> list = new ArrayList<>();
 
         Connection conn = null;
         Statement stmt = null;
@@ -44,23 +52,20 @@ public class SucursalDao {
             stmt = conn.createStatement();
 
             StringBuilder query = new StringBuilder();
-            query.append("select * from sucursales");
+            query.append("select * from estatus_suscriptor");
             ResultSet rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
-                entity = new SucursalEntity();
-                entity.setEstatus(rs.getInt("estatus"));
-                entity.setNombre(rs.getString("nombre"));
-                entity.setSucursalId(rs.getLong("id_sucursal"));
-                entity.setZonaId(rs.getLong("id_zona"));
-                entity.setDiaCorte(rs.getInt("dia_corte"));
-                break;
+                EstatusSuscriptorEntity entity = new EstatusSuscriptorEntity();
+                entity.setEstatusId(rs.getLong("id_estatus"));
+                entity.setDescripcion(rs.getString("descripcion"));
+                list.add(entity);
             }
 
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
-            logger.error("Error al obtener caja en bd: \n" + sw.toString());
+            logger.error("Error al obtener estatus de suscriptor en bd: \n" + sw.toString());
         } finally {
             try {
                 if (stmt != null) {
@@ -78,7 +83,7 @@ public class SucursalDao {
             }
         }
 
-        return entity;
+        return list;
 
     }
     

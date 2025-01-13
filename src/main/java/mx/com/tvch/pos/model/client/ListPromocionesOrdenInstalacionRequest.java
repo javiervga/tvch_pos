@@ -2,21 +2,17 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package mx.com.tvch.pos.entity;
+package mx.com.tvch.pos.model.client;
 
 /**
  *
  * @author fvega
  */
-public class SucursalEntity {
+public class ListPromocionesOrdenInstalacionRequest {
 
     private Long sucursalId;
 
-    private String nombre;
-
-    private Long zonaId;
-    
-    private Integer diaCorte;
+    private Long servicioId;
 
     private Integer estatus;
 
@@ -28,28 +24,12 @@ public class SucursalEntity {
         this.sucursalId = sucursalId;
     }
 
-    public String getNombre() {
-        return nombre;
+    public Long getServicioId() {
+        return servicioId;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public Long getZonaId() {
-        return zonaId;
-    }
-
-    public void setZonaId(Long zonaId) {
-        this.zonaId = zonaId;
-    }
-
-    public Integer getDiaCorte() {
-        return diaCorte;
-    }
-
-    public void setDiaCorte(Integer diaCorte) {
-        this.diaCorte = diaCorte;
+    public void setServicioId(Long servicioId) {
+        this.servicioId = servicioId;
     }
 
     public Integer getEstatus() {

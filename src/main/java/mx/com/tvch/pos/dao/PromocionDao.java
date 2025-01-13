@@ -10,8 +10,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
-import mx.com.tvch.pos.entity.SucursalEntity;
+import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
+import mx.com.tvch.pos.entity.PromocionEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,21 +22,27 @@ import org.slf4j.LoggerFactory;
  *
  * @author fvega
  */
-public class SucursalDao {
+public class PromocionDao {
     
-    private static SucursalDao sucursalDao;
+    private static PromocionDao dao;
     
-    Logger logger = LoggerFactory.getLogger(SucursalDao.class);
+    Logger logger = LoggerFactory.getLogger(PromocionDao.class);
     
-    public static SucursalDao getSucursalDao(){
-        if(sucursalDao == null)
-            sucursalDao = new SucursalDao();
-        return sucursalDao;
+    public static PromocionDao getPromocionDao(){
+        if(dao == null)
+            dao = new PromocionDao();
+        return dao;
     }
     
-    public SucursalEntity obtenerSucursal() {
+    /**
+     * 
+     * @param servicioId
+     * @return
+     * @throws Exception 
+     */
+    public List<PromocionEntity> obtenerPromocionesActivas(Long servicioId) throws Exception{
 
-        SucursalEntity entity = null;
+        List<PromocionEntity> list = new ArrayList<>();
 
         Connection conn = null;
         Statement stmt = null;
@@ -44,23 +53,30 @@ public class SucursalDao {
             stmt = conn.createStatement();
 
             StringBuilder query = new StringBuilder();
-            query.append("select * from sucursales");
+            
+            query.append("SELECT id_promocion, descripcion, id_sucursal, id_servicio, costo_promocion, meses_pagados, meses_gratis, estatus FROM promociones WHERE id_servicio =");
+            query.append(servicioId);
+            
             ResultSet rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
-                entity = new SucursalEntity();
+                PromocionEntity entity = new PromocionEntity();
+                entity.setCostoPromocion(rs.getDouble("costo_promocion"));
+                entity.setDescripcion(rs.getString("descripcion"));
                 entity.setEstatus(rs.getInt("estatus"));
-                entity.setNombre(rs.getString("nombre"));
+                entity.setMesesGratis(rs.getInt("meses_gratis"));
+                entity.setMesesPagados(rs.getInt("meses_pagados"));
+                entity.setPromocionId(rs.getLong("id_promocion"));
+                entity.setServicioId(rs.getLong("id_servicio"));
                 entity.setSucursalId(rs.getLong("id_sucursal"));
-                entity.setZonaId(rs.getLong("id_zona"));
-                entity.setDiaCorte(rs.getInt("dia_corte"));
-                break;
+                list.add(entity);
             }
 
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
-            logger.error("Error al obtener caja en bd: \n" + sw.toString());
+            logger.error("Error al consultar promociones en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
         } finally {
             try {
                 if (stmt != null) {
@@ -78,8 +94,9 @@ public class SucursalDao {
             }
         }
 
-        return entity;
+        return list;
 
+        
     }
     
 }

@@ -12,7 +12,7 @@ import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.util.VentanaEnum;
 import static mx.com.tvch.pos.util.VentanaEnum.APERTURA;
-import static mx.com.tvch.pos.util.VentanaEnum.COBRO;
+import static mx.com.tvch.pos.util.VentanaEnum.COBRO_SERVICIO;
 
 /**
  *
@@ -25,6 +25,8 @@ public class PosFrame extends javax.swing.JFrame {
     private final LoadingPanel loadingPanel;
     private final AperturaCajaPanel aperturaCajaPanel;
     private final SalidaCajaPanel salidaCajaPanel;
+    private final CobroServicioPanel cobroServicioPanel;
+    private final CobroOrdenPanel cobroOrdenPanel;
     private final DbConfig dbConfig;
     private Sesion sesion;
 
@@ -40,6 +42,8 @@ public class PosFrame extends javax.swing.JFrame {
         menuPanel = MenuPanel.getMenuPanel(this);
         aperturaCajaPanel = AperturaCajaPanel.getAperturaCajaPanel(this);
         salidaCajaPanel = SalidaCajaPanel.getSalidaCajaPanel(this);
+        cobroServicioPanel = CobroServicioPanel.getCobroPanel(this);
+        cobroOrdenPanel = CobroOrdenPanel.getCobroOrdenPanel(this);
         loadingPanel = LoadingPanel.getLoadingPanel();
         dbConfig = DbConfig.getdDbConfig();
         sesion = Sesion.getSesion();
@@ -95,7 +99,13 @@ public class PosFrame extends javax.swing.JFrame {
                 this.add(menuPanel);
                 menuPanel.cargarDatosSesion();
                 break;
-            case COBRO:
+            case COBRO_SERVICIO:
+                this.add(cobroServicioPanel);
+                cobroServicioPanel.cargarDatosSesion();
+                break;
+            case COBRO_ORDEN:
+                this.add(cobroOrdenPanel);
+                cobroOrdenPanel.cargarDatosSesion();
                 break;
             case APERTURA:
                 this.add(aperturaCajaPanel);
@@ -129,25 +139,37 @@ public class PosFrame extends javax.swing.JFrame {
     }
 
     public void mostrarLoading() {
+        
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                estaLoadingActivo = true;
+                add(loadingPanel, 0);
+                revalidate();
+                repaint();
+                //}this.setEnabled(false);
+                //this.paintAll(this.getGraphics());
+            }
+        });
 
-        estaLoadingActivo = true;
-        this.add(loadingPanel, 0);
-        this.revalidate();
-        this.repaint();
-        //}this.setEnabled(false);
-        //this.paintAll(this.getGraphics());
+        
 
     }
 
     public void ocultarLoading() {
+        
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                if (estaLoadingActivo) {
+                    remove(loadingPanel);
+                    revalidate();
+                    repaint();
+                    //this.setEnabled(true);
+                    estaLoadingActivo = false;
+                }
+            }
+        });
 
-        if (estaLoadingActivo) {
-            this.remove(loadingPanel);
-            this.revalidate();
-            this.repaint();
-            //this.setEnabled(true);
-            estaLoadingActivo = false;
-        }
+        
 
     }
 
@@ -164,7 +186,6 @@ public class PosFrame extends javax.swing.JFrame {
         setTitle("Tv Cable Hidalguense - Punto de Venta ");
         setMaximumSize(new java.awt.Dimension(1500, 900));
         setMinimumSize(new java.awt.Dimension(1500, 900));
-        setPreferredSize(new java.awt.Dimension(1500, 900));
         setResizable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

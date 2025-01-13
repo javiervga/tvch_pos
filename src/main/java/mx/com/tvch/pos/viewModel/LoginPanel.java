@@ -85,7 +85,7 @@ public class LoginPanel extends javax.swing.JPanel {
                 UsuarioEntity usuarioEntity = controller.autenticarUsuario(campousuario.getText(), String.valueOf(campoPassword.getPassword()));
                 CajaEntity cajaEntity = controller.consultarCaja();
                 SucursalEntity sucursalEntity = controller.consultarSucursal();
-                generarSesion(usuarioEntity, cajaEntity, sucursalEntity);
+                generarSesion(usuarioEntity, cajaEntity, sucursalEntity, String.valueOf(campoPassword.getPassword()));
                 posFrame.cambiarPantalla(loginPanel, VentanaEnum.MENU);
                 //posFrame.cargarMenuPrincipal();
             } catch (Exception ex) {
@@ -106,7 +106,7 @@ public class LoginPanel extends javax.swing.JPanel {
         campousuario.setText("");
     }
 
-    private void generarSesion(UsuarioEntity usuarioEntity, CajaEntity cajaEntity, SucursalEntity sucursalEntity) {
+    private void generarSesion(UsuarioEntity usuarioEntity, CajaEntity cajaEntity, SucursalEntity sucursalEntity, String password) {
 
         sesion.setCajaId(cajaEntity.getCajaId());
         sesion.setNumeroCaja(cajaEntity.getNumero());
@@ -114,6 +114,8 @@ public class LoginPanel extends javax.swing.JPanel {
         sesion.setSucursalId(sucursalEntity.getSucursalId());
         sesion.setUsuario(usuarioEntity.getUsuario());
         sesion.setUsuarioId(usuarioEntity.getUsuarioId());
+        sesion.setPassword(password);
+        sesion.setDiaCorte(sucursalEntity.getDiaCorte());
     }
 
     /**

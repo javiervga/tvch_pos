@@ -7,11 +7,9 @@ package mx.com.tvch.pos.dao;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import mx.com.tvch.pos.config.DbConfig;
-import mx.com.tvch.pos.entity.SucursalEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,22 +17,20 @@ import org.slf4j.LoggerFactory;
  *
  * @author fvega
  */
-public class SucursalDao {
+public class ContratoDao {
     
-    private static SucursalDao sucursalDao;
+    private static ContratoDao dao;
     
-    Logger logger = LoggerFactory.getLogger(SucursalDao.class);
+    Logger logger = LoggerFactory.getLogger(ContratoDao.class);
     
-    public static SucursalDao getSucursalDao(){
-        if(sucursalDao == null)
-            sucursalDao = new SucursalDao();
-        return sucursalDao;
+    public static ContratoDao getContratoDao(){
+        if(dao == null)
+            dao = new ContratoDao();
+        return dao;
     }
     
-    public SucursalEntity obtenerSucursal() {
-
-        SucursalEntity entity = null;
-
+    public void actualizarFechaPagoContrato(Long contratoId, String fechaPago) {
+        
         Connection conn = null;
         Statement stmt = null;
 
@@ -44,23 +40,17 @@ public class SucursalDao {
             stmt = conn.createStatement();
 
             StringBuilder query = new StringBuilder();
-            query.append("select * from sucursales");
-            ResultSet rs = stmt.executeQuery(query.toString());
-            while (rs.next()) {
-                entity = new SucursalEntity();
-                entity.setEstatus(rs.getInt("estatus"));
-                entity.setNombre(rs.getString("nombre"));
-                entity.setSucursalId(rs.getLong("id_sucursal"));
-                entity.setZonaId(rs.getLong("id_zona"));
-                entity.setDiaCorte(rs.getInt("dia_corte"));
-                break;
-            }
+            query.append("update contratos set fecha_proximo_pago = '");
+            query.append(fechaPago);
+            query.append("' where id_contrato = ");
+            query.append(contratoId);
+            stmt.executeUpdate(query.toString());
 
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
-            logger.error("Error al obtener caja en bd: \n" + sw.toString());
+            logger.error("Error al actualizar fecha de pago de contrato: " + sw.toString());
         } finally {
             try {
                 if (stmt != null) {
@@ -77,9 +67,7 @@ public class SucursalDao {
                 se.printStackTrace();
             }
         }
-
-        return entity;
-
+        
     }
     
 }

@@ -10,8 +10,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
-import mx.com.tvch.pos.entity.SucursalEntity;
+import mx.com.tvch.pos.entity.TipoDescuentoEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,21 +21,21 @@ import org.slf4j.LoggerFactory;
  *
  * @author fvega
  */
-public class SucursalDao {
+public class TipoDescuentoDao {
     
-    private static SucursalDao sucursalDao;
+    private static TipoDescuentoDao dao;
+   
+    Logger logger = LoggerFactory.getLogger(TipoDescuentoDao.class);
     
-    Logger logger = LoggerFactory.getLogger(SucursalDao.class);
-    
-    public static SucursalDao getSucursalDao(){
-        if(sucursalDao == null)
-            sucursalDao = new SucursalDao();
-        return sucursalDao;
+    public static TipoDescuentoDao getTipoDescuentoDao(){
+        if(dao == null)
+            dao = new TipoDescuentoDao();
+         return dao;
     }
     
-    public SucursalEntity obtenerSucursal() {
+    public List<TipoDescuentoEntity> obtenerTiposDescuento() {
 
-        SucursalEntity entity = null;
+        List<TipoDescuentoEntity> list = new ArrayList<>();
 
         Connection conn = null;
         Statement stmt = null;
@@ -44,23 +46,20 @@ public class SucursalDao {
             stmt = conn.createStatement();
 
             StringBuilder query = new StringBuilder();
-            query.append("select * from sucursales");
+            query.append("select * from tipos_descuento");
             ResultSet rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
-                entity = new SucursalEntity();
-                entity.setEstatus(rs.getInt("estatus"));
-                entity.setNombre(rs.getString("nombre"));
-                entity.setSucursalId(rs.getLong("id_sucursal"));
-                entity.setZonaId(rs.getLong("id_zona"));
-                entity.setDiaCorte(rs.getInt("dia_corte"));
-                break;
+                TipoDescuentoEntity entity = new TipoDescuentoEntity();
+                entity.setIdTipoDescuento(rs.getLong("id_tipo_descuento"));
+                entity.setDescripcion(rs.getString("descripcion"));
+                list.add(entity);
             }
 
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
-            logger.error("Error al obtener caja en bd: \n" + sw.toString());
+            logger.error("Error al obtener tipos de salida en bd: \n" + sw.toString());
         } finally {
             try {
                 if (stmt != null) {
@@ -78,7 +77,7 @@ public class SucursalDao {
             }
         }
 
-        return entity;
+        return list;
 
     }
     
