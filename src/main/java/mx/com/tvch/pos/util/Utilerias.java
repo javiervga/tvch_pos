@@ -38,34 +38,44 @@ public class Utilerias {
      * @param diaCorte
      * @param mesesGratis
      * @param fechaPago
+     * @param formato
      * @return
      * @throws ParseException 
      */
-    public String obtenerNuevaFechaProximoPago(int diaCorte, Integer mesesGratis, String fechaPago, String formato) throws ParseException {
+    public String obtenerNuevaFechaProximoPago(int diaCorte, Integer mesesGratis, Date fechaPagoActual, String formato) throws ParseException {
         
         SimpleDateFormat dateFormat = new SimpleDateFormat(Constantes.FORMATO_FECHA_MYSQL);
-        Calendar nuevaFechaPago = Calendar.getInstance(); 
-        Date fechaPagoActual = null;
-        try{
-            if(fechaPago != null)
-                fechaPagoActual =  dateFormat.parse(fechaPago);
-            else
-                fechaPagoActual = new Date();
-        }catch(Exception e){
-            //si truena se calcua la fecha pago a partir del dia en curso
-            fechaPagoActual = new Date();
-        }
-                
-        nuevaFechaPago.setTime(fechaPagoActual);
-        nuevaFechaPago.set(Calendar.DAY_OF_MONTH, diaCorte);
-        nuevaFechaPago.add(Calendar.MONTH, 1);
+        Calendar cfechaPagoActual = Calendar.getInstance();
+        
+        if(fechaPagoActual != null)
+            cfechaPagoActual.setTime(fechaPagoActual);
+        else
+            cfechaPagoActual.setTime(new Date());
+        
+        cfechaPagoActual.set(Calendar.DAY_OF_MONTH, diaCorte);
+        cfechaPagoActual.add(Calendar.MONTH, 1);
         
         if(mesesGratis != null){
-            //agregar los meses
-            nuevaFechaPago.add(Calendar.MONTH, mesesGratis);
+ 
+            cfechaPagoActual.add(Calendar.MONTH, mesesGratis);
+
         }
 
-        return convertirDateTime2String(nuevaFechaPago.getTime(), formato);
+        return convertirDateTime2String(cfechaPagoActual.getTime(), formato);
+    }
+    
+    private Calendar sumarMes(Calendar fecha, int diaCorte){
+        
+        fecha.set(Calendar.DAY_OF_MONTH, diaCorte);
+        int anio = fecha.get(Calendar.YEAR);
+        int mes = fecha.get(Calendar.MONTH);
+        if(mes == Calendar.DECEMBER){
+            fecha.set(Calendar.YEAR, anio+1);
+            fecha.set(Calendar.MONTH, Calendar.JANUARY);
+        }else{
+            fecha.add(Calendar.MONTH, 2);
+        }
+        return fecha;
     }
 
     /**

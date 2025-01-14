@@ -86,31 +86,32 @@ public class CobroServicioController {
 
             Double importePagar = Double.valueOf(obtenerImporteActualizado(detallesPago));
 
+            String nuevaFechaPagoTicket = "";
             String nuevaFechaPagoMySql = "";
             if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()) {
-                if(suscriptor.getFechaProximoPago() != null)
-                    nuevaFechaPagoMySql = util.obtenerNuevaFechaProximoPago(sesion.getDiaCorte(),
+                    nuevaFechaPagoMySql = util.obtenerNuevaFechaProximoPago(
+                            sesion.getDiaCorte(),
                         detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get().getMesesGratis(),
-                        util.convertirDateTime2String(suscriptor.getFechaProximoPago(), "dd/MM/yyyy"), Constantes.FORMATO_FECHA_MYSQL);
-                else{
-                    nuevaFechaPagoMySql = util.obtenerNuevaFechaProximoPago(sesion.getDiaCorte(), null, null, Constantes.FORMATO_FECHA_MYSQL);
-                    try{
-                        suscriptor.setFechaProximoPago(util.convertirString2Date(nuevaFechaPagoMySql, Constantes.FORMATO_FECHA_MYSQL));
-                    }catch(Exception ex){
-                        
-                    }
-                }
+                        suscriptor.getFechaProximoPago(), 
+                        Constantes.FORMATO_FECHA_MYSQL);
+                    nuevaFechaPagoTicket = util.obtenerNuevaFechaProximoPago(
+                            sesion.getDiaCorte(),
+                        detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get().getMesesGratis(),
+                        suscriptor.getFechaProximoPago(), 
+                        Constantes.FORMATO_FECHA_TICKET);
+
             } else {
-                if(suscriptor.getFechaProximoPago() != null)
-                    nuevaFechaPagoMySql = util.obtenerNuevaFechaProximoPago(sesion.getDiaCorte(), null, util.convertirDateTime2String(suscriptor.getFechaProximoPago(), "dd/MM/yyyy"), Constantes.FORMATO_FECHA_MYSQL);
-                else{
-                    nuevaFechaPagoMySql = util.obtenerNuevaFechaProximoPago(sesion.getDiaCorte(), null, null, Constantes.FORMATO_FECHA_MYSQL);
-                    try{
-                        suscriptor.setFechaProximoPago(util.convertirString2Date(nuevaFechaPagoMySql, Constantes.FORMATO_FECHA_MYSQL));
-                    }catch(Exception ex){
-                        
-                    }
-                }
+                    nuevaFechaPagoMySql = util.obtenerNuevaFechaProximoPago(
+                            sesion.getDiaCorte(), 
+                            null, 
+                            suscriptor.getFechaProximoPago(), 
+                            Constantes.FORMATO_FECHA_MYSQL);
+                    nuevaFechaPagoTicket = util.obtenerNuevaFechaProximoPago(
+                            sesion.getDiaCorte(), 
+                            null, 
+                            suscriptor.getFechaProximoPago(), 
+                            Constantes.FORMATO_FECHA_TICKET);
+
             }
 
             //registrar la transaccion
@@ -123,6 +124,8 @@ public class CobroServicioController {
 
             //registrar el detalle de la transaccion
             DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_SERVICIO).findFirst().get();
+            //setear la nueva fecha de pago para despues se imprima en el ticket
+            detalleCobro.setFechaProximoPago(nuevaFechaPagoTicket);
             DetalleCobroTransaccionEntity detalleCobroTransaccionEntity = new DetalleCobroTransaccionEntity();
             detalleCobroTransaccionEntity.setMonto(detalleCobro.getMonto());// monto sin descuentos ni promociones aplicadas
             detalleCobroTransaccionEntity.setServicioId(suscriptor.getServicioId());

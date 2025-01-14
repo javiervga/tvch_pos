@@ -340,51 +340,39 @@ public class Impresora {
      * @throws Exception
      */
     public void imprimirTicketAperturaCaja(AperturaCajaEntity entity) throws Exception {
-
-        if (properties.obtenerPropiedad("impresora.tipo").equals(Constantes.IMPRESORA_58MM)) {
-            imprimirTicketAperturaCaja58MM(entity);
-        } else if (properties.obtenerPropiedad("impresora.tipo").equals(Constantes.IMPRESORA_80MM)) {
-
-        } else {
-            throw new Exception("No se encontro configuracion de impresora en archivo de propiedades. Por favor contacte a soporte.");
-        }
-
-    }
-
-    public void imprimirTicketAperturaCaja58MM(AperturaCajaEntity entity) throws Exception {
-
+        
         PrinterMatrix pm = new PrinterMatrix();
 
-        pm.setOutSize(14, 32);
-        pm.printCharAtCol(1, 1, 32, "=");
-        pm.printTextWrap(1, 1, 7, 32, "Apertura de caja");
-        pm.printTextLinCol(1, 1, "\n");
-        pm.printTextLinCol(3, 1, "Sucursal:");
-        pm.printTextLinCol(3, 15, sesion.getSucursal());
-        pm.printTextLinCol(4, 1, "Folio Caja:");
-        pm.printTextLinCol(4, 15, entity.getAperturaCajaId().toString());
-        pm.printTextLinCol(5, 1, "Folio Server:");
-        if (entity.getAperturaCajaServer() != null) {
-            pm.printTextLinCol(5, 15, entity.getAperturaCajaServer().toString());
-        } else {
-            pm.printTextLinCol(5, 15, "");
-        }
-        pm.printTextLinCol(6, 1, "Num. Caja:");
-        pm.printTextLinCol(6, 15, entity.getNumeroCaja().toString());
-        pm.printTextLinCol(7, 1, "Usuario:");
-        pm.printTextLinCol(7, 15, entity.getUsuario());
-        pm.printTextLinCol(8, 1, "Fondo Fijo:");
-        pm.printTextLinCol(8, 15, entity.getFondoFijo().toString());
-        pm.printTextLinCol(9, 1, "Fecha:");
-        pm.printTextLinCol(9, 15, utilerias.convertirDateTime2String(entity.getHoraApertura(), Constantes.FORMATO_FECHA_TICKET));
-        pm.printTextLinCol(10, 1, "Hora:");
-        pm.printTextLinCol(10, 15, utilerias.convertirDateTime2String(entity.getHoraApertura(), Constantes.FORMATO_HORA_TICKET));
+        pm.setOutSize(20, 47);
+        pm.printCharAtCol(1, 1, 47, "=");
+        pm.printTextWrap(1, 1, 15, 47, "Apertura de caja");
 
-        //String nombreArchivo = "ApCaja".concat(entity.getAperturaCajaId().toString()).concat(".txt");
+        pm.printTextLinCol(4, 1, "Sucursal:");
+        pm.printTextLinCol(4, 24, sesion.getSucursal());
+        pm.printTextLinCol(5, 1, "Folio Caja:");
+        pm.printTextLinCol(5, 24, entity.getAperturaCajaId().toString());
+        pm.printTextLinCol(6, 1, "Folio Server:");
+        if (entity.getAperturaCajaServer() != null) {
+            pm.printTextLinCol(6, 24, entity.getAperturaCajaServer().toString());
+        } else {
+            pm.printTextLinCol(6, 24, "");
+        }
+        pm.printTextLinCol(7, 1, "Num. Caja:");
+        pm.printTextLinCol(7, 24, entity.getNumeroCaja().toString());
+        pm.printTextLinCol(8, 1, "Cajero:");
+        pm.printTextLinCol(8, 24, entity.getUsuario());
+        pm.printTextLinCol(9, 1, "Fondo Fijo:");
+        pm.printTextLinCol(9, 24, entity.getFondoFijo().toString());
+        pm.printTextLinCol(10, 1, "Fecha:");
+        pm.printTextLinCol(10, 24, utilerias.convertirDateTime2String(entity.getHoraApertura(), Constantes.FORMATO_FECHA_TICKET));
+        pm.printTextLinCol(11, 1, "Hora:");
+        pm.printTextLinCol(11, 24, utilerias.convertirDateTime2String(entity.getHoraApertura(), Constantes.FORMATO_HORA_TICKET));
+
         String nombreArchivo = ("impresion.txt");
         pm.toFile(nombreArchivo);
 
         imprimirArchivo(nombreArchivo);
+
     }
 
     private static void imprimirArchivo(String nombreArchivo) throws Exception {
