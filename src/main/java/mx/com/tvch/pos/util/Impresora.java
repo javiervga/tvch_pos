@@ -233,7 +233,9 @@ public class Impresora {
             pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(detalleRecargo.getMonto())));
         }
         if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()) {
+            DetallePagoServicio detallePromocion = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get();
             linea++;
+            importeTotal = detallePromocion.getMonto();
             pm.printTextLinCol(linea, 1, "Promoción:");
             pm.printTextLinCol(linea, 38, "- $ ".concat(String.valueOf(detalleCobro.getMonto()
                     - detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get().getMonto())));
