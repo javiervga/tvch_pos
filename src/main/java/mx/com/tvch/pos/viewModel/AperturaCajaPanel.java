@@ -122,7 +122,7 @@ public final class AperturaCajaPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         etiquetaLogo = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        etiquetaApertura = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         campoUsuario = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -147,10 +147,10 @@ public final class AperturaCajaPanel extends javax.swing.JPanel {
         etiquetaLogo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         etiquetaLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagen_menu.png"))); // NOI18N
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 40)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(163, 73, 164));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Apertura de Caja");
+        etiquetaApertura.setFont(new java.awt.Font("Segoe UI", 0, 40)); // NOI18N
+        etiquetaApertura.setForeground(new java.awt.Color(163, 73, 164));
+        etiquetaApertura.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        etiquetaApertura.setText("Apertura de Caja");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -226,7 +226,7 @@ public final class AperturaCajaPanel extends javax.swing.JPanel {
                                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
                                         .addComponent(campoCaja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 425, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(etiquetaApertura, javax.swing.GroupLayout.PREFERRED_SIZE, 425, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
@@ -278,7 +278,7 @@ public final class AperturaCajaPanel extends javax.swing.JPanel {
                 .addGap(23, 23, 23)
                 .addComponent(etiquetaLogo)
                 .addGap(29, 29, 29)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(etiquetaApertura, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(47, 47, 47)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -311,11 +311,11 @@ public final class AperturaCajaPanel extends javax.swing.JPanel {
     private javax.swing.JTextField campoFondoFijo;
     private javax.swing.JLabel campoSucursal;
     private javax.swing.JLabel campoUsuario;
+    private javax.swing.JLabel etiquetaApertura;
     private javax.swing.JLabel etiquetaLogo;
     private javax.swing.JLabel etiquetaNumeroCaja;
     private javax.swing.JLabel etiquetaSucursal;
     private javax.swing.JLabel etiquetaUsuario;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;

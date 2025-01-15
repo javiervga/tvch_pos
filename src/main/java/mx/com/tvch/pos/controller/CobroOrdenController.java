@@ -374,7 +374,8 @@ public class CobroOrdenController {
                     //quitar los contratos cancelados
                     return response.getData().getSuscriptores()
                             .stream()
-                            .filter(s -> s.getEstatusContratoId() != Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO && s.getEstatusContratoId() != Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO)
+                            .filter(s -> s.getEstatusContratoId() == null ||
+                                    (s.getEstatusContratoId() != Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO && s.getEstatusContratoId() != Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO) )
                             .collect(Collectors.toList());
                 case Constantes.CODIGO_HTTP_NO_CONTENT:
                     throw new NoSuchElementException("No se encontraron suscriptores con la informacion recibida");

@@ -42,7 +42,7 @@ public class AperturaCajaController {
     
     public AperturaCajaEntity abrirCaja(Double fondoFijo) throws Exception {
         
-        Long aperturaCajaId = utilerias.generarAperturaCajaId();
+        Long aperturaCajaId = utilerias.generarIdLocal();
         dao.registrarAperturaCaja(aperturaCajaId, sesion, fondoFijo);
         cajaDao.actualizarEstatusCaja(sesion.getCajaId(), Constantes.ESTATUS_CAJA_ACTIVA);
         return dao.obtenerAperturaCaja(aperturaCajaId);

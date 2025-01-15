@@ -103,4 +103,19 @@ public class Constantes {
     public static final int CODIGO_HTTP_TVCH_ERROR = 409;
     public static final int CODIGO_HTTP_SERVER_ERROR = 500;
     
+    public static final int TIPO_DETALLE_CORTE_FONDO_FIJO = 1;
+    public static final int TIPO_DETALLE_CORTE_NUMERO_TRANSACCIONES = 2;
+    public static final int TIPO_DETALLE_CORTE_NUMERO_DETALLES_TRANSACCION = 3;
+    public static final int TIPO_DETALLE_CORTE_NUMERO_SALIDAS = 4;
+    public static final int TIPO_DETALLE_CORTE_PROMOCIONES_APLICADAS = 5;
+    public static final int TIPO_DETALLE_CORTE_DESCUENTOS_REALIZADOS = 6;
+    public static final int TIPO_DETALLE_CORTE_MONTO_SOLICITADO = 7;
+    public static final int TIPO_DETALLE_CORTE_MONTO_ENTREGADO = 8;
+    public static final int TIPO_DETALLE_CORTE_FALTANTES = 9;
+    public static final int TIPO_DETALLE_CORTE_SOBRANTES = 10;
+    public static final int TIPO_DETALLE_CORTE_ID = 11;
+    
+    public static final long TIPO_DIFERENCIA_CORTE_FALTANTE = 1;
+    public static final long TIPO_DIFERENCIA_CORTE_SOBRANTE = 2;
+    
 }

@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import org.slf4j.Logger;
@@ -30,6 +32,68 @@ public class DetalleCobroTransaccionDao {
         if(dao == null)
             dao = new DetalleCobroTransaccionDao();
         return dao;
+    }
+    
+    /**
+     * 
+     * @param transaccionId
+     * @return
+     * @throws Exception 
+     */
+    public List<DetalleCobroTransaccionEntity> obtenerDetallesCobroPorTransaccion(Long transaccionId) throws Exception{
+
+        List<DetalleCobroTransaccionEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("SELECT id_detalle, id_servicio, id_transaccion, id_tipo_cobro,  monto FROM detalle_cobro_transaccion WHERE id_transaccion =");
+            query.append(transaccionId);
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                DetalleCobroTransaccionEntity entity = new DetalleCobroTransaccionEntity();
+                entity.setDetalleId(rs.getLong("id_detalle"));
+                entity.setMonto(rs.getDouble("monto"));
+                entity.setServicioId(rs.getLong("id_servicio"));
+                entity.setTipoCobroId(rs.getLong("id_tipo_cobro"));
+                entity.setTransaccionId(rs.getLong("id_transaccion"));
+                list.add(entity);
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar detalles de cobro de transaccion en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return list;
+
+        
     }
     
     /**

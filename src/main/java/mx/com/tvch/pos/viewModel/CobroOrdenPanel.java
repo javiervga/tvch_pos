@@ -1053,6 +1053,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
+        tablaOrdenes.setRowSelectionAllowed(false);
         tablaOrdenes.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(tablaOrdenes);
         if (tablaOrdenes.getColumnModel().getColumnCount() > 0) {

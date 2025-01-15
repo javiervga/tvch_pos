@@ -40,6 +40,59 @@ public class AperturaCajaDao {
         utilerias = Utilerias.getUtilerias();
     }
     
+    /**
+     * 
+     * @param aperturaCajaId
+     * @param estatus 
+     */
+    public void actualizarEstatusApertura(Long aperturaCajaId, Integer estatus) {
+        
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            query.append("update aperturas_caja set estatus = ");
+            query.append(estatus);
+            query.append(" where id_apertura_caja = ");
+            query.append(aperturaCajaId);
+            stmt.executeUpdate(query.toString());
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al actualizar estatus de apertura de caja: " + sw.toString());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        
+    }
+    
+    /**
+     * 
+     * @param aperturaCajaId
+     * @param sesion
+     * @param fondoFijo
+     * @throws Exception 
+     */
     public void registrarAperturaCaja(Long aperturaCajaId, Sesion sesion, Double fondoFijo) throws Exception {
         
         Connection conn = null;

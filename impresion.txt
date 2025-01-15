@@ -10,27 +10,28 @@
        Colonia La Providencia C.P. 42186       
          Sucursal Providencia                  
                                                
-Fecha:       13/01/2025 22:18:33               
+Fecha:       14/01/2025 22:08:55               
                                                
 Caja:        1                                 
                                                
 Tipo Pago:   Pago de Mensualidad               
                                                
-Contrato:    Providencia-10008                 
+Contrato:    Providencia-10300                 
                                                
-Suscriptor:  JORGE ALBERTO  VEGA TAPIA         
+Suscriptor:  JAVIER OLMOS MENDOZA              
                                                
-Domicilio:   SANTA MONSERRAT 507 PROVIDENCIA   
+Domicilio:   ORIENTE 23 124 AVE REAL           
                                                
-Servicio:    TV + INTERNET 8MB                 
+Servicio:    PROMO 1                           
                                                
-Telefono:    7712584314                        
+Telefono:    7713600940                        
                                                
-Costo Mensualidad:                     $ 390.0 
+Costo Mensualidad:                     $ 450.0 
+Descuento:                           - $ 50.0  
                                                
-Total:                                 $ 390.0 
+Total:                                 $ 450.0 
                                                
-Proximo pago antes de:  10/01/26               
+Proximo pago antes de:  10/05/25               
                                                
  RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO
    CANCELACION DEL 25 AL 30 DEL MES PAGADO     
@@ -38,6 +39,9 @@ Proximo pago antes de:  10/01/26
               SABADO DE 9AM A 2PM              
          Telefono Oficina:  7713212773         
     Soporte Tecnico WhatsApp: 7717769686       
+                                               
+                                               
+                                               
                                                
                                                
                                                

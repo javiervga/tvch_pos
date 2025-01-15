@@ -7,11 +7,13 @@ package mx.com.tvch.pos.util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import mx.com.tvch.pos.config.Sesion;
 
 /**
  *
@@ -20,12 +22,17 @@ import java.util.Date;
 public class Utilerias {
 
     private static Utilerias utilerias;
+    private final Sesion sesion;
 
     public static Utilerias getUtilerias() {
         if (utilerias == null) {
             utilerias = new Utilerias();
         }
         return utilerias;
+    }
+    
+    public Utilerias(){
+        sesion = Sesion.getSesion();
     }
 
     public static void main(String args[]) {
@@ -116,16 +123,22 @@ public class Utilerias {
         return ld.format(formatter);
     }
     
+    public Date obtenerFecha() throws ParseException {
+        LocalDate localDate = LocalDate.now();
+        Date date = Date.from(localDate.atStartOfDay(ZoneId.of(Constantes.ZONA_HORARIA)).toInstant());
+        return date;
+    }
+    
     public Date convertirString2Date(String date, String formato) throws ParseException {
         SimpleDateFormat format = new SimpleDateFormat(formato);
         return format.parse(date);
     }
 
-    public Long generarAperturaCajaId() {
+    public Long generarIdLocal() {
 
         LocalDateTime ld = LocalDateTime.now(ZoneId.of(Constantes.ZONA_HORARIA));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-        String cadenaId = ld.format(formatter);
+        String cadenaId = String.valueOf(sesion.getCajaId()).concat(ld.format(formatter)) ;
         return Long.valueOf(cadenaId);
 
     }

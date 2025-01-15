@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.entity.DetallePromocionTransaccionEntity;
 import org.slf4j.Logger;
@@ -30,6 +32,68 @@ public class DetallePromocionTransaccionDao {
         if(dao == null)
             dao = new DetallePromocionTransaccionDao();
         return dao;
+    }
+    
+    /**
+     * 
+     * @param transaccionId
+     * @return
+     * @throws Exception 
+     */
+    public List<DetallePromocionTransaccionEntity> obtenerDetallesPromocionPorTransaccion(Long transaccionId) throws Exception{
+
+        List<DetallePromocionTransaccionEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("SELECT id_detalle, id_transaccion, id_promocion, descripcion_promocion, costo_promocion FROM detalle_promocion_transaccion WHERE id_transaccion =");
+            query.append(transaccionId);
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                DetallePromocionTransaccionEntity entity = new DetallePromocionTransaccionEntity();
+                entity.setDetalleId(rs.getLong("id_detalle"));
+                entity.setCostoPromocion(rs.getDouble("costo_promocion"));
+                entity.setDescripcionPromocion(rs.getString("descripcion_promocion"));
+                entity.setPromocionId(rs.getLong("id_promocion"));
+                entity.setTransaccionId(rs.getLong("id_transaccion"));
+                list.add(entity);
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar detalles de promociones de transaccion en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return list;
+
+        
     }
     
     /**

@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,6 +25,9 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.entity.AperturaCajaEntity;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
+import mx.com.tvch.pos.entity.CorteCajaEntity;
+import mx.com.tvch.pos.model.CorteCaja;
+import mx.com.tvch.pos.model.DetalleCorte;
 import mx.com.tvch.pos.model.DetallePagoServicio;
 import mx.com.tvch.pos.model.Orden;
 import mx.com.tvch.pos.model.client.Suscriptor;
@@ -65,6 +69,75 @@ public class Impresora {
             java.util.logging.Logger.getLogger(Impresora.class.getName()).log(Level.SEVERE, null, ex);
         }
     }*/
+    public void imprimirTicketCorteCaja(List<DetalleCorte> list, CorteCaja corteCaja) throws Exception{
+
+        DetalleCorte detalleId = list.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_CORTE_ID).findFirst().get();
+
+        PrinterMatrix pm = new PrinterMatrix();
+
+        pm.setOutSize(40, 47);
+        pm.printCharAtCol(1, 1, 47, "=");
+        pm.printTextWrap(1, 1, 15, 47, "Corte de caja");
+
+        pm.printTextLinCol(4, 1, "Sucursal:");
+        pm.printTextLinCol(4, 27, sesion.getSucursal());
+        pm.printTextLinCol(5, 1, "Folio Corte:");
+        pm.printTextLinCol(5, 27, String.valueOf(corteCaja.getEntity().getCorteCajaId()));
+        pm.printTextLinCol(6, 1, "Folio Server:");
+        if (corteCaja.getEntity().getCorteCajaIdServer() != null) {
+            pm.printTextLinCol(6, 27, corteCaja.getEntity().getCorteCajaIdServer().toString());
+        } else {
+            pm.printTextLinCol(6, 27, "");
+        }
+        pm.printTextLinCol(7, 1, "Num. Caja:");
+        pm.printTextLinCol(7, 27, String.valueOf(sesion.getNumeroCaja()));
+        pm.printTextLinCol(8, 1, "Cajero:");
+        pm.printTextLinCol(8, 27, sesion.getUsuario());
+        pm.printTextLinCol(9, 1, "Fondo Fijo:");
+        pm.printTextLinCol(9, 27, corteCaja.getEntity().getFondoFijo().toString());
+        try {
+            pm.printTextLinCol(10, 1, "Fecha:");
+            pm.printTextLinCol(10, 27, utilerias.convertirDateTime2String(utilerias.convertirString2Date(corteCaja.getEntity().getFechaCorte(), Constantes.FORMATO_FECHA_MYSQL), Constantes.FORMATO_FECHA_TICKET));
+            pm.printTextLinCol(11, 1, "Hora:");
+            pm.printTextLinCol(11, 27, utilerias.convertirDateTime2String(utilerias.convertirString2Date(corteCaja.getEntity().getFechaCorte(), Constantes.FORMATO_FECHA_MYSQL), Constantes.FORMATO_HORA_TICKET));
+        } catch (ParseException ex) {
+
+        }
+        pm.printTextLinCol(13, 1, "Operaciones Realizadas:");
+        pm.printTextLinCol(13, 27, String.valueOf(corteCaja.getEntity().getCantidadCobros()));
+        pm.printTextLinCol(14, 1, "Monto Total Cobrado:");
+        pm.printTextLinCol(14, 27, String.valueOf(corteCaja.getEntity().getTotalCobros()));
+        
+        pm.printTextLinCol(16, 1, "Descuentos otorgados:");
+        pm.printTextLinCol(16, 27, String.valueOf(corteCaja.getEntity().getCantidadDescuentos()));
+        pm.printTextLinCol(17, 1, "Monto de los descuentos:");
+        pm.printTextLinCol(17, 27, String.valueOf(corteCaja.getEntity().getTotalDescuentos()));
+
+        pm.printTextLinCol(19, 1, "Salidas de caja:");
+        pm.printTextLinCol(19, 27, String.valueOf(corteCaja.getEntity().getCantidadSalidas()));
+        pm.printTextLinCol(20, 1, "Monto de los salidas:");
+        pm.printTextLinCol(20, 27, String.valueOf(corteCaja.getEntity().getTotalSalidas()));
+        
+        pm.printTextLinCol(22, 1, "Efectivo calculado:");
+        pm.printTextLinCol(22, 27, String.valueOf(corteCaja.getEntity().getTotalSolicitado()));
+        pm.printTextLinCol(23, 1, "Efectivo entegado:");
+        pm.printTextLinCol(23, 27, String.valueOf(corteCaja.getEntity().getTotalEntregado()));
+        
+        if(corteCaja.getFaltanteEntity() != null){
+            pm.printTextLinCol(24, 1, "Faltante registrado:");
+            pm.printTextLinCol(24, 27, String.valueOf(corteCaja.getFaltanteEntity().getMonto()));
+        }else if(corteCaja.getSobranteEntity() != null){
+            pm.printTextLinCol(24, 1, "Sobrante registrado:");
+            pm.printTextLinCol(24, 27, String.valueOf(corteCaja.getSobranteEntity().getMonto()));
+        }
+        
+        String nombreArchivo = ("impresion.txt");
+        pm.toFile(nombreArchivo);
+
+        imprimirArchivo(nombreArchivo);
+
+    }
+
     /**
      *
      * @param detallesPago
@@ -77,20 +150,23 @@ public class Impresora {
 
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptor.getNombre()).append(" ").append(suscriptor.getApellidoPaterno()).append(" ").append(suscriptor.getApellidoMaterno());
-        
+
         StringBuilder domicilio = new StringBuilder();
-        if(suscriptor.getCalle() != null)
+        if (suscriptor.getCalle() != null) {
             domicilio.append(suscriptor.getCalle()).append(" ");
-        if(suscriptor.getNumeroCalle() != null)
+        }
+        if (suscriptor.getNumeroCalle() != null) {
             domicilio.append(suscriptor.getNumeroCalle()).append(" ");
-        if(suscriptor.getColonia() != null)
+        }
+        if (suscriptor.getColonia() != null) {
             domicilio.append(suscriptor.getColonia());
+        }
 
         String contrato = String.valueOf(suscriptor.getContratoId());
         if (suscriptor.getContratoAnteriorId() != null && suscriptor.getContratoAnteriorId() > 0) {
             contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getContratoAnteriorId()));
         }
-        
+
         DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_SERVICIO).findAny().get();
         Double importeTotal = detalleCobro.getMonto();
 
@@ -98,9 +174,9 @@ public class Impresora {
 
         int cantidadLineas = 51;
 
-        if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent() || 
-                detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent() ||
-                detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_RECARGO).findAny().isPresent()) {
+        if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()
+                || detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()
+                || detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_RECARGO).findAny().isPresent()) {
             cantidadLineas = cantidadLineas + 4;
         }
 
@@ -122,7 +198,7 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 9, 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
-        
+
         pm.printTextLinCol(linea, 1, "Fecha:");
         pm.printTextLinCol(linea, 14, utilerias.convertirDateTime2String(new Date(), "dd/MM/yyyy HH:mm:ss"));
         linea = linea + 2;
@@ -159,8 +235,8 @@ public class Impresora {
         if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()) {
             linea++;
             pm.printTextLinCol(linea, 1, "Promoción:");
-            pm.printTextLinCol(linea, 38, "- $ ".concat(String.valueOf(detalleCobro.getMonto() - 
-                    detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get().getMonto())));
+            pm.printTextLinCol(linea, 38, "- $ ".concat(String.valueOf(detalleCobro.getMonto()
+                    - detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get().getMonto())));
         } else {
             if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()) {
                 linea++;
@@ -198,8 +274,8 @@ public class Impresora {
 
         //int impresiones = 0;
         //do{
-            imprimirArchivo(nombreArchivo);
-            //impresiones = impresiones+1;
+        imprimirArchivo(nombreArchivo);
+        //impresiones = impresiones+1;
         //}while(impresiones<2);
 
     }
@@ -264,7 +340,7 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 9, 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
-        
+
         pm.printTextLinCol(linea, 1, "Fecha:");
         pm.printTextLinCol(linea, 14, utilerias.convertirDateTime2String(new Date(), "dd/MM/yyyy HH:mm:ss"));
         linea = linea + 2;
@@ -340,7 +416,7 @@ public class Impresora {
      * @throws Exception
      */
     public void imprimirTicketAperturaCaja(AperturaCajaEntity entity) throws Exception {
-        
+
         PrinterMatrix pm = new PrinterMatrix();
 
         pm.setOutSize(20, 47);

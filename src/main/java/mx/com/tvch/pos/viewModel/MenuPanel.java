@@ -51,6 +51,27 @@ public class MenuPanel extends javax.swing.JPanel {
         };
         botonSalir.addActionListener(botonSalirActionListener);
         
+        ActionListener botonCorteCajaListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    AperturaCajaEntity entity = aperturaCajaController.obtenerAperturaCajaActiva();
+                    if(entity != null){
+                        if(entity.getUsuarioId().longValue() == sesion.getUsuarioId().longValue()){
+                            sesion.setAperturaCajaId(entity.getAperturaCajaId());
+                            posFrame.cambiarPantalla(menuPanel, VentanaEnum.CORTE);
+                        }else{
+                            JOptionPane.showMessageDialog(menuPanel, "Se encontro una apertura de caja realizada por un usuario diferente, para realizar un corte de caja debe ingresar con el usuario que realizo la apertura","", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }else
+                        JOptionPane.showMessageDialog(menuPanel, "No se encontro una apertura de caja activa, para realizar un corte de caja primero debe abrir caja","", JOptionPane.WARNING_MESSAGE);
+                }catch(Exception ex){
+                    JOptionPane.showMessageDialog(menuPanel, ex.getMessage(),"", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        botonCorteCaja.addActionListener(botonCorteCajaListener);
+        
         ActionListener botonCobrarOrdenListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -154,7 +175,7 @@ public class MenuPanel extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         etiquetaUsuario = new javax.swing.JLabel();
         botonAbrirCaja = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        botonCorteCaja = new javax.swing.JButton();
         botonCobrarServicio = new javax.swing.JButton();
         botonCobrarOrden = new javax.swing.JButton();
         botonSalir = new javax.swing.JButton();
@@ -193,11 +214,11 @@ public class MenuPanel extends javax.swing.JPanel {
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(163, 73, 164));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Hacer Corte");
-        jButton2.setPreferredSize(new java.awt.Dimension(75, 25));
+        botonCorteCaja.setBackground(new java.awt.Color(163, 73, 164));
+        botonCorteCaja.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        botonCorteCaja.setForeground(new java.awt.Color(255, 255, 255));
+        botonCorteCaja.setText("Hacer Corte");
+        botonCorteCaja.setPreferredSize(new java.awt.Dimension(75, 25));
 
         botonCobrarServicio.setBackground(new java.awt.Color(163, 73, 164));
         botonCobrarServicio.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -272,7 +293,7 @@ public class MenuPanel extends javax.swing.JPanel {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(190, 190, 190)
-                                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(botonCorteCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(159, 159, 159)
                                         .addComponent(botonCobrarOrden, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
@@ -343,7 +364,7 @@ public class MenuPanel extends javax.swing.JPanel {
                         .addComponent(botonCobrarOrden, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(49, 49, 49))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(botonCorteCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(78, 78, 78))))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -367,13 +388,13 @@ public class MenuPanel extends javax.swing.JPanel {
     private javax.swing.JButton botonAbrirCaja;
     private javax.swing.JButton botonCobrarOrden;
     private javax.swing.JButton botonCobrarServicio;
+    private javax.swing.JButton botonCorteCaja;
     private javax.swing.JButton botonRegistrarSalida;
     private javax.swing.JButton botonSalir;
     private javax.swing.JLabel etiquetaLogo;
     private javax.swing.JLabel etiquetaNumeroCaja;
     private javax.swing.JLabel etiquetaSucursal;
     private javax.swing.JLabel etiquetaUsuario;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;

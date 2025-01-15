@@ -31,6 +31,10 @@ public class CajaDao {
         return cajaDao;
     }
     
+    /**
+     * 
+     * @return 
+     */
     public CajaEntity obtenerCaja() {
 
         CajaEntity entity = null;

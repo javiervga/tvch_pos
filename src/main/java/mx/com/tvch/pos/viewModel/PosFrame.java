@@ -27,6 +27,7 @@ public class PosFrame extends javax.swing.JFrame {
     private final SalidaCajaPanel salidaCajaPanel;
     private final CobroServicioPanel cobroServicioPanel;
     private final CobroOrdenPanel cobroOrdenPanel;
+    private final CorteCajaPanel corteCajaPanel;
     private final DbConfig dbConfig;
     private Sesion sesion;
 
@@ -45,6 +46,7 @@ public class PosFrame extends javax.swing.JFrame {
         cobroServicioPanel = CobroServicioPanel.getCobroPanel(this);
         cobroOrdenPanel = CobroOrdenPanel.getCobroOrdenPanel(this);
         loadingPanel = LoadingPanel.getLoadingPanel();
+        corteCajaPanel = CorteCajaPanel.getCorteCajaPanel(this);
         dbConfig = DbConfig.getdDbConfig();
         sesion = Sesion.getSesion();
 
@@ -116,6 +118,8 @@ public class PosFrame extends javax.swing.JFrame {
                 salidaCajaPanel.cargarDatosSesion();
                 break;
             case CORTE:
+                this.add(corteCajaPanel);
+                corteCajaPanel.cargarDatosSesion();
                 break;
             case BUSQUEDA:
                 break;
