@@ -240,6 +240,8 @@ public class Impresora {
         } else {
             if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()) {
                 linea++;
+                DetallePagoServicio detalleDescuento = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findFirst().get();
+                importeTotal = importeTotal -detalleDescuento.getMonto();
                 pm.printTextLinCol(linea, 1, "Descuento:");
                 pm.printTextLinCol(linea, 38, "- $ ".concat(String.valueOf(detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().get().getMonto())));
             }

@@ -10,28 +10,28 @@
        Colonia La Providencia C.P. 42186       
          Sucursal Providencia                  
                                                
-Fecha:       14/01/2025 22:08:55               
+Fecha:       14/01/2025 22:30:24               
                                                
 Caja:        1                                 
                                                
 Tipo Pago:   Pago de Mensualidad               
                                                
-Contrato:    Providencia-10300                 
+Contrato:    Providencia-4816                  
                                                
-Suscriptor:  JAVIER OLMOS MENDOZA              
+Suscriptor:  JAVIER EDUARDO DELGADO CRUZ       
                                                
-Domicilio:   ORIENTE 23 124 AVE REAL           
+Domicilio:   SANTA CATALINA M 37 L 11 PROVIDENCIA
                                                
-Servicio:    PROMO 1                           
+Servicio:    TV + INTERNET 8MB                 
                                                
-Telefono:    7713600940                        
+Telefono:    5586957748                        
                                                
-Costo Mensualidad:                     $ 450.0 
+Costo Mensualidad:                     $ 390.0 
 Descuento:                           - $ 50.0  
                                                
-Total:                                 $ 450.0 
+Total:                                 $ 340.0 
                                                
-Proximo pago antes de:  10/05/25               
+Proximo pago antes de:  10/04/25               
                                                
  RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO
    CANCELACION DEL 25 AL 30 DEL MES PAGADO     
