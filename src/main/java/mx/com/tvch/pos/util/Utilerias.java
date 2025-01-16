@@ -137,7 +137,7 @@ public class Utilerias {
     public Long generarIdLocal() {
 
         LocalDateTime ld = LocalDateTime.now(ZoneId.of(Constantes.ZONA_HORARIA));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         String cadenaId = String.valueOf(sesion.getCajaId()).concat(ld.format(formatter)) ;
         return Long.valueOf(cadenaId);
 

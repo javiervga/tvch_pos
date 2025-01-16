@@ -1,50 +1,14 @@
+===============================================
+               Apertura de caja                
                                                
-
-                                              
-                                               
-             Comprobante de Pago               
-                                               
-             TV Cable Hidalguense              
-  Mineral de la Reforma   R.F.C. TCH151120HY6  
-           Calle San Rafael No. 150,           
-       Colonia La Providencia C.P. 42186       
-         Sucursal Providencia                  
-                                               
-Fecha:       14/01/2025 22:30:24               
-                                               
-Caja:        1                                 
-                                               
-Tipo Pago:   Pago de Mensualidad               
-                                               
-Contrato:    Providencia-4816                  
-                                               
-Suscriptor:  JAVIER EDUARDO DELGADO CRUZ       
-                                               
-Domicilio:   SANTA CATALINA M 37 L 11 PROVIDENCIA
-                                               
-Servicio:    TV + INTERNET 8MB                 
-                                               
-Telefono:    5586957748                        
-                                               
-Costo Mensualidad:                     $ 390.0 
-Descuento:                           - $ 50.0  
-                                               
-Total:                                 $ 340.0 
-                                               
-Proximo pago antes de:  10/04/25               
-                                               
- RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO
-   CANCELACION DEL 25 AL 30 DEL MES PAGADO     
-  HORARIO DE OFICINA LUNES A VIERNES 9AM A 6PM,
-              SABADO DE 9AM A 2PM              
-         Telefono Oficina:  7713212773         
-    Soporte Tecnico WhatsApp: 7717769686       
-                                               
-                                               
-                                               
-                                               
-                                               
-                                               
+Sucursal:              Providencia             
+Folio Caja:            120250115015932         
+Folio Server:          0                       
+Num. Caja:             1                       
+Cajero:                MDELGADO                
+Fondo Fijo:            100.0                   
+Fecha:                 15/01/25                
+Hora:                  01:59:32                
                                                
                                                
                                                
