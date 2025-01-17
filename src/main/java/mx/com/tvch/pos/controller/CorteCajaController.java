@@ -15,6 +15,7 @@ import mx.com.tvch.pos.dao.DetalleCobroTransaccionDao;
 import mx.com.tvch.pos.dao.DetalleDescuentoTransaccionDao;
 import mx.com.tvch.pos.dao.DetalleDiferenciaCorteCajaDao;
 import mx.com.tvch.pos.dao.DetallePromocionTransaccionDao;
+import mx.com.tvch.pos.dao.IngresoCajaDao;
 import mx.com.tvch.pos.dao.SalidaCajaDao;
 import mx.com.tvch.pos.dao.TransaccionDao;
 import mx.com.tvch.pos.entity.AperturaCajaEntity;
@@ -23,6 +24,7 @@ import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import mx.com.tvch.pos.entity.DetalleDescuentoTransaccionEntity;
 import mx.com.tvch.pos.entity.DetalleDiferenciaCorteEntity;
 import mx.com.tvch.pos.entity.DetallePromocionTransaccionEntity;
+import mx.com.tvch.pos.entity.IngresoCajaEntity;
 import mx.com.tvch.pos.entity.SalidaCajaEntity;
 import mx.com.tvch.pos.entity.TransaccionEntity;
 import mx.com.tvch.pos.model.CorteCaja;
@@ -48,6 +50,7 @@ public class CorteCajaController {
     private final DetalleDiferenciaCorteCajaDao detalleDiferenciaCorteCajaDao;
     private final TransaccionDao transaccionDao;
     private final SalidaCajaDao salidaCajaDao;
+    private final IngresoCajaDao ingresoCajaDao;
     private final Sesion sesion;
     private final Utilerias util;
 
@@ -69,6 +72,7 @@ public class CorteCajaController {
         detalleDiferenciaCorteCajaDao = DetalleDiferenciaCorteCajaDao.getDetalleDiferenciaCorteCajaDao();
         transaccionDao = TransaccionDao.getTransaccionDao();
         salidaCajaDao = SalidaCajaDao.getSalidaCajaDao();
+        ingresoCajaDao = IngresoCajaDao.getIngresoCajaDao();
         sesion = Sesion.getSesion();
         util = Utilerias.getUtilerias();
     }
@@ -105,11 +109,17 @@ public class CorteCajaController {
             if (list.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_CORTE_PROMOCIONES_APLICADAS).findAny().isPresent()) {
                 dDetallePromociones = list.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_CORTE_PROMOCIONES_APLICADAS).findFirst().get();
             }
-            //detalles promociones -> validar que existan
+            //detalles salidas -> validar que existan
             DetalleCorte dSalidas = null;
             if (list.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_CORTE_NUMERO_SALIDAS).findAny().isPresent()) {
                 dSalidas = list.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_CORTE_NUMERO_SALIDAS).findFirst().get();
             }
+            //detalles ingresos -> validar que existan
+            DetalleCorte dIngresos = null;
+            if (list.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_CORTE_NUMERO_INGRESOS).findAny().isPresent()) {
+                dIngresos = list.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_CORTE_NUMERO_INGRESOS).findFirst().get();
+            }
+            
             //monto solicitado siempre existe
             DetalleCorte dMontoSolicitado = list.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_CORTE_MONTO_SOLICITADO).findFirst().get();
 
@@ -167,6 +177,13 @@ public class CorteCajaController {
             if(dSalidas != null){
                 entity.setCantidadSalidas(dSalidas.getCantidad());
                 entity.setTotalSalidas(dSalidas.getMonto());
+            }else{
+                entity.setCantidadSalidas(0);
+                entity.setTotalSalidas(0.0);
+            }
+            if(dIngresos != null){
+                entity.setCantidadIngresos(dIngresos.getCantidad());
+                entity.setTotalIngresos(dIngresos.getMonto());
             }else{
                 entity.setCantidadSalidas(0);
                 entity.setTotalSalidas(0.0);
@@ -247,10 +264,12 @@ public class CorteCajaController {
             boolean existenDescuentos = false;
             boolean existenPromociones = false;
             boolean existenSalidas = false;
+            boolean existenIngresos = false;
             DetalleCorte detalleNumeroTransacciones = null;
             DetalleCorte detalleDescuentos = null;
             DetalleCorte detallePromociones = null;
             DetalleCorte detalleSalidas = null;
+            DetalleCorte detalleIngresos = null;
             DetalleCorte detalleCobros = null;
 
             List<TransaccionEntity> transacciones = transaccionDao.obtenerTransaccionesxAperturaCaja(aperturaCaja.getAperturaCajaId());
@@ -345,6 +364,19 @@ public class CorteCajaController {
                 detalleSalidas.setTipoDetalle(Constantes.TIPO_DETALLE_CORTE_NUMERO_SALIDAS);
                 list.add(detalleSalidas);
             }
+            
+            List<IngresoCajaEntity> ingresos = ingresoCajaDao.obtenerIngresoPorAperturaCaja(sesion.getAperturaCajaId());
+            if (!ingresos.isEmpty()) {
+                existenIngresos = true;
+                detalleIngresos = new DetalleCorte();
+                double montoIngresos = ingresos.stream().mapToDouble(IngresoCajaEntity::getMonto).sum();
+                detalleIngresos.setCantidad(salidas.size());
+                detalleIngresos.setConcepto("Ingresos a caja");
+                detalleIngresos.setMonto(montoIngresos);
+                detalleIngresos.setMontoCadena("+ " + String.valueOf(montoIngresos));
+                detalleIngresos.setTipoDetalle(Constantes.TIPO_DETALLE_CORTE_NUMERO_INGRESOS);
+                list.add(detalleIngresos);
+            }
 
             DetalleCorte detalleMontoSolicitado = new DetalleCorte();
             detalleMontoSolicitado.setCantidad(1);
@@ -360,6 +392,9 @@ public class CorteCajaController {
             }
             if (existenSalidas) {
                 montoEsperado = montoEsperado - detalleSalidas.getMonto();
+            }
+            if (existenIngresos){
+                montoEsperado = montoEsperado + detalleIngresos.getMonto();
             }
 
             detalleMontoSolicitado.setMonto(montoEsperado);

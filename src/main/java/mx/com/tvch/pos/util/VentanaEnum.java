@@ -19,6 +19,7 @@ public enum VentanaEnum {
     BUSQUEDA,
     REIMPRESION,
     SALIDA,
+    INGRESO,
     LOADING
     
 }

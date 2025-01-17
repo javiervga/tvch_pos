@@ -175,8 +175,6 @@ public class CorteCajaPanel extends javax.swing.JPanel {
         jLabel11 = new javax.swing.JLabel();
         etiquetaUsuario = new javax.swing.JLabel();
         etiquetaLogo = new javax.swing.JLabel();
-        panelFooter = new javax.swing.JPanel();
-        botonRegresar = new javax.swing.JButton();
         etiquetaCorte = new javax.swing.JLabel();
         panelInformacion = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -185,11 +183,13 @@ public class CorteCajaPanel extends javax.swing.JPanel {
         botonCalcularMontos = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         campoEfectivo = new javax.swing.JTextField();
+        panelFooter = new javax.swing.JPanel();
+        botonRegresar = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
-        setMaximumSize(new java.awt.Dimension(1500, 900));
-        setMinimumSize(new java.awt.Dimension(1500, 900));
-        setPreferredSize(new java.awt.Dimension(1500, 900));
+        setMaximumSize(new java.awt.Dimension(1500, 800));
+        setMinimumSize(new java.awt.Dimension(1500, 800));
+        setPreferredSize(new java.awt.Dimension(1500, 800));
 
         panelCabecero.setBackground(new java.awt.Color(255, 255, 255));
         panelCabecero.setPreferredSize(new java.awt.Dimension(1500, 50));
@@ -251,30 +251,6 @@ public class CorteCajaPanel extends javax.swing.JPanel {
         etiquetaLogo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         etiquetaLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagen_menu.png"))); // NOI18N
 
-        panelFooter.setBackground(new java.awt.Color(255, 255, 255));
-
-        botonRegresar.setBackground(new java.awt.Color(255, 51, 0));
-        botonRegresar.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        botonRegresar.setForeground(new java.awt.Color(255, 255, 255));
-        botonRegresar.setText("Regresar");
-
-        javax.swing.GroupLayout panelFooterLayout = new javax.swing.GroupLayout(panelFooter);
-        panelFooter.setLayout(panelFooterLayout);
-        panelFooterLayout.setHorizontalGroup(
-            panelFooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFooterLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(botonRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26))
-        );
-        panelFooterLayout.setVerticalGroup(
-            panelFooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelFooterLayout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(botonRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(23, Short.MAX_VALUE))
-        );
-
         etiquetaCorte.setFont(new java.awt.Font("Segoe UI", 0, 40)); // NOI18N
         etiquetaCorte.setForeground(new java.awt.Color(163, 73, 164));
         etiquetaCorte.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -335,6 +311,30 @@ public class CorteCajaPanel extends javax.swing.JPanel {
 
         campoEfectivo.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
 
+        panelFooter.setBackground(new java.awt.Color(255, 255, 255));
+
+        botonRegresar.setBackground(new java.awt.Color(255, 51, 0));
+        botonRegresar.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        botonRegresar.setForeground(new java.awt.Color(255, 255, 255));
+        botonRegresar.setText("Regresar");
+
+        javax.swing.GroupLayout panelFooterLayout = new javax.swing.GroupLayout(panelFooter);
+        panelFooter.setLayout(panelFooterLayout);
+        panelFooterLayout.setHorizontalGroup(
+            panelFooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFooterLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(botonRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28))
+        );
+        panelFooterLayout.setVerticalGroup(
+            panelFooterLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelFooterLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(botonRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(22, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout panelInformacionLayout = new javax.swing.GroupLayout(panelInformacion);
         panelInformacion.setLayout(panelInformacionLayout);
         panelInformacionLayout.setHorizontalGroup(
@@ -352,19 +352,24 @@ public class CorteCajaPanel extends javax.swing.JPanel {
                         .addComponent(botonRealizarCorte))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 936, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelInformacionLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(panelFooter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         panelInformacionLayout.setVerticalGroup(
             panelInformacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelInformacionLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelInformacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(botonRealizarCorte)
                     .addComponent(botonCalcularMontos)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(campoEfectivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(64, 64, 64))
+                    .addComponent(campoEfectivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botonRealizarCorte))
+                .addGap(50, 50, 50)
+                .addComponent(panelFooter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -376,12 +381,10 @@ public class CorteCajaPanel extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(etiquetaCorte, javax.swing.GroupLayout.PREFERRED_SIZE, 425, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(535, 535, 535))
+                .addGap(536, 536, 536))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelFooter, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelInformacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(panelInformacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -389,13 +392,11 @@ public class CorteCajaPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(panelCabecero, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(etiquetaLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(etiquetaLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(etiquetaCorte)
-                .addGap(18, 18, 18)
-                .addComponent(panelInformacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
-                .addComponent(panelFooter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(panelInformacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents

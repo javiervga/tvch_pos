@@ -58,8 +58,8 @@ public class CorteCajaDao {
             
             String query = "insert into cortes_caja (id_corte_caja, id_apertura_caja, id_usuario, id_sucursal, "
                     + "fondo_fijo, cantidad_cobros, total_cobros, cantidad_descuentos, total_descuentos, cantidad_salidas, "
-                    + "total_salidas, promociones_aplicadas,  total_solicitado, total_entregado, hora_corte) "
-                    + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    + "total_salidas, cantidad_ingresos, total_ingresos, promociones_aplicadas,  total_solicitado, total_entregado, hora_corte) "
+                    + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setLong(1, entity.getCorteCajaId());
             ps.setLong(2, entity.getAperturaCajaId());
@@ -72,10 +72,12 @@ public class CorteCajaDao {
             ps.setDouble(9, entity.getTotalDescuentos());
             ps.setInt(10, entity.getCantidadSalidas());
             ps.setDouble(11, entity.getTotalSalidas());
-            ps.setInt(12, entity.getPromocionesAplicadas());
-            ps.setDouble(13, entity.getTotalSolicitado());
-            ps.setDouble(14, entity.getTotalEntregado());
-            ps.setString(15, entity.getFechaCorte());
+            ps.setInt(12, entity.getCantidadIngresos());
+            ps.setDouble(13, entity.getTotalIngresos());
+            ps.setInt(14, entity.getPromocionesAplicadas());
+            ps.setDouble(15, entity.getTotalSolicitado());
+            ps.setDouble(16, entity.getTotalEntregado());
+            ps.setString(17, entity.getFechaCorte());
             ps.executeUpdate();
             
             ResultSet rs = ps.getGeneratedKeys();

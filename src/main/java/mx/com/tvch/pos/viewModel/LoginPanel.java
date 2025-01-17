@@ -135,9 +135,9 @@ public class LoginPanel extends javax.swing.JPanel {
         campoPassword = new javax.swing.JPasswordField();
 
         setBackground(new java.awt.Color(255, 255, 255));
-        setMaximumSize(new java.awt.Dimension(1500, 900));
-        setMinimumSize(new java.awt.Dimension(1500, 900));
-        setPreferredSize(new java.awt.Dimension(1500, 900));
+        setMaximumSize(new java.awt.Dimension(1500, 800));
+        setMinimumSize(new java.awt.Dimension(1500, 800));
+        setPreferredSize(new java.awt.Dimension(1500, 800));
 
         jLabel1.setText("Usuario");
 

@@ -33,6 +33,10 @@ public class CorteCajaEntity {
     private Integer cantidadSalidas;
 
     private Double totalSalidas;
+    
+    private Integer cantidadIngresos;
+    
+    private Double totalIngresos;
 
     private Integer promocionesAplicadas;
 
@@ -136,6 +140,22 @@ public class CorteCajaEntity {
 
     public void setTotalSalidas(Double totalSalidas) {
         this.totalSalidas = totalSalidas;
+    }
+
+    public Integer getCantidadIngresos() {
+        return cantidadIngresos;
+    }
+
+    public void setCantidadIngresos(Integer cantidadIngresos) {
+        this.cantidadIngresos = cantidadIngresos;
+    }
+
+    public Double getTotalIngresos() {
+        return totalIngresos;
+    }
+
+    public void setTotalIngresos(Double totalIngresos) {
+        this.totalIngresos = totalIngresos;
     }
 
     public Integer getPromocionesAplicadas() {

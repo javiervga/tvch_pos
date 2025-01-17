@@ -13,6 +13,7 @@ import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.util.VentanaEnum;
 import static mx.com.tvch.pos.util.VentanaEnum.APERTURA;
 import static mx.com.tvch.pos.util.VentanaEnum.COBRO_SERVICIO;
+import static mx.com.tvch.pos.util.VentanaEnum.SALIDA;
 
 /**
  *
@@ -25,6 +26,7 @@ public class PosFrame extends javax.swing.JFrame {
     private final LoadingPanel loadingPanel;
     private final AperturaCajaPanel aperturaCajaPanel;
     private final SalidaCajaPanel salidaCajaPanel;
+    private final IngresoCajaPanel ingresoCajaPanel;
     private final CobroServicioPanel cobroServicioPanel;
     private final CobroOrdenPanel cobroOrdenPanel;
     private final CorteCajaPanel corteCajaPanel;
@@ -43,6 +45,7 @@ public class PosFrame extends javax.swing.JFrame {
         menuPanel = MenuPanel.getMenuPanel(this);
         aperturaCajaPanel = AperturaCajaPanel.getAperturaCajaPanel(this);
         salidaCajaPanel = SalidaCajaPanel.getSalidaCajaPanel(this);
+        ingresoCajaPanel = IngresoCajaPanel.getIngresoCajaPanel(this);
         cobroServicioPanel = CobroServicioPanel.getCobroPanel(this);
         cobroOrdenPanel = CobroOrdenPanel.getCobroOrdenPanel(this);
         loadingPanel = LoadingPanel.getLoadingPanel();
@@ -117,6 +120,10 @@ public class PosFrame extends javax.swing.JFrame {
                 this.add(salidaCajaPanel);
                 salidaCajaPanel.cargarDatosSesion();
                 break;
+            case INGRESO:
+                this.add(ingresoCajaPanel);
+                ingresoCajaPanel.cargarDatosSesion();
+                break;
             case CORTE:
                 this.add(corteCajaPanel);
                 corteCajaPanel.cargarDatosSesion();
@@ -188,8 +195,8 @@ public class PosFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Tv Cable Hidalguense - Punto de Venta ");
-        setMaximumSize(new java.awt.Dimension(1500, 900));
-        setMinimumSize(new java.awt.Dimension(1500, 900));
+        setMaximumSize(new java.awt.Dimension(1500, 800));
+        setMinimumSize(new java.awt.Dimension(1500, 800));
         setResizable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -200,7 +207,7 @@ public class PosFrame extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 900, Short.MAX_VALUE)
+            .addGap(0, 800, Short.MAX_VALUE)
         );
 
         pack();
