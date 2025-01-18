@@ -16,6 +16,8 @@ public class Constantes {
     public static final String FORMATO_FECHA_WEB_SERVICE = "dd/MM/yyyy";
     public static final String FORMATO_HORA_TICKET = "HH:mm:ss";
     
+    public static final long ESTATUS_SUSCRIPTOR_ACTIVO = 2;
+    
     public static final long ESTATUS_CONTRATO_NUEVO = 1;
     public static final long ESTATUS_CONTRATO_PENDIENTE_INSTALAR = 2;
     public static final long ESTATUS_CONTRATO_ACTIVO = 3;

@@ -1,34 +1,14 @@
 ===============================================
-               Corte de caja                   
+               Apertura de caja                
                                                
-Sucursal:                 Providencia          
-Folio Corte:              120250117023804      
-Folio Server:                                  
-Num. Caja:                1                    
-Cajero:                   MDELGADO             
-Fondo Fijo:               100.0                
-Fecha:                    17/01/25             
-Hora:                     02:38:04             
-                                               
-Operaciones Realizadas:   0                    
-Monto Total Cobrado:      0.0                  
-                                               
-Descuentos otorgados:     0                    
-Monto de los descuentos:  0.0                  
-                                               
-Salidas de caja:          0                    
-Monto de los salidas:     0.0                  
-                                               
-Efectivo calculado:       200.0                
-Efectivo entegado:        200.0                
-                                               
-                                               
-                                               
-                                               
-                                               
-                                               
-                                               
-                                               
+Sucursal:              Providencia             
+Folio Caja:            120250118010337         
+Folio Server:          0                       
+Num. Caja:             1                       
+Cajero:                MDELGADO                
+Fondo Fijo:            230.0                   
+Fecha:                 18/01/25                
+Hora:                  01:03:37                
                                                
                                                
                                                

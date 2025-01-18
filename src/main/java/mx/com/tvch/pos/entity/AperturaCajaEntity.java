@@ -26,7 +26,7 @@ public class AperturaCajaEntity {
 
     private Double fondoFijo;
     
-    private Date horaApertura;
+    private Date fechaApertura;
 
     private Integer estatus;
 
@@ -86,12 +86,12 @@ public class AperturaCajaEntity {
         this.fondoFijo = fondoFijo;
     }
 
-    public Date getHoraApertura() {
-        return horaApertura;
+    public Date getFechaApertura() {
+        return fechaApertura;
     }
 
-    public void setHoraApertura(Date horaApertura) {
-        this.horaApertura = horaApertura;
+    public void setFechaApertura(Date horaApertura) {
+        this.fechaApertura = horaApertura;
     }
 
     public Integer getEstatus() {

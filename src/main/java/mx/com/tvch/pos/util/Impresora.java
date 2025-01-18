@@ -118,17 +118,22 @@ public class Impresora {
         pm.printTextLinCol(20, 1, "Monto de los salidas:");
         pm.printTextLinCol(20, 27, String.valueOf(corteCaja.getEntity().getTotalSalidas()));
         
-        pm.printTextLinCol(22, 1, "Efectivo calculado:");
-        pm.printTextLinCol(22, 27, String.valueOf(corteCaja.getEntity().getTotalSolicitado()));
-        pm.printTextLinCol(23, 1, "Efectivo entegado:");
-        pm.printTextLinCol(23, 27, String.valueOf(corteCaja.getEntity().getTotalEntregado()));
+        pm.printTextLinCol(22, 1, "Ingresos de caja:");
+        pm.printTextLinCol(22, 27, String.valueOf(corteCaja.getEntity().getCantidadIngresos()));
+        pm.printTextLinCol(23, 1, "Monto de los ingresos:");
+        pm.printTextLinCol(23, 27, String.valueOf(corteCaja.getEntity().getTotalIngresos()));
+        
+        pm.printTextLinCol(25, 1, "Efectivo calculado:");
+        pm.printTextLinCol(25, 27, String.valueOf(corteCaja.getEntity().getTotalSolicitado()));
+        pm.printTextLinCol(26, 1, "Efectivo entegado:");
+        pm.printTextLinCol(26, 27, String.valueOf(corteCaja.getEntity().getTotalEntregado()));
         
         if(corteCaja.getFaltanteEntity() != null){
-            pm.printTextLinCol(24, 1, "Faltante registrado:");
-            pm.printTextLinCol(24, 27, String.valueOf(corteCaja.getFaltanteEntity().getMonto()));
+            pm.printTextLinCol(27, 1, "Faltante registrado:");
+            pm.printTextLinCol(27, 27, String.valueOf(corteCaja.getFaltanteEntity().getMonto()));
         }else if(corteCaja.getSobranteEntity() != null){
-            pm.printTextLinCol(24, 1, "Sobrante registrado:");
-            pm.printTextLinCol(24, 27, String.valueOf(corteCaja.getSobranteEntity().getMonto()));
+            pm.printTextLinCol(27, 1, "Sobrante registrado:");
+            pm.printTextLinCol(27, 27, String.valueOf(corteCaja.getSobranteEntity().getMonto()));
         }
         
         String nombreArchivo = ("impresion.txt");
@@ -444,9 +449,9 @@ public class Impresora {
         pm.printTextLinCol(9, 1, "Fondo Fijo:");
         pm.printTextLinCol(9, 24, entity.getFondoFijo().toString());
         pm.printTextLinCol(10, 1, "Fecha:");
-        pm.printTextLinCol(10, 24, utilerias.convertirDateTime2String(entity.getHoraApertura(), Constantes.FORMATO_FECHA_TICKET));
+        pm.printTextLinCol(10, 24, utilerias.convertirDateTime2String(entity.getFechaApertura(), Constantes.FORMATO_FECHA_TICKET));
         pm.printTextLinCol(11, 1, "Hora:");
-        pm.printTextLinCol(11, 24, utilerias.convertirDateTime2String(entity.getHoraApertura(), Constantes.FORMATO_HORA_TICKET));
+        pm.printTextLinCol(11, 24, utilerias.convertirDateTime2String(entity.getFechaApertura(), Constantes.FORMATO_HORA_TICKET));
 
         String nombreArchivo = ("impresion.txt");
         pm.toFile(nombreArchivo);

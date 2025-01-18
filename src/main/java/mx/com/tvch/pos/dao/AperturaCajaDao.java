@@ -104,7 +104,7 @@ public class AperturaCajaDao {
             stmt = conn.createStatement();
 
             StringBuilder query = new StringBuilder();
-            query.append("insert into aperturas_caja (id_apertura_caja, id_apertura_caja_server, id_caja, numero_caja, id_usuario, usuario, fondo_fijo, hora_apertura, estatus) values (");
+            query.append("insert into aperturas_caja (id_apertura_caja, id_apertura_caja_server, id_caja, numero_caja, id_usuario, usuario, fondo_fijo, fecha_apertura, estatus) values (");
             query.append(aperturaCajaId).append(",");
             query.append("null,");
             query.append(sesion.getCajaId()).append(",");
@@ -166,7 +166,7 @@ public class AperturaCajaDao {
                 entity.setNumeroCaja(rs.getInt("numero_caja"));
                 entity.setEstatus(rs.getInt("estatus"));
                 entity.setFondoFijo(rs.getDouble("fondo_fijo"));
-                entity.setHoraApertura(rs.getTimestamp("hora_apertura"));
+                entity.setFechaApertura(rs.getTimestamp("fecha_apertura"));
                 entity.setUsuarioId(rs.getLong("id_usuario"));
                 entity.setUsuario(rs.getString("usuario"));
                 break;

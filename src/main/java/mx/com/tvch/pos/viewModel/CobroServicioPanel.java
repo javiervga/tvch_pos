@@ -45,24 +45,25 @@ import org.slf4j.LoggerFactory;
  * @author fvega
  */
 public class CobroServicioPanel extends javax.swing.JPanel {
-    
+
     private static CobroServicioPanel cobroPanel;
     private static PosFrame posFrame;
-    
+
     private final Sesion sesion;
     private final CobroServicioController controller;
     private final Utilerias util;
     private final Impresora impresora;
-    
+
     List<ContratoxSuscriptorEntity> suscriptoresConsultaList;
-    private ContratoxSuscriptorEntity suscriptorSeleccionado; 
+    private ContratoxSuscriptorEntity suscriptorSeleccionado;
     private List<DetallePagoServicio> listaDetallesPago;
-    
+
     org.slf4j.Logger logger = LoggerFactory.getLogger(CobroServicioPanel.class);
-    
-    public static CobroServicioPanel getCobroPanel(PosFrame frame){
-        if(cobroPanel == null)
+
+    public static CobroServicioPanel getCobroPanel(PosFrame frame) {
+        if (cobroPanel == null) {
             cobroPanel = new CobroServicioPanel();
+        }
         posFrame = frame;
         return cobroPanel;
     }
@@ -72,39 +73,66 @@ public class CobroServicioPanel extends javax.swing.JPanel {
      */
     public CobroServicioPanel() {
         initComponents();
-        
+
         sesion = Sesion.getSesion();
         controller = CobroServicioController.getContratoxSuscriptorController();
         util = Utilerias.getUtilerias();
         impresora = Impresora.getImpresora();
         suscriptoresConsultaList = new ArrayList<>();
         listaDetallesPago = new ArrayList<>();
-        
+
         cargarComboTiposDescuento();
         crearEventos();
         cargarComboTiposBusqueda();
         cargarComboEstatusSuscriptor();
     }
-    
-    private void crearEventos(){
-        
+
+    private void cobrarServicio() {
+
+        if (suscriptorSeleccionado != null && !listaDetallesPago.isEmpty()) {
+            try {
+                Long transaccionId = controller.cobrarServicio(suscriptorSeleccionado, listaDetallesPago);
+                try {
+                    impresora.imprimirTicketServicio(listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal());
+                } catch (Exception ex) {
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    ex.printStackTrace(pw);
+                    logger.error("Fallo al imprimir ticket de transaccion: \n" + sw.toString());
+                    JOptionPane.showMessageDialog(cobroPanel, "El cobro se realizó correctamente pero ocurrió un error al imprimir su ticket. Si desea una rempresión vaya a sección de reimpresiones", "", JOptionPane.WARNING_MESSAGE);
+                }
+                System.out.println("transaccionId: " + transaccionId);
+                limpiarPantalla();
+            } catch (Exception ex) {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                ex.printStackTrace(pw);
+                logger.error("Fallo al cobrar transaccion: \n" + sw.toString());
+                JOptionPane.showMessageDialog(cobroPanel, "Ocurrió un error al realizar el cobro, por favor reintente. Si el problema persiste consulte a soporte.", "", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+
+    }
+
+    private void crearEventos() {
+
         ActionListener botonCobrarActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
-                if(suscriptorSeleccionado != null && !listaDetallesPago.isEmpty()){
+
+                if (suscriptorSeleccionado != null && !listaDetallesPago.isEmpty()) {
                     try {
                         Long transaccionId = controller.cobrarServicio(suscriptorSeleccionado, listaDetallesPago);
-                        try{
+                        try {
                             impresora.imprimirTicketServicio(listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal());
-                        }catch(Exception ex){
+                        } catch (Exception ex) {
                             StringWriter sw = new StringWriter();
                             PrintWriter pw = new PrintWriter(sw);
                             ex.printStackTrace(pw);
                             logger.error("Fallo al imprimir ticket de transaccion: \n" + sw.toString());
                             JOptionPane.showMessageDialog(cobroPanel, "El cobro se realizó correctamente pero ocurrió un error al imprimir su ticket. Si desea una rempresión vaya a sección de reimpresiones", "", JOptionPane.WARNING_MESSAGE);
                         }
-                        System.out.println("transaccionId: "+transaccionId);
+                        System.out.println("transaccionId: " + transaccionId);
                         limpiarPantalla();
                     } catch (Exception ex) {
                         StringWriter sw = new StringWriter();
@@ -114,40 +142,40 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                         JOptionPane.showMessageDialog(cobroPanel, "Ocurrió un error al realizar el cobro, por favor reintente. Si el problema persiste consulte a soporte.", "", JOptionPane.WARNING_MESSAGE);
                     }
                 }
-                
+
             }
         };
         botonCobrar.addActionListener(botonCobrarActionListener);
-        
+
         ActionListener botonEliminarPromocionActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(suscriptorSeleccionado != null){
-                    
-                    if(!listaDetallesPago.isEmpty() &&
-                            listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()){
+                if (suscriptorSeleccionado != null) {
+
+                    if (!listaDetallesPago.isEmpty()
+                            && listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()) {
                         listaDetallesPago = listaDetallesPago.stream().filter(d -> d.getTipoDetalle() != Constantes.TIPO_DETALLE_COBRO_PROMOCION).collect(Collectors.toList());
                         actualizarTablaDetallesPago();
                         etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
                         etiquetaPromocionAplicada.setVisible(false);
                     }
-                    
+
                 }
             }
         };
         botonEliminarPromocion.addActionListener(botonEliminarPromocionActionListener);
-        
+
         ActionListener botonAplicarPromocionActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(suscriptorSeleccionado != null && comboPromociones.getModel().getSize() > 0){
-                    
-                    if(!listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()){
-                        
-                        if(!listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()){
-                            
+                if (suscriptorSeleccionado != null && comboPromociones.getModel().getSize() > 0) {
+
+                    if (!listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()) {
+
+                        if (!listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()) {
+
                             PromocionEntity entity = (PromocionEntity) comboPromociones.getModel().getSelectedItem();
-                            
+
                             DetallePagoServicio detallePromocion = new DetallePagoServicio();
                             StringBuilder promocion = new StringBuilder();
                             promocion.append("Promoción - ");
@@ -161,27 +189,27 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                             actualizarTablaDetallesPago();
                             etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
                             etiquetaPromocionAplicada.setVisible(true);
-                        }else{
+                        } else {
                             JOptionPane.showMessageDialog(cobroPanel, "Ya existe un descuento aplicado en el cobro. Si desea aplicar una promoción es necesario eliminar el descuento.", "", JOptionPane.WARNING_MESSAGE);
                         }
-                        
-                    }else{
+
+                    } else {
                         JOptionPane.showMessageDialog(cobroPanel, "Ya existe un descuento aplicado en el pago", "", JOptionPane.WARNING_MESSAGE);
                     }
-                    
+
                 }
             }
         };
         botonAplicarPromocion.addActionListener(botonAplicarPromocionActionListener);
-        
+
         ActionListener botonEliminarDescuentoActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
-                if(suscriptorSeleccionado != null){
-                    
-                    if(!listaDetallesPago.isEmpty() &&
-                            listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()){
+
+                if (suscriptorSeleccionado != null) {
+
+                    if (!listaDetallesPago.isEmpty()
+                            && listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()) {
                         listaDetallesPago = listaDetallesPago.stream().filter(d -> d.getTipoDetalle() != Constantes.TIPO_DETALLE_COBRO_DESCUENTO).collect(Collectors.toList());
                         actualizarTablaDetallesPago();
                         etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
@@ -189,22 +217,22 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                         campoMotivoDescuento.setText("");
                         campoMontoDescuento.setText("");
                     }
-                    
-                } 
-                
+
+                }
+
             }
         };
         botonEliminarDescuento.addActionListener(botonEliminarDescuentoActionListener);
-        
+
         ActionListener botonApliCarDescuentoActionLister = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(suscriptorSeleccionado != null && !campoMontoDescuento.getText().isEmpty() && !campoMotivoDescuento.getText().isEmpty()){
-                    
-                    if(!listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()){
-                        
-                        if(!listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()){
-                    
+                if (suscriptorSeleccionado != null && !campoMontoDescuento.getText().isEmpty() && !campoMotivoDescuento.getText().isEmpty()) {
+
+                    if (!listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()) {
+
+                        if (!listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()) {
+
                             Double importeDescuento = null;
                             boolean elImporteDescuentoEsNumerico = false;
                             try {
@@ -214,7 +242,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                                 JOptionPane.showMessageDialog(cobroPanel, "Por favor capture un monto numérico de descuento", "", JOptionPane.WARNING_MESSAGE);
                             }
                             if (importeDescuento != null && elImporteDescuentoEsNumerico) {
-                                            
+
                                 TipoDescuentoEntity entity = (TipoDescuentoEntity) comboTipoDescuento.getModel().getSelectedItem();
                                 DetallePagoServicio detalleDescuento = new DetallePagoServicio();
                                 StringBuilder descuento = new StringBuilder();
@@ -232,70 +260,52 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                                 campoDescuentoAplicado.setText(detalleDescuento.getMotivoDescuento());
                                 campoMotivoDescuento.setText("");
                                 campoMontoDescuento.setText("");
-                    
+
                             }
-                        
-                        }else{
+
+                        } else {
                             JOptionPane.showMessageDialog(cobroPanel, "Ya existe una promoción aplicada en el cobro. Si desea agregar un descuento es necesario eliminar la promoción.", "", JOptionPane.WARNING_MESSAGE);
                         }
-                        
-                    }else{
+
+                    } else {
                         JOptionPane.showMessageDialog(cobroPanel, "Ya existe un descuento aplicado en el pago", "", JOptionPane.WARNING_MESSAGE);
                     }
-  
+
                 }
             }
         };
         botonAplicarDescuento.addActionListener(botonApliCarDescuentoActionLister);;
-        
-        /*ListSelectionModel cellSelectionModel = tablaSuscriptores.getSelectionModel();
-        
-        cellSelectionModel.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                
-                e.getFirstIndex();
-                
-                int columnCount = tablaSuscriptores.getColumnCount();                 
-                int selectedRow = tablaSuscriptores.getSelectedRow();
-                                  
-                Long contrato = (Long) tablaSuscriptores.getModel().getValueAt(selectedRow,0);
-                //strTemplateCode = (int) tblTemplate.getModel().getValueAt(selectedRow,1);
- 
-                System.out.println("contrato seleccionado enter" + contrato);
- 
-            }
-        });*/
-                
+
         KeyListener enterTablaSuscriptoresListener = new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     int selectedRow = tablaSuscriptores.getSelectedRow();
-                    if(selectedRow >=0){
+                    if (selectedRow >= 0) {
                         Long contratoId = (Long) tablaSuscriptores.getModel().getValueAt(selectedRow, 0);
-                        System.out.println("contrato seleccionado: "+contratoId);
-                        if(!suscriptoresConsultaList.isEmpty()){
-                            if(suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()){
+                        System.out.println("contrato seleccionado: " + contratoId);
+                        if (!suscriptoresConsultaList.isEmpty()) {
+                            if (suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
                                 ContratoxSuscriptorEntity entity = suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
                                 cargarDatosSuscriptor(entity);
                             }
                         }
-                    }    
+                    }
                 }
             }
         };
         tablaSuscriptores.addKeyListener(enterTablaSuscriptoresListener);
-        
+
         MouseListener dobleClickTablaSuscriptoresListener = new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
-                JTable table =(JTable) mouseEvent.getSource();
+                JTable table = (JTable) mouseEvent.getSource();
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                // your valueChanged overridden method
+                    // your valueChanged overridden method
                     Long contratoId = (Long) tablaSuscriptores.getModel().getValueAt(row, 0);
-                    System.out.println("contrato seleccionado: "+contratoId);
-                    if(!suscriptoresConsultaList.isEmpty()){
-                        if(suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()){
+                    System.out.println("contrato seleccionado: " + contratoId);
+                    if (!suscriptoresConsultaList.isEmpty()) {
+                        if (suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
                             ContratoxSuscriptorEntity entity = suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
                             cargarDatosSuscriptor(entity);
                         }
@@ -305,7 +315,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             }
         };
         tablaSuscriptores.addMouseListener(dobleClickTablaSuscriptoresListener);
-        
+
         ActionListener botonRegresarActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -314,91 +324,116 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             }
         };
         botonRegresar.addActionListener(botonRegresarActionListener);
+
+        KeyListener keyListenerBuscarSuscriptor = new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    buscarSuscriptor();
+                }
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+            }
+        };
+        campoBusqueda.addKeyListener(keyListenerBuscarSuscriptor);
         
         ActionListener botonBusquedaActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
-                if(!campoBusqueda.getText().isEmpty()){
-                
-                    TipoBusquedaCobro tipoBusquedaCobro = (TipoBusquedaCobro) comboTiposBusqueda.getModel().getSelectedItem();
-                    
-                    try{
-                        
-                        Long contrato = null;
-                        DefaultTableModel model = (DefaultTableModel) tablaSuscriptores.getModel();
-                        model.getDataVector().clear();
-                        //model.fireTableStructureChanged();
-                        
-                        if(tipoBusquedaCobro.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_CONTRATO ||
-                                tipoBusquedaCobro.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_CONTRATO_ANTERIOR){
-                            try{
-                                
-                                contrato = Long.parseLong(campoBusqueda.getText());
-                                cargarTablaSuscriptores(model, contrato, tipoBusquedaCobro.getTipoCobroId(), "");
-                                limpiarDatosSuscriptor();
-                                  
-                            }catch(NumberFormatException ex){
-                                JOptionPane.showMessageDialog(cobroPanel, "Formato de contrato incorrecto. Por favor ingrese un contrato numérico","", JOptionPane.WARNING_MESSAGE);
-                            }
-                        }else{
-                            
-                            if(!campoBusqueda.getText().isEmpty()){
-                                
-                                cargarTablaSuscriptores(model, contrato, tipoBusquedaCobro.getTipoCobroId(), campoBusqueda.getText().toUpperCase());
-                                limpiarDatosSuscriptor();
-                                
-                            }else{
-                                JOptionPane.showMessageDialog(cobroPanel, "Por favor ingrese ingrese un texto a buscar válido.","", JOptionPane.WARNING_MESSAGE);
-                            }
-                            
-                        }
-                        
-                    }catch(NoSuchElementException ex){
-                        JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(),"", JOptionPane.WARNING_MESSAGE);
-                    }catch(Exception ex){
-                        JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(),"", JOptionPane.ERROR_MESSAGE);
-                    }
-                    
-                
-                }else{
-                    JOptionPane.showMessageDialog(cobroPanel, "Por favor ingrese información para realizar la busqueda.","", JOptionPane.WARNING_MESSAGE);
-                }
-                
+                buscarSuscriptor();
             }
         };
         botonBusqueda.addActionListener(botonBusquedaActionListener);
-        
-    }   
-    
-    private void cargarDatosSuscriptor(ContratoxSuscriptorEntity contratosuscriptor){
-        
-        System.out.println("Seelccionado: "+contratosuscriptor.getContratoId());
-        
+
+    }
+
+    private void buscarSuscriptor() {
+
+        if (!campoBusqueda.getText().isEmpty()) {
+
+            TipoBusquedaCobro tipoBusquedaCobro = (TipoBusquedaCobro) comboTiposBusqueda.getModel().getSelectedItem();
+
+            try {
+
+                Long contrato = null;
+                DefaultTableModel model = (DefaultTableModel) tablaSuscriptores.getModel();
+                model.getDataVector().clear();
+                //model.fireTableStructureChanged();
+
+                if (tipoBusquedaCobro.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_CONTRATO
+                        || tipoBusquedaCobro.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_CONTRATO_ANTERIOR) {
+                    try {
+
+                        contrato = Long.parseLong(campoBusqueda.getText());
+                        cargarTablaSuscriptores(model, contrato, tipoBusquedaCobro.getTipoCobroId(), "");
+                        limpiarDatosSuscriptor();
+
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(cobroPanel, "Formato de contrato incorrecto. Por favor ingrese un contrato numérico", "", JOptionPane.WARNING_MESSAGE);
+                    }
+                } else {
+
+                    if (!campoBusqueda.getText().isEmpty()) {
+
+                        cargarTablaSuscriptores(model, contrato, tipoBusquedaCobro.getTipoCobroId(), campoBusqueda.getText().toUpperCase());
+                        limpiarDatosSuscriptor();
+
+                    } else {
+                        JOptionPane.showMessageDialog(cobroPanel, "Por favor ingrese ingrese un texto a buscar válido.", "", JOptionPane.WARNING_MESSAGE);
+                    }
+
+                }
+
+            } catch (NoSuchElementException ex) {
+                JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } else {
+            JOptionPane.showMessageDialog(cobroPanel, "Por favor ingrese información para realizar la busqueda.", "", JOptionPane.WARNING_MESSAGE);
+        }
+
+    }
+
+    private void cargarDatosSuscriptor(ContratoxSuscriptorEntity contratosuscriptor) {
+
+        System.out.println("Seelccionado: " + contratosuscriptor.getContratoId());
+
         // primero borrar los datos de suscriptores que se hayan seleccionado antes
         limpiarDatosSuscriptor();
-                
+
         suscriptorSeleccionado = contratosuscriptor;
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptorSeleccionado.getNombre());
-        if(suscriptorSeleccionado.getApellidoPaterno() != null)
+        if (suscriptorSeleccionado.getApellidoPaterno() != null) {
             nombre.append(" ").append(suscriptorSeleccionado.getApellidoPaterno());
-        if(suscriptorSeleccionado.getApellidoMaterno() != null)
+        }
+        if (suscriptorSeleccionado.getApellidoMaterno() != null) {
             nombre.append(" ").append(suscriptorSeleccionado.getApellidoMaterno());
+        }
         campoSuscriptor.setText(nombre.toString());
         campoContrato.setText(String.valueOf(suscriptorSeleccionado.getContratoId()));
-        if(suscriptorSeleccionado.getContratoAnteriorId() != null && suscriptorSeleccionado.getContratoAnteriorId() > 0)
+        if (suscriptorSeleccionado.getContratoAnteriorId() != null && suscriptorSeleccionado.getContratoAnteriorId() > 0) {
             campoContratoAnterior.setText(String.valueOf(suscriptorSeleccionado.getContratoAnteriorId()));
+        }
         campoEstatus.setText(suscriptorSeleccionado.getEstatusContrato());
-        if(contratosuscriptor.getFechaProximoPago() != null)
+        if (contratosuscriptor.getFechaProximoPago() != null) {
             campoFechaPago.setText(util.convertirDateTime2String(contratosuscriptor.getFechaProximoPago(), "dd/MM/yyyy"));
+        }
         campoServicioContratado.setText(suscriptorSeleccionado.getServicio());
         StringBuilder domicilio = new StringBuilder();
         domicilio.append(suscriptorSeleccionado.getCalle()).append(" ").append(suscriptorSeleccionado.getNumeroCalle());
         domicilio.append(" ").append(suscriptorSeleccionado.getColonia());
         campoDomicilio.setText(domicilio.toString());
         campoTelefono.setText(suscriptorSeleccionado.getTelefono());
-        
+
         DetallePagoServicio detalleMontoPago = new DetallePagoServicio();
         StringBuilder conceptoMontoPago = new StringBuilder();
         conceptoMontoPago.append("Pago Mensualidad ");
@@ -407,10 +442,9 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         detalleMontoPago.setMonto(suscriptorSeleccionado.getCostoServicio());
         detalleMontoPago.setCadenaMonto("  $".concat(String.valueOf(suscriptorSeleccionado.getCostoServicio())));
         detalleMontoPago.setTipoDetalle(Constantes.TIPO_DETALLE_COBRO_SERVICIO);
-        
-        
+
         listaDetallesPago.add(detalleMontoPago);
-        if(controller.seDebeGenerarRecargo(suscriptorSeleccionado)){
+        if (controller.seDebeGenerarRecargo(suscriptorSeleccionado)) {
             DetallePagoServicio detalleRecargo = new DetallePagoServicio();
             detalleRecargo.setConcepto("Recargo por pago tardío");
             detalleRecargo.setMonto(50.0);
@@ -418,29 +452,29 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             detalleRecargo.setTipoDetalle(Constantes.TIPO_DETALLE_COBRO_RECARGO);
             listaDetallesPago.add(detalleRecargo);
         }
-          
+
         actualizarTablaDetallesPago();
         etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
-        
+
         ///carcagr combo promociones
         comboPromociones.removeAllItems();
         cargarComboPromociones(suscriptorSeleccionado.getServicioId());
     }
-    
-    private void actualizarTablaDetallesPago(){
-        
+
+    private void actualizarTablaDetallesPago() {
+
         DefaultTableModel model = (DefaultTableModel) tablaDetallesPago.getModel();
         model.getDataVector().clear();
         for (DetallePagoServicio o : listaDetallesPago) {
-                model.addRow(new Object[]{
-                    o.getConcepto(),
-                    o.getCadenaMonto()});
-            }
-         model.fireTableDataChanged();
-        
+            model.addRow(new Object[]{
+                o.getConcepto(),
+                o.getCadenaMonto()});
+        }
+        model.fireTableDataChanged();
+
     }
-    
-    private void limpiarDatosSuscriptor(){
+
+    private void limpiarDatosSuscriptor() {
         listaDetallesPago.clear();
         suscriptorSeleccionado = null;
         campoSuscriptor.setText("");
@@ -457,40 +491,39 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         etiquetaImporte.setText("0.00");
         etiquetaPromocionAplicada.setVisible(false);
     }
-    
+
     /**
-     * 
+     *
      * @param model
      * @param contrato
      * @param tipoBusquedaCobro
      * @param cadenaBusqueda
-     * @throws Exception 
+     * @throws Exception
      */
-    private void cargarTablaSuscriptores(DefaultTableModel model, Long contrato, int tipoBusquedaCobro, String cadenaBusqueda) throws Exception{
-        
+    private void cargarTablaSuscriptores(DefaultTableModel model, Long contrato, int tipoBusquedaCobro, String cadenaBusqueda) throws Exception {
+
         suscriptoresConsultaList = controller.consultarSuscriptores(contrato, tipoBusquedaCobro, cadenaBusqueda);
 
-        if(!suscriptoresConsultaList.isEmpty()){
+        if (!suscriptoresConsultaList.isEmpty()) {
 
             model.getDataVector().clear();
             model.fireTableDataChanged();
-            for(ContratoxSuscriptorEntity c : suscriptoresConsultaList){                                   
-                model.addRow(new Object[]
-                {c.getContratoId(), 
-                    c.getContratoAnteriorId()==null?"":c.getContratoAnteriorId(), 
-                    c.getNombre().concat(" ").concat(c.getApellidoPaterno()).concat(" ").concat(c.getApellidoMaterno()), 
+            for (ContratoxSuscriptorEntity c : suscriptoresConsultaList) {
+                model.addRow(new Object[]{c.getContratoId(),
+                    c.getContratoAnteriorId() == null ? "" : c.getContratoAnteriorId(),
+                    c.getNombre().concat(" ").concat(c.getApellidoPaterno()).concat(" ").concat(c.getApellidoMaterno()),
                     c.getServicio(),
                     c.getCalle().concat(" ").concat(c.getNumeroCalle()).concat(" ").concat(c.getColonia()),
                     c.getEstatusContrato()});
             }
-        }else{
-            JOptionPane.showMessageDialog(cobroPanel, "No se encontraron suscriptores con la información solicitada","", JOptionPane.WARNING_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(cobroPanel, "No se encontraron suscriptores con la información solicitada", "", JOptionPane.WARNING_MESSAGE);
         }
-        
+
     }
-    
-    private void cargarComboTiposBusqueda(){
-        
+
+    private void cargarComboTiposBusqueda() {
+
         List<TipoBusquedaCobro> list = new ArrayList<>();
         list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_CONTRATO, "Por Contrato"));
         list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_CONTRATO_ANTERIOR, "Por Contrato Anterior"));
@@ -499,11 +532,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_APELLIDO_MATERNO, "Por Apellido Materno"));
         list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_DOMICILIO, "Por Domicilio"));
         list.forEach(tb -> comboTiposBusqueda.addItem(tb));
-        
+
     }
-    
+
     /**
-     * 
+     *
      */
     private void cargarComboPromociones(Long servicioId) {
 
@@ -518,9 +551,9 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         }
 
     }
-    
+
     /**
-     * 
+     *
      */
     private void cargarComboTiposDescuento() {
 
@@ -535,26 +568,26 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         }
 
     }
-    
-    private void limpiarPantalla(){
+
+    private void limpiarPantalla() {
         limpiarDatosSuscriptor();
-        
+
         DefaultTableModel model = (DefaultTableModel) tablaSuscriptores.getModel();
         model.getDataVector().clear();
         model.fireTableDataChanged();
-        
+
         campoMontoDescuento.setText("");
         campoMotivoDescuento.setText("");
         campoDescuentoAplicado.setText("");
         etiquetaImporte.setText("0.00");
     }
-    
-    public void cargarDatosSesion(){
-        
+
+    public void cargarDatosSesion() {
+
         etiquetaNumeroCaja.setText(sesion.getNumeroCaja().toString());
         etiquetaUsuario.setText(sesion.getUsuario());
         etiquetaSucursal.setText(sesion.getSucursal());
-        
+
         //JScrollPane scrollPane = new JScrollPane();
         //scrollPane.setViewportView(tablaSuscriptores);
         //scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -566,17 +599,16 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         tablaSuscriptores.getColumnModel().getColumn(4).setPreferredWidth(380);
         tablaSuscriptores.getColumnModel().getColumn(5).setPreferredWidth(130);
         //tablaSuscriptores.gets
-        
-        
+
         ImageIcon imagen = new ImageIcon("src/main/resources/logo_grande.jpg");
-        Icon icono = new ImageIcon(imagen.getImage().getScaledInstance(/*etiquetaLogo.getWidth(), etiquetaLogo.getHeight()*/320,130, Image.SCALE_DEFAULT));
+        Icon icono = new ImageIcon(imagen.getImage().getScaledInstance(/*etiquetaLogo.getWidth(), etiquetaLogo.getHeight()*/320, 130, Image.SCALE_DEFAULT));
         etiquetaLogo.setIcon(icono);
-        
+
         etiquetaImporte.setText("0.00");
         etiquetaPromocionAplicada.setVisible(false);
         campoDescuentoAplicado.setEditable(false);
     }
-    
+
     /**
      *
      */
@@ -585,6 +617,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         try {
 
             List<EstatusSuscriptorEntity> list = controller.consultarEstatusSuscriptor();
+            list = list.stream().filter(e -> e.getEstatusId() == Constantes.ESTATUS_SUSCRIPTOR_ACTIVO).collect(Collectors.toList());
             list.forEach(e -> comboEstatusSuscriptor.addItem(e));
 
         } catch (Exception ex) {
