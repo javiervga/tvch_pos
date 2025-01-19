@@ -120,7 +120,9 @@ public class CobroServicioController {
             transaccionEntity.setContratoId(suscriptor.getContratoId());
             transaccionEntity.setFechaTransaccion(util.obtenerFechaFormatoMysql());
             transaccionEntity.setMonto(importePagar);//monto a pagar ya con descuentos y promociones aplicadas si existieran
-            transaccionId = transaccionDao.registrarTransaccion(transaccionEntity);
+            transaccionEntity.setTransaccionId(util.generarIdLocal());
+            transaccionId = transaccionEntity.getTransaccionId();
+            transaccionDao.registrarTransaccion(transaccionEntity);
 
             //registrar el detalle de la transaccion
             DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_SERVICIO).findFirst().get();

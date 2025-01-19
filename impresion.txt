@@ -1,14 +1,50 @@
-===============================================
-               Apertura de caja                
                                                
-Sucursal:              Providencia             
-Folio Caja:            120250118010337         
-Folio Server:          0                       
-Num. Caja:             1                       
-Cajero:                MDELGADO                
-Fondo Fijo:            230.0                   
-Fecha:                 18/01/25                
-Hora:                  01:03:37                
+
+                                              
+                                               
+             Comprobante de Pago               
+                                               
+             TV Cable Hidalguense              
+  Mineral de la Reforma   R.F.C. TCH151120HY6  
+           Calle San Rafael No. 150,           
+       Colonia La Providencia C.P. 42186       
+         Sucursal Providencia                  
+                                               
+Fecha:       19/01/2025 14:39:13               
+                                               
+Caja:        1                                 
+                                               
+Tipo Pago:   Pago de Mensualidad               
+                                               
+Contrato:    Providencia-3571                  
+                                               
+Suscriptor:  NOE IVAN MARTINEZ CONTRERAS       
+                                               
+Domicilio:   SANTA CECILIA 126 PROVIDENCIA     
+                                               
+Servicio:    TV                                
+                                               
+Telefono:    7711620899                        
+                                               
+Costo Mensualidad:                     $ 270.0 
+Descuento:                           - $ 50.0  
+                                               
+Total:                                 $ 220.0 
+                                               
+Proximo pago antes de:  28/02/25               
+                                               
+ RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO
+   CANCELACION DEL 25 AL 30 DEL MES PAGADO     
+  HORARIO DE OFICINA LUNES A VIERNES 9AM A 6PM,
+              SABADO DE 9AM A 2PM              
+         Telefono Oficina:  7713212773         
+    Soporte Tecnico WhatsApp: 7717769686       
+                                               
+                                               
+                                               
+                                               
+                                               
+                                               
                                                
                                                
                                                

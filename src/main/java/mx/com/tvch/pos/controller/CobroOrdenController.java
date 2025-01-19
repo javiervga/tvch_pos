@@ -102,6 +102,7 @@ public class CobroOrdenController {
         transaccionEntity.setContratoId(orden.getContratoId());
         transaccionEntity.setFechaTransaccion(util.obtenerFechaFormatoMysql());
         transaccionEntity.setMonto(orden.getImportePagar());//monto a pagar ya con descuentos y promociones aplicadas si existieran
+        transaccionEntity.setTransaccionId(util.generarIdLocal());
         transaccionId = transaccionDao.registrarTransaccion(transaccionEntity);
 
         //registrar el detalle de la transaccion

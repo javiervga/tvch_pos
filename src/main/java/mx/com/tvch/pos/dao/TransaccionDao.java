@@ -113,12 +113,13 @@ public class TransaccionDao {
             DbConfig dbConfig = DbConfig.getdDbConfig();
             conn = dbConfig.getConnection();
             
-            String query = "insert into transacciones (id_apertura_caja, id_contrato, monto, fecha_transaccion) values(?,?,?,?)";
+            String query = "insert into transacciones (id_transaccion ,id_apertura_caja, id_contrato, monto, fecha_transaccion) values(?,?,?,?,?)";
             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            ps.setLong(1, entity.getAperturaCajaId());
-            ps.setLong(2, entity.getContratoId());
-            ps.setDouble(3, entity.getMonto());
-            ps.setString(4, entity.getFechaTransaccion());
+            ps.setLong(1, entity.getTransaccionId());
+            ps.setLong(2, entity.getAperturaCajaId());
+            ps.setLong(3, entity.getContratoId());
+            ps.setDouble(4, entity.getMonto());
+            ps.setString(5, entity.getFechaTransaccion());
             ps.executeUpdate();
             
             ResultSet rs = ps.getGeneratedKeys();
