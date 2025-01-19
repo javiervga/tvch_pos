@@ -12,7 +12,7 @@ public class TransaccionEntity {
 
     private Long transaccionId;
 
-    private Long consiliacionServerId;
+    private Long transaccionSucursalId;
 
     private Long aperturaCajaId;
 
@@ -30,12 +30,12 @@ public class TransaccionEntity {
         this.transaccionId = transaccionId;
     }
 
-    public Long getConsiliacionServerId() {
-        return consiliacionServerId;
+    public Long getTransaccionSucursalId() {
+        return transaccionSucursalId;
     }
 
-    public void setConsiliacionServerId(Long consiliacionServerId) {
-        this.consiliacionServerId = consiliacionServerId;
+    public void setTransaccionSucursalId(Long transaccionSucursalId) {
+        this.transaccionSucursalId = transaccionSucursalId;
     }
 
     public Long getAperturaCajaId() {
