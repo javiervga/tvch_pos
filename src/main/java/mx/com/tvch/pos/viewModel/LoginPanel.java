@@ -115,7 +115,11 @@ public class LoginPanel extends javax.swing.JPanel {
         sesion.setUsuario(usuarioEntity.getUsuario());
         sesion.setUsuarioId(usuarioEntity.getUsuarioId());
         sesion.setPassword(password);
-        sesion.setDiaCorte(sucursalEntity.getDiaCorte());
+        
+        if(sucursalEntity.getDiaCorte() != 0)
+            sesion.setDiaCorte(sucursalEntity.getDiaCorte());
+        else
+            sesion.setDiaCorte(10);
     }
 
     /**
