@@ -112,12 +112,13 @@ public class DetalleCobroTransaccionDao {
             DbConfig dbConfig = DbConfig.getdDbConfig();
             conn = dbConfig.getConnection();
             
-            String query = "insert into detalle_cobro_transaccion (id_servicio, id_transaccion, id_tipo_cobro, monto) values(?,?,?,?)";
+            String query = "insert into detalle_cobro_transaccion (id_servicio, id_transaccion, id_tipo_cobro, monto, id_orden) values(?,?,?,?,?)";
             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setLong(1, entity.getServicioId());
             ps.setLong(2, entity.getTransaccionId());
             ps.setLong(3, entity.getTipoCobroId());
             ps.setDouble(4, entity.getMonto());
+            ps.setLong(5, entity.getOrdenId());
             ps.executeUpdate();
             
             ResultSet rs = ps.getGeneratedKeys();
