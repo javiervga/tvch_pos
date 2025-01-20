@@ -291,6 +291,9 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                     try {
                         ordenSeleccionada = null;
                         etiquetaPromoActiva.setVisible(false);
+                        etiquetaImporte.setText("0.00");
+                        limpiarTablaOrdenes();
+                        
                         TipoOrden tipoOrden = (TipoOrden) comboTiposOrden.getModel().getSelectedItem();
                         List<Orden> ordenes = controller.consultarOrdenes(suscriptorSeleccionado, tipoOrden);
                         if (!ordenes.isEmpty() && ordenes.size() == 1) {
@@ -409,9 +412,11 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                         EstatusSuscriptorEntity estatus = (EstatusSuscriptorEntity) comboEstatusSuscriptor.getModel().getSelectedItem();
                         suscriptoresConsultaList = controller.consultarSuscriptores(tipoBusquedaCobro, campoBusqueda.getText(), estatus);
 
+                        limpiarTablaOrdenes();
                         DefaultTableModel model = (DefaultTableModel) tablaSuscriptores.getModel();
                         model.getDataVector().clear();
                         suscriptorSeleccionado = null;
+                        ordenSeleccionada = null;
                         cargarTablaSuscriptores(model, suscriptoresConsultaList);
                         comboPromociones.removeAllItems();
                         comboPromociones.setEnabled(false);
@@ -696,6 +701,12 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         modelOrdenes.getDataVector().clear();
         modelOrdenes.fireTableDataChanged();
 
+    }
+    
+    private void limpiarTablaOrdenes(){
+        DefaultTableModel modelOrdenes = (DefaultTableModel) tablaOrdenes.getModel();
+        modelOrdenes.getDataVector().clear();
+        modelOrdenes.fireTableDataChanged();
     }
 
     private void limpiarInformacionContrato() {

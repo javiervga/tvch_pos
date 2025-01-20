@@ -69,9 +69,11 @@ public class PosMapper {
         double estatusId = (double) map.get("estatusId");
         response.setEstatusId((long) estatusId);
         response.setEstatus((String) map.get("estatus"));
-        double vendedorId = (double) map.get("vendedorId");
-        response.setVendedorId((long) vendedorId);
-        response.setVendedor((String) map.get("vendedor"));
+        if(map.get("vendedorId") != null){
+            double vendedorId = (double) map.get("vendedorId");
+            response.setVendedorId((long) vendedorId);
+            response.setVendedor((String) map.get("vendedor"));
+        }
         response.setCosto((Double) map.get("costo"));
         
         return response;
@@ -206,9 +208,11 @@ public class PosMapper {
         ordenInstalacion.setOrdenInstalacionId((long) ordenInstalacionId);
         ordenInstalacion.setSuscriptor((String) map.get("suscriptor"));
         ordenInstalacion.setUsuario((String) map.get("usuario"));
-        ordenInstalacion.setVendedor((String) map.get("vendedor"));
-        double vendedorId = (double) map.get("vendedorId");
-        ordenInstalacion.setVendedorId((long) vendedorId);
+        if(map.get("vendedor") != null){
+            ordenInstalacion.setVendedor((String) map.get("vendedor"));
+            double vendedorId = (double) map.get("vendedorId");
+            ordenInstalacion.setVendedorId((long) vendedorId);
+        }
         return ordenInstalacion;
     }
     

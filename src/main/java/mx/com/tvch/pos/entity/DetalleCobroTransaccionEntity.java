@@ -20,6 +20,8 @@ public class DetalleCobroTransaccionEntity {
 
     private Double monto;
 
+    private Long ordenId;
+
     public Long getDetalleId() {
         return detalleId;
     }
@@ -58,6 +60,14 @@ public class DetalleCobroTransaccionEntity {
 
     public void setMonto(Double monto) {
         this.monto = monto;
+    }
+
+    public Long getOrdenId() {
+        return ordenId;
+    }
+
+    public void setOrdenId(Long ordenId) {
+        this.ordenId = ordenId;
     }
 
 }

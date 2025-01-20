@@ -10,28 +10,28 @@
        Colonia La Providencia C.P. 42186       
          Sucursal Providencia                  
                                                
-Fecha:       19/01/2025 14:39:13               
+Fecha:       20/01/2025 02:46:14               
                                                
 Caja:        1                                 
                                                
-Tipo Pago:   Pago de Mensualidad               
+Tipo Pago:   Instalacion de Servicio           
                                                
-Contrato:    Providencia-3571                  
+Contrato:    5616                              
                                                
-Suscriptor:  NOE IVAN MARTINEZ CONTRERAS       
+Suscriptor:  KARINA SUNDERLEY HERRERA          
                                                
-Domicilio:   SANTA CECILIA 126 PROVIDENCIA     
+Domicilio:   ESTACIONAMIENTO 33.2 E. 50 DP.403 11 DE JULIO
                                                
-Servicio:    TV                                
+Servicio:    TV + INTERNET 8MB                 
                                                
-Telefono:    7711620899                        
+Telefono:    5529462506                        
                                                
-Costo Mensualidad:                     $ 270.0 
-Descuento:                           - $ 50.0  
+Costo Instalacion:                     $ 150.0 
+Promoción:                           - $ 150.0 
                                                
-Total:                                 $ 220.0 
+Total:                                 $ 0.0   
                                                
-Proximo pago antes de:  28/02/25               
+Próximo pago antes de:  10/03/2025             
                                                
  RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO
    CANCELACION DEL 25 AL 30 DEL MES PAGADO     
@@ -39,8 +39,6 @@ Proximo pago antes de:  28/02/25
               SABADO DE 9AM A 2PM              
          Telefono Oficina:  7713212773         
     Soporte Tecnico WhatsApp: 7717769686       
-                                               
-                                               
                                                
                                                
                                                

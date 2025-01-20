@@ -103,7 +103,8 @@ public class CobroOrdenController {
         transaccionEntity.setFechaTransaccion(util.obtenerFechaFormatoMysql());
         transaccionEntity.setMonto(orden.getImportePagar());//monto a pagar ya con descuentos y promociones aplicadas si existieran
         transaccionEntity.setTransaccionId(util.generarIdLocal());
-        transaccionId = transaccionDao.registrarTransaccion(transaccionEntity);
+        transaccionId = transaccionEntity.getTransaccionId();
+        transaccionDao.registrarTransaccion(transaccionEntity);
 
         //registrar el detalle de la transaccion
         DetalleCobroTransaccionEntity detalleCobroTransaccionEntity = new DetalleCobroTransaccionEntity();
@@ -111,6 +112,7 @@ public class CobroOrdenController {
         detalleCobroTransaccionEntity.setServicioId(orden.getServicioId());
         detalleCobroTransaccionEntity.setTipoCobroId(Constantes.TIPO_COBRO_ORDEN_INSTALACION);
         detalleCobroTransaccionEntity.setTransaccionId(transaccionId);
+        detalleCobroTransaccionEntity.setOrdenId(orden.getId());
         Long detalleCobro = detalleCobroTransaccionDao.registrarDetalleTransaccion(detalleCobroTransaccionEntity);
 
         //registrar el detalle de promocion
@@ -174,7 +176,7 @@ public class CobroOrdenController {
                     //segundo actualizar estatus de contrato y orden de instalacion en server
                     UpdateEstatusPagadaOrdenInstalacionRequest instalacionRequest = new UpdateEstatusPagadaOrdenInstalacionRequest();
                     instalacionRequest.setOrdenInstalacionId(orden.getId());
-                    instalacionRequest.setFechaProximoPago(util.obtenerNuevaFechaProximoPagoOrdenInstalacion(sesion.getDiaCorte(), orden.getMesesGratisPromocion(), orden.getFechaProximoPago()));
+                    instalacionRequest.setFechaProximoPago(util.obtenerNuevaFechaProximoPagoOrdenInstalacion(sesion.getDiaCorte(), orden.getMesesGratisPromocion()));
                     Request<UpdateEstatusPagadaOrdenInstalacionRequest> request = new Request<>();
                     request.setData(instalacionRequest);
                     Response<UpdateOrdenInstalacionResponse> response = client.updateEstatusPagoOrdenInstalacion(request);
@@ -320,7 +322,7 @@ public class CobroOrdenController {
      */
     public String actualizarFechaProximoPago(String fechaPago, PromocionOrdenInstalacion promocion){
         try{
-            return util.obtenerNuevaFechaProximoPagoOrdenInstalacion(sesion.getDiaCorte(), promocion.getMesesGratis(), fechaPago);
+            return util.obtenerNuevaFechaProximoPagoOrdenInstalacion(sesion.getDiaCorte(), promocion.getMesesGratis());
         }catch(Exception ex){
             return fechaPago;
         }
