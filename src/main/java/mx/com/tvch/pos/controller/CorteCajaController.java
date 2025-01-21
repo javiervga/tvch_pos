@@ -220,7 +220,7 @@ public class CorteCajaController {
                 diferenciaSObranteEntity.setDiferenciaId(util.generarIdLocal());
                 diferenciaSObranteEntity.setCorteCajaId(idCorteCaja);
                 diferenciaSObranteEntity.setTipoDiferenciaId(Constantes.TIPO_DIFERENCIA_CORTE_FALTANTE);
-                diferenciaSObranteEntity.setMonto(dMontoFaltante.getMonto());
+                diferenciaSObranteEntity.setMonto(dMontoSobrante.getMonto());
                 detalleDiferenciaCorteCajaDao.registrarDetalleDiferenciaCorte(diferenciaSObranteEntity);
                 corteCaja.setSobranteEntity(diferenciaSObranteEntity);
             }  
