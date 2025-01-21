@@ -61,7 +61,7 @@ public class SalidaCajaDao {
 
             StringBuilder query = new StringBuilder();
             
-            query.append("SELECT id_salida_caja , id_apertura_caja , id_tipo_salida , observaciones, monto, hora_salida FROM salidas_caja WHERE id_apertura_caja =");
+            query.append("SELECT id_salida_caja , id_apertura_caja , id_tipo_salida , observaciones, monto, fecha_salida FROM salidas_caja WHERE id_apertura_caja =");
             query.append(aperturaCajaId);
             
             ResultSet rs = stmt.executeQuery(query.toString());
@@ -122,7 +122,7 @@ public class SalidaCajaDao {
             stmt = conn.createStatement();
 
             StringBuilder query = new StringBuilder();
-            query.append("insert into salidas_caja ( id_apertura_caja, id_tipo_salida, observaciones, monto, hora_salida) values (");
+            query.append("insert into salidas_caja ( id_apertura_caja, id_tipo_salida, observaciones, monto, fecha_salida) values (");
             query.append(sesion.getAperturaCajaId()).append(",");
             query.append(tipoSalidaId).append(",'");
             query.append(observaciones).append("',");
