@@ -122,6 +122,7 @@ public class CobroOrdenController {
             detallePromocionTransaccionEntity.setDescripcionPromocion(orden.getDescripcionPromocion());
             detallePromocionTransaccionEntity.setPromocionId(orden.getPromocionId());
             detallePromocionTransaccionEntity.setTransaccionId(transaccionId);
+            detallePromocionTransaccionEntity.setTipoPromocionId(Constantes.TIPO_PROMOCION_ORDEN_INSTALACION);
             Long detallePromocion = detallePromocionTransaccionDao.registrarDetallePromocion(detallePromocionTransaccionEntity);
         }
 

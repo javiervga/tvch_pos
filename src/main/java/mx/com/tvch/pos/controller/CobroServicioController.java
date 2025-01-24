@@ -154,6 +154,7 @@ public class CobroServicioController {
                 detallePromocionTransaccionEntity.setDescripcionPromocion(detallePromocion.getConcepto());
                 detallePromocionTransaccionEntity.setPromocionId(detallePromocion.getPromocionId());
                 detallePromocionTransaccionEntity.setTransaccionId(transaccionId);
+                detallePromocionTransaccionEntity.setTipoPromocionId(Constantes.TIPO_PROMOCION_SERVICIO);
                 Long detallePromocionId = detallePromocionTransaccionDao.registrarDetallePromocion(detallePromocionTransaccionEntity);
             }
 

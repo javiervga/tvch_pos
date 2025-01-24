@@ -118,7 +118,10 @@ public class DetalleCobroTransaccionDao {
             ps.setLong(2, entity.getTransaccionId());
             ps.setLong(3, entity.getTipoCobroId());
             ps.setDouble(4, entity.getMonto());
-            ps.setLong(5, entity.getOrdenId());
+            if(entity.getOrdenId() != null)
+                ps.setLong(5, entity.getOrdenId());
+            else
+                ps.setObject(5, null);
             ps.executeUpdate();
             
             ResultSet rs = ps.getGeneratedKeys();

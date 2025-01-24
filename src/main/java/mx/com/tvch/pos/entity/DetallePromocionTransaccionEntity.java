@@ -11,7 +11,7 @@ package mx.com.tvch.pos.entity;
 public class DetallePromocionTransaccionEntity {
 
     private Long detalleId;
-    
+
     private Long transaccionId;
 
     private Long promocionId;
@@ -19,6 +19,8 @@ public class DetallePromocionTransaccionEntity {
     private String descripcionPromocion;
 
     private Double costoPromocion;
+
+    private Long tipoPromocionId;
 
     public Long getDetalleId() {
         return detalleId;
@@ -58,6 +60,14 @@ public class DetallePromocionTransaccionEntity {
 
     public void setCostoPromocion(Double costoPromocion) {
         this.costoPromocion = costoPromocion;
+    }
+
+    public Long getTipoPromocionId() {
+        return tipoPromocionId;
+    }
+
+    public void setTipoPromocionId(Long tipoPromocionId) {
+        this.tipoPromocionId = tipoPromocionId;
     }
 
 }

@@ -112,12 +112,13 @@ public class DetallePromocionTransaccionDao {
             DbConfig dbConfig = DbConfig.getdDbConfig();
             conn = dbConfig.getConnection();
             
-            String query = "insert into detalle_promocion_transaccion (id_transaccion, id_promocion, descripcion_promocion, costo_promocion) values(?,?,?,?)";
+            String query = "insert into detalle_promocion_transaccion (id_transaccion, id_promocion, id_tipo_promocion, descripcion_promocion, costo_promocion ) values(?,?,?,?,?)";
             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setLong(1, entity.getTransaccionId());
             ps.setLong(2, entity.getPromocionId());
-            ps.setString(3, entity.getDescripcionPromocion());
-            ps.setDouble(4, entity.getCostoPromocion());
+            ps.setLong(3, entity.getTipoPromocionId());
+            ps.setString(4, entity.getDescripcionPromocion());
+            ps.setDouble(5, entity.getCostoPromocion());
             ps.executeUpdate();
             
             ResultSet rs = ps.getGeneratedKeys();

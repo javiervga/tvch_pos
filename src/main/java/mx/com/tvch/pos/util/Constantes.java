@@ -35,6 +35,9 @@ public class Constantes {
     public static final int ESTATUS_ACTIVO = 1;
     public static final int ESTATUS_INACTIVO = 0;
     
+    public static final long TIPO_PROMOCION_SERVICIO = 1;
+    public static final long TIPO_PROMOCION_ORDEN_INSTALACION = 2;
+    
     public static final long ESTATUS_ORDEN_NUEVA = 1;
     public static final long ESTATUS_ORDEN_PAGADA = 2;
     public static final long ESTATUS_ORDEN_AGENDADA = 3;
