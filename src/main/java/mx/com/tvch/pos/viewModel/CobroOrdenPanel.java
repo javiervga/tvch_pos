@@ -293,6 +293,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                         etiquetaPromoActiva.setVisible(false);
                         etiquetaImporte.setText("0.00");
                         limpiarTablaOrdenes();
+                        comboPromociones.removeAllItems();
                         
                         TipoOrden tipoOrden = (TipoOrden) comboTiposOrden.getModel().getSelectedItem();
                         List<Orden> ordenes = controller.consultarOrdenes(suscriptorSeleccionado, tipoOrden);
