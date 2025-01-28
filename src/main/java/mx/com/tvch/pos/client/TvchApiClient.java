@@ -14,6 +14,8 @@ import mx.com.tvch.pos.model.client.AuthRequest;
 import mx.com.tvch.pos.model.client.AuthResponse;
 import mx.com.tvch.pos.model.client.ListOrdenesInstalacionPosRequest;
 import mx.com.tvch.pos.model.client.ListOrdenesInstalacionResponse;
+import mx.com.tvch.pos.model.client.ListOrdenesServicioPosRequest;
+import mx.com.tvch.pos.model.client.ListOrdenesServicioResponse;
 import mx.com.tvch.pos.model.client.ListPromocionesOrdenInstalacionRequest;
 import mx.com.tvch.pos.model.client.ListPromocionesOrdenInstalacionResponse;
 import mx.com.tvch.pos.model.client.ListSuscriptoresRequest;
@@ -22,7 +24,9 @@ import mx.com.tvch.pos.model.client.ListTiposDescuentoResponse;
 import mx.com.tvch.pos.model.client.Request;
 import mx.com.tvch.pos.model.client.Response;
 import mx.com.tvch.pos.model.client.UpdateEstatusPagadaOrdenInstalacionRequest;
+import mx.com.tvch.pos.model.client.UpdateEstatusPagadaOrdenServicioRequest;
 import mx.com.tvch.pos.model.client.UpdateOrdenInstalacionResponse;
+import mx.com.tvch.pos.model.client.UpdateOrdenServicioResponse;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.LectorProperties;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -61,6 +65,55 @@ public class TvchApiClient {
         properties = LectorProperties.getLectorProperties();
         jwtSesion = JwtSesion.getJwtSesion();
         sesion = Sesion.getSesion();
+    }
+    
+    /**
+     * 
+     * @param request
+     * @return
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     * @throws Exception 
+     */
+    public Response<UpdateOrdenServicioResponse> updateEstatusPagoOrdenServicio(Request<UpdateEstatusPagadaOrdenServicioRequest> request) throws UnsupportedEncodingException, IOException, Exception {
+        
+        Response<UpdateOrdenServicioResponse> response = new Response<>();
+        String url = properties.obtenerPropiedad(Constantes.TVCH_API_URL);
+
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(request);
+        System.out.println("Request update estatus pago orden de servicio: " + jsonString);
+
+        StringEntity entity = new StringEntity(jsonString);
+        HttpPut httpPut = new HttpPut(url + properties.obtenerPropiedad(Constantes.TVCH_API_ORDENES_SERVICIO_UPDATE_PAGO));
+        
+        httpPut.setHeader("Content-type", "application/json");
+        httpPut.setHeader("Authorization", obtenerToken());
+        httpPut.setEntity(entity);
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        logger.info("Enviando peticion de update orden servicio");
+        CloseableHttpResponse httpResponse = httpClient.execute(httpPut);
+
+        if (httpResponse.getStatusLine().getStatusCode() == Constantes.CODIGO_HTTP_OK
+                && httpResponse.getStatusLine().getStatusCode() != Constantes.CODIGO_HTTP_NO_CONTENT) {
+            String responseBody = EntityUtils.toString(httpResponse.getEntity());
+            logger.info("Respuesta de update de orden servicio a estatus pagado exitosa: \n"+responseBody);
+            response = gson.fromJson(responseBody, Response.class);
+            response.setData(mapper.object2UpdateOrdenServicioResponse(response.getData()));
+            jwtSesion.setToken(httpResponse.getFirstHeader("Authorization").getValue());
+        }else{
+            if(httpResponse.getEntity() != null){
+                String responseBody = EntityUtils.toString(httpResponse.getEntity());
+                logger.warn("Fallo en respuesta de update de orden servicio estatus pagado: \n"+responseBody);
+            }else{
+                logger.warn("Fallo en respuesta de update de orden servicio estatus pagado: \nCódigo"+httpResponse.getStatusLine());
+            }
+            response.setCode(httpResponse.getStatusLine().getStatusCode());
+        }
+
+        return response;
+        
     }
     
     /**
@@ -244,6 +297,55 @@ public class TvchApiClient {
                 logger.warn("Fallo en respuesta de consulta de ordenes de instalacion: \n"+responseBody);
             }else{
                 logger.warn("Fallo en respuesta de consulta de ordenes de instalacion: \nCódigo"+httpResponse.getStatusLine());
+            }
+            response.setCode(httpResponse.getStatusLine().getStatusCode());
+        }
+
+        return response;
+        
+    }
+    
+    /**
+     * 
+     * @param request
+     * @return
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     * @throws Exception 
+     */
+    public Response<ListOrdenesServicioResponse> consultarOrdenesServicio(Request<ListOrdenesServicioPosRequest> request) throws UnsupportedEncodingException, IOException, Exception {
+        
+        Response<ListOrdenesServicioResponse> response = new Response<>();
+        String url = properties.obtenerPropiedad(Constantes.TVCH_API_URL);
+
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(request);
+        System.out.println("Request ordenes de servicio: " + jsonString);
+
+        StringEntity entity = new StringEntity(jsonString);
+        HttpPost httpPost = new HttpPost(url + properties.obtenerPropiedad(Constantes.TVCH_API_LIST_ORDENES_SERVICIO));
+        
+        httpPost.setHeader("Content-type", "application/json");
+        httpPost.setHeader("Authorization", obtenerToken());
+        httpPost.setEntity(entity);
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        logger.info("Enviando peticion de consulta de ordenes de servicio: \n"+jsonString);
+        CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
+
+        if (httpResponse.getStatusLine().getStatusCode() == Constantes.CODIGO_HTTP_OK
+                && httpResponse.getStatusLine().getStatusCode() != Constantes.CODIGO_HTTP_NO_CONTENT) {
+            String responseBody = EntityUtils.toString(httpResponse.getEntity());
+            logger.info("Respuesta de consulta de ordenes de servicio exitosa: \n"+responseBody);
+            response = gson.fromJson(responseBody, Response.class);
+            response.setData(mapper.object2ListOrdenesServicioResponse(response.getData()));
+            jwtSesion.setToken(httpResponse.getFirstHeader("Authorization").getValue());
+        }else{
+            if(httpResponse.getEntity() != null){
+                String responseBody = EntityUtils.toString(httpResponse.getEntity());
+                logger.warn("Fallo en respuesta de consulta de ordenes de servicio: \n"+responseBody);
+            }else{
+                logger.warn("Fallo en respuesta de consulta de ordenes de servicio: \nCódigo"+httpResponse.getStatusLine());
             }
             response.setCode(httpResponse.getStatusLine().getStatusCode());
         }

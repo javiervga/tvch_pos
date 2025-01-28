@@ -28,6 +28,8 @@ import mx.com.tvch.pos.model.TipoBusquedaCobro;
 import mx.com.tvch.pos.model.TipoOrden;
 import mx.com.tvch.pos.model.client.ListOrdenesInstalacionPosRequest;
 import mx.com.tvch.pos.model.client.ListOrdenesInstalacionResponse;
+import mx.com.tvch.pos.model.client.ListOrdenesServicioPosRequest;
+import mx.com.tvch.pos.model.client.ListOrdenesServicioResponse;
 import mx.com.tvch.pos.model.client.ListPromocionesOrdenInstalacionRequest;
 import mx.com.tvch.pos.model.client.ListPromocionesOrdenInstalacionResponse;
 import mx.com.tvch.pos.model.client.ListSuscriptoresRequest;
@@ -39,7 +41,9 @@ import mx.com.tvch.pos.model.client.Response;
 import mx.com.tvch.pos.model.client.Suscriptor;
 import mx.com.tvch.pos.model.client.TipoDescuento;
 import mx.com.tvch.pos.model.client.UpdateEstatusPagadaOrdenInstalacionRequest;
+import mx.com.tvch.pos.model.client.UpdateEstatusPagadaOrdenServicioRequest;
 import mx.com.tvch.pos.model.client.UpdateOrdenInstalacionResponse;
+import mx.com.tvch.pos.model.client.UpdateOrdenServicioResponse;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Utilerias;
 import org.slf4j.Logger;
@@ -92,7 +96,7 @@ public class CobroOrdenController {
      * @return
      * @throws Exception 
      */
-    public Long registrarTransaccion(Orden orden) throws Exception {
+    public Long registrarTransaccion(Orden orden, Long tipoCobroId) throws Exception {
         
         Long transaccionId = null;
 
@@ -110,7 +114,7 @@ public class CobroOrdenController {
         DetalleCobroTransaccionEntity detalleCobroTransaccionEntity = new DetalleCobroTransaccionEntity();
         detalleCobroTransaccionEntity.setMonto(orden.getCosto());// monto sin descuentos ni promociones aplicadas
         detalleCobroTransaccionEntity.setServicioId(orden.getServicioId());
-        detalleCobroTransaccionEntity.setTipoCobroId(Constantes.TIPO_COBRO_ORDEN_INSTALACION);
+        detalleCobroTransaccionEntity.setTipoCobroId(tipoCobroId);
         detalleCobroTransaccionEntity.setTransaccionId(transaccionId);
         detalleCobroTransaccionEntity.setOrdenId(orden.getId());
         Long detalleCobro = detalleCobroTransaccionDao.registrarDetalleTransaccion(detalleCobroTransaccionEntity);
@@ -175,27 +179,48 @@ public class CobroOrdenController {
                 case Constantes.TIPO_ORDEN_INSTALACION:
                     
                     //segundo actualizar estatus de contrato y orden de instalacion en server
-                    UpdateEstatusPagadaOrdenInstalacionRequest instalacionRequest = new UpdateEstatusPagadaOrdenInstalacionRequest();
-                    instalacionRequest.setOrdenInstalacionId(orden.getId());
-                    instalacionRequest.setFechaProximoPago(util.obtenerNuevaFechaProximoPagoOrdenInstalacion(sesion.getDiaCorte(), orden.getMesesGratisPromocion()));
-                    Request<UpdateEstatusPagadaOrdenInstalacionRequest> request = new Request<>();
-                    request.setData(instalacionRequest);
-                    Response<UpdateOrdenInstalacionResponse> response = client.updateEstatusPagoOrdenInstalacion(request);
-                    switch (response.getCode()) {
+                    UpdateEstatusPagadaOrdenInstalacionRequest instalacionPagadaRequest = new UpdateEstatusPagadaOrdenInstalacionRequest();
+                    instalacionPagadaRequest.setOrdenInstalacionId(orden.getId());
+                    instalacionPagadaRequest.setFechaProximoPago(util.obtenerNuevaFechaProximoPagoOrdenInstalacion(sesion.getDiaCorte(), orden.getMesesGratisPromocion()));
+                    Request<UpdateEstatusPagadaOrdenInstalacionRequest> requestInstalacion = new Request<>();
+                    requestInstalacion.setData(instalacionPagadaRequest);
+                    Response<UpdateOrdenInstalacionResponse> responseInstalacion = client.updateEstatusPagoOrdenInstalacion(requestInstalacion);
+                    switch (responseInstalacion.getCode()) {
                         case Constantes.CODIGO_HTTP_OK:
                             //registrar em bd local
-                            transaccionId = registrarTransaccion(orden);
+                            transaccionId = registrarTransaccion(orden,Constantes.TIPO_COBRO_ORDEN_INSTALACION);
                             break;
                         case Constantes.CODIGO_HTTP_TVCH_ERROR:
-                            throw new Exception(response.getMessage());
+                            throw new Exception(responseInstalacion.getMessage());
                         case Constantes.CODIGO_HTTP_SERVER_ERROR:
-                            throw new Exception(response.getMessage());
+                            throw new Exception(responseInstalacion.getMessage());
                         case Constantes.CODIGO_HTTP_PERMISOS_ERROR:
                             throw new Exception("Su usuario no cuenta con los permisos para realizar el pago de la orden");
                         default:
-                            throw new Exception(response.getMessage());
+                            throw new Exception(responseInstalacion.getMessage());
                     }
-
+                case Constantes.TIPO_ORDEN_SERVICIO:
+                    
+                    //segundo actualizar estatus de contrato y orden de instalacion en server
+                    UpdateEstatusPagadaOrdenServicioRequest servicioPagadoRequest = new UpdateEstatusPagadaOrdenServicioRequest();
+                    servicioPagadoRequest.setOrdenServicioId(orden.getId());
+                    Request<UpdateEstatusPagadaOrdenServicioRequest> requestServicio = new Request<>();
+                    requestServicio.setData(servicioPagadoRequest);
+                    Response<UpdateOrdenServicioResponse> responseServicio = client.updateEstatusPagoOrdenServicio(requestServicio);
+                    switch (responseServicio.getCode()) {
+                        case Constantes.CODIGO_HTTP_OK:
+                            //registrar em bd local
+                            transaccionId = registrarTransaccion(orden,Constantes.TIPO_COBRO_ORDEN_SERVICIO);
+                            break;
+                        case Constantes.CODIGO_HTTP_TVCH_ERROR:
+                            throw new Exception(responseServicio.getMessage());
+                        case Constantes.CODIGO_HTTP_SERVER_ERROR:
+                            throw new Exception(responseServicio.getMessage());
+                        case Constantes.CODIGO_HTTP_PERMISOS_ERROR:
+                            throw new Exception("Su usuario no cuenta con los permisos para realizar el pago de la orden");
+                        default:
+                            throw new Exception(responseServicio.getMessage());
+                    }
                 default:
                     break;
             }
@@ -292,22 +317,39 @@ public class CobroOrdenController {
 
         switch (tipoOrden.getTipoOrdenId()) {
             case Constantes.TIPO_ORDEN_INSTALACION:
-                ListOrdenesInstalacionPosRequest ordenesRequest = new ListOrdenesInstalacionPosRequest();
-                ordenesRequest.setContratoId(suscriptor.getContrato());
+                ListOrdenesInstalacionPosRequest listOrdenesInstalacionRequest = new ListOrdenesInstalacionPosRequest();
+                listOrdenesInstalacionRequest.setContratoId(suscriptor.getContrato());
                 //ordenesRequest.setFechaInicio(util.convertirDateTime2String(fechaInicio, "dd/MM/yyyy"));
                 //ordenesRequest.setFechaFin(util.convertirDateTime2String(fechaFin, "dd/MM/yyyy"));
-                Request<ListOrdenesInstalacionPosRequest> request = new Request<>();
-                request.setData(ordenesRequest);
-                Response<ListOrdenesInstalacionResponse> responseOrdenes = client.consultarOrdenesInstalacion(request);
-                switch (responseOrdenes.getCode()) {
+                Request<ListOrdenesInstalacionPosRequest> ordenesInstalacionRequest = new Request<>();
+                ordenesInstalacionRequest.setData(listOrdenesInstalacionRequest);
+                Response<ListOrdenesInstalacionResponse> responseOrdenesInstalacion = client.consultarOrdenesInstalacion(ordenesInstalacionRequest);
+                switch (responseOrdenesInstalacion.getCode()) {
                     case Constantes.CODIGO_HTTP_OK:
-                        return mapper.ordenInstalacionList2Ordenes(responseOrdenes.getData().getList(), tipoOrden);
+                        return mapper.ordenInstalacionList2Ordenes(responseOrdenesInstalacion.getData().getList(), tipoOrden);
                     case Constantes.CODIGO_HTTP_NO_CONTENT:
                         throw new Exception("No se encontraron ordenes de instalacion para el contrato solicitado");
                     case Constantes.CODIGO_HTTP_PERMISOS_ERROR:
                         throw new Exception("Su usuario no cuenta con los permisos para realizar la consulta de ordenes de instalación");
                     default:
-                        throw new Exception(responseOrdenes.getMessage());
+                        throw new Exception(responseOrdenesInstalacion.getMessage());
+                }
+
+            case Constantes.TIPO_ORDEN_SERVICIO:
+                ListOrdenesServicioPosRequest listOrdenesServicioRequest = new ListOrdenesServicioPosRequest();
+                listOrdenesServicioRequest.setContratoId(suscriptor.getContrato());
+                Request<ListOrdenesServicioPosRequest> ordenesServicioRequest = new Request<>();
+                ordenesServicioRequest.setData(listOrdenesServicioRequest);
+                Response<ListOrdenesServicioResponse> responseOrdenesServicio = client.consultarOrdenesServicio(ordenesServicioRequest);
+                switch (responseOrdenesServicio.getCode()) {
+                    case Constantes.CODIGO_HTTP_OK:
+                        return mapper.ordenServicioList2Ordenes(responseOrdenesServicio.getData().getList(), tipoOrden);
+                    case Constantes.CODIGO_HTTP_NO_CONTENT:
+                        throw new Exception("No se encontraron ordenes de instalacion para el contrato solicitado");
+                    case Constantes.CODIGO_HTTP_PERMISOS_ERROR:
+                        throw new Exception("Su usuario no cuenta con los permisos para realizar la consulta de ordenes de instalación");
+                    default:
+                        throw new Exception(responseOrdenesServicio.getMessage());
                 }
             default:
                 throw new Exception();

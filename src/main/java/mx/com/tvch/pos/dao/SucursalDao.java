@@ -53,6 +53,8 @@ public class SucursalDao {
                 entity.setSucursalId(rs.getLong("id_sucursal"));
                 entity.setZonaId(rs.getLong("id_zona"));
                 entity.setDiaCorte(rs.getInt("dia_corte"));
+                entity.setTelefono(rs.getString("telefono"));
+                entity.setUsaWhats(rs.getInt("usa_whats"));
                 break;
             }
 

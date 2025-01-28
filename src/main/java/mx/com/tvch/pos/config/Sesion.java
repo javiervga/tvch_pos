@@ -27,8 +27,12 @@ public class Sesion {
     private Long aperturaCajaId;
 
     private String password;
-    
+
     private Integer diaCorte;
+
+    private String telefonoSucursal;
+
+    private Integer usaWhats;
 
     public static Sesion getSesion() {
         if (sesion == null) {
@@ -107,6 +111,22 @@ public class Sesion {
 
     public void setDiaCorte(Integer diaCorte) {
         this.diaCorte = diaCorte;
+    }
+
+    public String getTelefonoSucursal() {
+        return telefonoSucursal;
+    }
+
+    public void setTelefonoSucursal(String telefonoSucursal) {
+        this.telefonoSucursal = telefonoSucursal;
+    }
+
+    public Integer getUsaWhats() {
+        return usaWhats;
+    }
+
+    public void setUsaWhats(Integer usaWhats) {
+        this.usaWhats = usaWhats;
     }
 
 }

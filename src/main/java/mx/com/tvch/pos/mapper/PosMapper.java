@@ -13,14 +13,17 @@ import mx.com.tvch.pos.model.Orden;
 import mx.com.tvch.pos.model.TipoOrden;
 import mx.com.tvch.pos.model.client.AuthResponse;
 import mx.com.tvch.pos.model.client.ListOrdenesInstalacionResponse;
+import mx.com.tvch.pos.model.client.ListOrdenesServicioResponse;
 import mx.com.tvch.pos.model.client.ListPromocionesOrdenInstalacionResponse;
 import mx.com.tvch.pos.model.client.ListSuscriptoresResponse;
 import mx.com.tvch.pos.model.client.ListTiposDescuentoResponse;
 import mx.com.tvch.pos.model.client.OrdenInstalacion;
+import mx.com.tvch.pos.model.client.OrdenServicio;
 import mx.com.tvch.pos.model.client.PromocionOrdenInstalacion;
 import mx.com.tvch.pos.model.client.Suscriptor;
 import mx.com.tvch.pos.model.client.TipoDescuento;
 import mx.com.tvch.pos.model.client.UpdateOrdenInstalacionResponse;
+import mx.com.tvch.pos.model.client.UpdateOrdenServicioResponse;
 
 /**
  *
@@ -47,6 +50,53 @@ public class PosMapper {
                 .convertValue(object, new TypeReference<Map<String,Object>>(){});
     }
     
+    /**
+     * 
+     * @param object
+     * @return 
+     */
+    public UpdateOrdenServicioResponse object2UpdateOrdenServicioResponse(Object object){
+        
+        UpdateOrdenServicioResponse response = new UpdateOrdenServicioResponse();
+        Map<String, Object> map = getMapper(object);
+        
+        double contratoId = (double) map.get("contratoId");
+        response.setContratoId((long) contratoId);
+        response.setEstatusOrden((String) map.get("estatusOrden"));
+        double estatusOrdenId = (double) map.get("estatusOrdenId");
+        response.setEstatusOrdenId((long) estatusOrdenId);
+        if(map.get("fechaAgenda") != null)
+            response.setFechaAgenda((String) map.get("fechaAgenda"));
+        response.setFechaRegistro((String) map.get("fechaRegistro"));
+        if(map.get("fechaServicio") != null)
+            response.setFechaServicio((String) map.get("fechaServicio"));
+        if(map.get("observacionesAgenda") != null)
+            response.setObservacionesAgenda((String) map.get("observacionesAgenda"));
+        if(map.get("observacionesServicio") != null)
+            response.setObservacionesServicio((String) map.get("observacionesServicio"));
+        double ordenServicioId = (double) map.get("ordenServicioId");
+        response.setOrdenServicioId((long) ordenServicioId);
+        response.setServicio((String) map.get("servicio"));
+        double servicioId = (double) map.get("servicioId");
+        response.setServicioId((long) servicioId);
+        response.setSuscriptor((String) map.get("suscriptor"));
+        double suscriptorId = (double) map.get("suscriptorId");
+        response.setSuscriptorId((long) suscriptorId);
+        response.setTipoOrdenServicio((String) map.get("tipoOrdenServicio"));
+        double tipoOrdenServicioId = (double) map.get("tipoOrdenServicioId");
+        response.setTipoOrdenServicioId((long) tipoOrdenServicioId);
+        response.setUsuario((String) map.get("usuario"));
+        double usuarioId = (double) map.get("usuarioId");
+        response.setUsuarioId((long) usuarioId);
+        
+        return response;
+    }
+    
+    /**
+     * 
+     * @param object
+     * @return 
+     */
     public UpdateOrdenInstalacionResponse object2UpdateOrdenInstalacionResponse(Object object){
         
         UpdateOrdenInstalacionResponse response = new UpdateOrdenInstalacionResponse();
@@ -221,6 +271,65 @@ public class PosMapper {
      * @param object
      * @return 
      */
+    public ListOrdenesServicioResponse object2ListOrdenesServicioResponse(Object object){
+        
+        ListOrdenesServicioResponse response = new ListOrdenesServicioResponse();
+        Map<String, Object> map = getMapper(object);
+        
+        List<Map<String, Object>> list = (List<Map<String, Object>>) map.get("list");
+        List<OrdenServicio> ordenesServicio = new ArrayList<>();
+        list.forEach(o -> ordenesServicio.add(map2OrdenServicio(o)));
+        response.setList(ordenesServicio);
+        
+        return response;
+    }
+    
+    /**
+     * 
+     * @param map
+     * @return 
+     */
+    private OrdenServicio map2OrdenServicio(Map<String, Object> map){
+        
+        OrdenServicio ordenServicio = new OrdenServicio();
+        
+        double contratoId = (double) map.get("contratoId");
+        ordenServicio.setContratoId((long) contratoId);
+        ordenServicio.setCosto((Double) map.get("costo"));
+        ordenServicio.setEstatus((String) map.get("estatus"));
+        double estatusId = (double) map.get("estatusId");
+        ordenServicio.setEstatusId((long) estatusId);
+        if(map.get("fechaAgenda") != null)
+            ordenServicio.setFechaAgenda((String) map.get("fechaAgenda"));
+        ordenServicio.setFechaRegistro((String) map.get("fechaRegistro"));
+        if(map.get("fechaServicio") != null)
+            ordenServicio.setFechaServicio((String) map.get("fechaServicio"));
+        if(map.get("observacionesAgenda") != null)
+            ordenServicio.setObservacionesAgenda((String) map.get("observacionesAgenda"));
+        if(map.get("observacionesServicio") != null)
+            ordenServicio.setObservacionesServicio((String) map.get("observacionesServicio"));
+        double ordenServicioId = (double) map.get("ordenServicioId");
+        ordenServicio.setOrdenServicioId((long) ordenServicioId);
+        ordenServicio.setServicio((String) map.get("servicio"));
+        double servicioId = (double) map.get("servicioId");
+        ordenServicio.setServicioId((long) servicioId);
+        ordenServicio.setSuscriptor((String) map.get("suscriptor"));
+        double suscriptorId = (double) map.get("suscriptorId");
+        ordenServicio.setSuscriptorId((long) suscriptorId);
+        ordenServicio.setTipoOrdenServicio((String) map.get("tipoOrdenServicio"));
+        double tipoOrdenServicioId = (double) map.get("tipoOrdenServicioId");
+        ordenServicio.setTipoOrdenServicioId((long) tipoOrdenServicioId);
+        ordenServicio.setUsuario((String) map.get("usuario"));
+        double usuarioId = (double) map.get("usuarioId");
+        ordenServicio.setUsuarioId((long) usuarioId);
+        return ordenServicio;
+    }
+    
+    /**
+     * 
+     * @param object
+     * @return 
+     */
     public ListSuscriptoresResponse object2ListSuscriptoresResponse(Object object){
         
         ListSuscriptoresResponse response = new ListSuscriptoresResponse();
@@ -313,6 +422,26 @@ public class PosMapper {
         list.forEach(o -> ordenes.add(
                 new Orden(o.getOrdenInstalacionId(), o.getContratoId(), tipoOrden.getTipoOrdenId(), 
                         tipoOrden.getDescripcion(), o.getCosto(), o.getFechaRegistro(), o.getCosto())));
+        return ordenes;
+    }
+    
+    /**
+     * 
+     * @param list
+     * @param tipoOrden
+     * @return 
+     */
+    public List<Orden> ordenServicioList2Ordenes(List<OrdenServicio> list, TipoOrden tipoOrden){
+        List<Orden> ordenes = new ArrayList<>();
+        for( OrdenServicio o : list){
+            Orden orden = new Orden(o.getOrdenServicioId(), o.getContratoId(), tipoOrden.getTipoOrdenId(), 
+                        tipoOrden.getDescripcion(), o.getCosto(), o.getFechaRegistro(), o.getCosto());
+            orden.setConceptoOrdenServicio(o.getTipoOrdenServicio());
+            ordenes.add(orden);
+        }
+        /*list.forEach(o -> ordenes.add(
+                new Orden(o.getOrdenServicioId(), o.getContratoId(), tipoOrden.getTipoOrdenId(), 
+                        tipoOrden.getDescripcion(), o.getCosto(), o.getFechaRegistro(), o.getCosto())));*/
         return ordenes;
     }
     

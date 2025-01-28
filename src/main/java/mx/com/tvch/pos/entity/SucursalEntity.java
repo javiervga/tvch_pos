@@ -15,10 +15,14 @@ public class SucursalEntity {
     private String nombre;
 
     private Long zonaId;
-    
+
     private Integer diaCorte;
 
     private Integer estatus;
+
+    private String telefono;
+
+    private Integer usaWhats;
 
     public Long getSucursalId() {
         return sucursalId;
@@ -58,6 +62,22 @@ public class SucursalEntity {
 
     public void setEstatus(Integer estatus) {
         this.estatus = estatus;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public Integer getUsaWhats() {
+        return usaWhats;
+    }
+
+    public void setUsaWhats(Integer usaWhats) {
+        this.usaWhats = usaWhats;
     }
 
 }

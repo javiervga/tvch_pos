@@ -43,6 +43,8 @@ public class Orden {
     private String servicio;
     
     private Integer mesesGratisPromocion;
+    
+    private String conceptoOrdenServicio;
 
     public Orden(Long id, Long contratoId, Integer tipoOrdenId, String tipoOrden,
             Double costo, String fechaRegistro, Double importePagar) {
@@ -189,6 +191,14 @@ public class Orden {
 
     public void setServicio(String servicio) {
         this.servicio = servicio;
+    }
+
+    public String getConceptoOrdenServicio() {
+        return conceptoOrdenServicio;
+    }
+
+    public void setConceptoOrdenServicio(String conceptoOrdenServicio) {
+        this.conceptoOrdenServicio = conceptoOrdenServicio;
     }
 
 }

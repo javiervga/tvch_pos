@@ -110,7 +110,15 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                     try{
                         Long transaccionId = controller.cobrarOrden(ordenSeleccionada);
                         try{
-                            impresora.imprimirTicketOrdenInstalacion(ordenSeleccionada, suscriptorSeleccionado, sesion.getSucursal());
+                            switch (ordenSeleccionada.getTipoOrdenId()) {
+                                case Constantes.TIPO_ORDEN_INSTALACION:
+                                    impresora.imprimirTicketOrdenInstalacion(transaccionId, ordenSeleccionada, suscriptorSeleccionado, sesion.getSucursal());
+                                    break;
+                                case Constantes.TIPO_ORDEN_SERVICIO:
+                                    impresora.imprimirTicketOrdenServicio(transaccionId, ordenSeleccionada, suscriptorSeleccionado, sesion.getSucursal());
+                                    break;
+                            }
+                            
                         }catch(Exception ex){
                             StringWriter sw = new StringWriter();
                             PrintWriter pw = new PrintWriter(sw);
@@ -305,16 +313,18 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                             ordenSeleccionada.setFechaProximoPago(suscriptorSeleccionado.getFechaProximoPago());
                             DefaultTableModel model = (DefaultTableModel) tablaOrdenes.getModel();
                             model.getDataVector().clear();
-                            cargarTablaOrdenes(model, ordenes);
                             //consultar promociones
                             switch (tipoOrden.getTipoOrdenId()) {
                                 case Constantes.TIPO_ORDEN_INSTALACION:
+                                    cargarTablaOrdenesInstalacion(model, ordenes);
                                     cargarComboTiposDescuento();
                                     cargarComboPromocionesOrdenInstalacion();
                                     etiquetaImporte.setText(String.valueOf(ordenSeleccionada.getCosto()));
                                     break;
                                 case Constantes.TIPO_ORDEN_SERVICIO:
-                                    //cargarComboPromocionesOrdenInstalacion();
+                                    cargarTablaOrdenesServicio(model, ordenes);
+                                    cargarComboTiposDescuento();
+                                    etiquetaImporte.setText(String.valueOf(ordenSeleccionada.getCosto()));
                                     break;
                                 case Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO:
                                     //cargarComboPromocionesOrdenInstalacion();
@@ -504,7 +514,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
      * @param list
      * @throws Exception
      */
-    private void cargarTablaOrdenes(DefaultTableModel model, List<Orden> list) throws Exception {
+    private void cargarTablaOrdenesInstalacion(DefaultTableModel model, List<Orden> list) throws Exception {
 
         if (!list.isEmpty()) {
 
@@ -515,6 +525,32 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                     o.getId(),
                     o.getContratoId(),
                     o.getTipoOrden(),
+                    o.getFechaRegistro(),
+                    o.getCosto()});
+            }
+        } else {
+            JOptionPane.showMessageDialog(cobroPanel, "No se encontraron ordenes asociadas al contrato seleccionado", "", JOptionPane.WARNING_MESSAGE);
+        }
+
+    }
+    
+    /**
+     *
+     * @param model
+     * @param list
+     * @throws Exception
+     */
+    private void cargarTablaOrdenesServicio(DefaultTableModel model, List<Orden> list) throws Exception {
+
+        if (!list.isEmpty()) {
+
+            model.getDataVector().clear();
+            model.fireTableDataChanged();
+            for (Orden o : list) {
+                model.addRow(new Object[]{
+                    o.getId(),
+                    o.getContratoId(),
+                    o.getConceptoOrdenServicio(),
                     o.getFechaRegistro(),
                     o.getCosto()});
             }
@@ -667,6 +703,12 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         tablaSuscriptores.getColumnModel().getColumn(3).setPreferredWidth(190);
         tablaSuscriptores.getColumnModel().getColumn(4).setPreferredWidth(380);
         tablaSuscriptores.getColumnModel().getColumn(5).setPreferredWidth(130);
+        
+        tablaOrdenes.getColumnModel().getColumn(0).setPreferredWidth(90);
+        tablaOrdenes.getColumnModel().getColumn(1).setPreferredWidth(90);
+        tablaOrdenes.getColumnModel().getColumn(2).setPreferredWidth(380);
+        tablaOrdenes.getColumnModel().getColumn(3).setPreferredWidth(150);
+        tablaOrdenes.getColumnModel().getColumn(4).setPreferredWidth(150);
 
         //seccion promociones
         comboPromociones.setEnabled(false);
@@ -1151,16 +1193,15 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                             .addComponent(campoDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel16)
                             .addComponent(campoTelefono)))
-                    .addGroup(panelInfoContratoLayout.createSequentialGroup()
-                        .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel8)
-                            .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9)
-                            .addComponent(campoContratoAnterior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(campoEstatusContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel19)
-                            .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel13))))
+                    .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel8)
+                        .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel9)
+                        .addComponent(campoContratoAnterior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(campoEstatusContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel19)
+                        .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel13)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1298,21 +1339,21 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         panelImporteLayout.setHorizontalGroup(
             panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelImporteLayout.createSequentialGroup()
-                .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(panelImporteLayout.createSequentialGroup()
+                .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelImporteLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jLabel23)
-                        .addGap(32, 32, 32)
-                        .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(etiquetaImporte, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(panelImporteLayout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(etiquetaPromoActiva, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(etiquetaPromoActiva, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelImporteLayout.createSequentialGroup()
                         .addGap(57, 57, 57)
-                        .addComponent(botonCobrar, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(botonRegresar)))
+                        .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelImporteLayout.createSequentialGroup()
+                                .addComponent(jLabel23)
+                                .addGap(18, 18, 18)
+                                .addComponent(etiquetaImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panelImporteLayout.createSequentialGroup()
+                                .addComponent(botonCobrar, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(botonRegresar)))))
                 .addContainerGap(76, Short.MAX_VALUE))
         );
         panelImporteLayout.setVerticalGroup(
@@ -1414,7 +1455,6 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                         .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, 937, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelInferiorLayout.createSequentialGroup()
                         .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1043, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(panelInferiorLayout.createSequentialGroup()
                                 .addGap(19, 19, 19)
                                 .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1437,8 +1477,11 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                                         .addGap(18, 18, 18)
                                         .addComponent(etiquetaImporteDescuento)
                                         .addGap(18, 18, 18)
-                                        .addComponent(campoImporteDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(campoImporteDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(panelInferiorLayout.createSequentialGroup()
+                                .addComponent(jScrollPane2)
+                                .addGap(18, 18, 18)))
                         .addComponent(panelImporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(375, 375, 375))
         );
