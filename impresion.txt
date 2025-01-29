@@ -1,14 +1,46 @@
-===============================================
-               Apertura de caja                
                                                
-Sucursal:              Providencia             
-Folio Caja:            120250123041611         
-Folio Server:          0                       
-Num. Caja:             1                       
-Cajero:                MDELGADO                
-Fondo Fijo:            250.0                   
-Fecha:                 23/01/25                
-Hora:                  04:16:11                
+
+                                              
+                                               
+             Comprobante de Pago               
+                                               
+             TV Cable Hidalguense              
+  Mineral de la Reforma   R.F.C. TCH151120HY6  
+           Calle San Rafael No. 150,           
+       Colonia La Providencia C.P. 42186       
+         Sucursal Providencia                  
+                                               
+Fecha:       28/01/2025 14:35:14               
+                                               
+Caja:        1                                 
+                                               
+Folio:       120250128143506                   
+                                               
+Tipo Pago:   Instalacion de Servicio           
+                                               
+Contrato:    5629                              
+                                               
+Suscriptor:  AIDEE LECHUGA LOPEZ               
+                                               
+Domicilio:   CIRCUITO VILLA LA NUEVA  100 VILLA DE LAS FLORES 
+                                               
+Servicio:    TV + INTERNET 15MB                
+                                               
+Telefono:    7711306356                        
+                                               
+Costo Instalacion:                     $ 150.0 
+                                               
+Total:                                 $ 150.0 
+                                               
+Próximo pago antes de:  10/03/2025             
+                                               
+ RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO
+   CANCELACION DEL 25 AL 30 DEL MES PAGADO     
+  HORARIO DE OFICINA LUNES A VIERNES 9AM A 6PM,
+              SABADO DE 9AM A 2PM              
+         Telefono Oficina:  7713212773         
+    Soporte Tecnico WhatsApp: 7717769686       
+                                               
                                                
                                                
                                                

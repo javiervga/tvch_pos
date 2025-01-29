@@ -12,16 +12,19 @@ import java.util.Map;
 import mx.com.tvch.pos.model.Orden;
 import mx.com.tvch.pos.model.TipoOrden;
 import mx.com.tvch.pos.model.client.AuthResponse;
+import mx.com.tvch.pos.model.client.ListOrdenesCambioDomicilioResponse;
 import mx.com.tvch.pos.model.client.ListOrdenesInstalacionResponse;
 import mx.com.tvch.pos.model.client.ListOrdenesServicioResponse;
 import mx.com.tvch.pos.model.client.ListPromocionesOrdenInstalacionResponse;
 import mx.com.tvch.pos.model.client.ListSuscriptoresResponse;
 import mx.com.tvch.pos.model.client.ListTiposDescuentoResponse;
+import mx.com.tvch.pos.model.client.OrdenCambioDomicilio;
 import mx.com.tvch.pos.model.client.OrdenInstalacion;
 import mx.com.tvch.pos.model.client.OrdenServicio;
 import mx.com.tvch.pos.model.client.PromocionOrdenInstalacion;
 import mx.com.tvch.pos.model.client.Suscriptor;
 import mx.com.tvch.pos.model.client.TipoDescuento;
+import mx.com.tvch.pos.model.client.UpdateOrdenCambioDomicilioResponse;
 import mx.com.tvch.pos.model.client.UpdateOrdenInstalacionResponse;
 import mx.com.tvch.pos.model.client.UpdateOrdenServicioResponse;
 
@@ -48,6 +51,46 @@ public class PosMapper {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper
                 .convertValue(object, new TypeReference<Map<String,Object>>(){});
+    }
+    
+    /**
+     * 
+     * @param object
+     * @return 
+     */
+    public UpdateOrdenCambioDomicilioResponse object2UpdateOrdenCambioDomicilioResponse(Object object){
+        
+        UpdateOrdenCambioDomicilioResponse response = new UpdateOrdenCambioDomicilioResponse();
+        Map<String, Object> map = getMapper(object);
+        
+        double contratoId = (double) map.get("contratoId");
+        response.setContratoId((long) contratoId);
+        response.setCosto((Double) map.get("costo"));
+        response.setEstatusOrden((String) map.get("estatusOrden"));
+        double estatusOrdenId = (double) map.get("estatusOrdenId");
+        response.setEstatusOrdenId((long) estatusOrdenId);
+        if(map.get("fechaAgenda") != null)
+            response.setFechaAgenda((String) map.get("fechaAgenda"));
+        response.setFechaRegistro((String) map.get("fechaRegistro"));
+        if(map.get("fechaCambioDomicilio") != null)
+            response.setFechaCambioDomicilio((String) map.get("fechaCambioDomicilio"));
+        if(map.get("observacionesAgenda") != null)
+            response.setObservacionesAgenda((String) map.get("observacionesAgenda"));
+        if(map.get("observacionesCambioDomicilio") != null)
+            response.setObservacionesCambioDomicilio((String) map.get("observacionesCambioDomicilio"));
+        double ordenCambioDomicilioId = (double) map.get("ordenCambioDomicilioId");
+        response.setOrdenCambioDomicilioId((long) ordenCambioDomicilioId);
+        response.setServicio((String) map.get("servicio"));
+        double servicioId = (double) map.get("servicioId");
+        response.setServicioId((long) servicioId);
+        response.setSuscriptor((String) map.get("suscriptor"));
+        double suscriptorId = (double) map.get("suscriptorId");
+        response.setSuscriptorId((long) suscriptorId);
+        response.setUsuario((String) map.get("usuario"));
+        double usuarioId = (double) map.get("usuarioId");
+        response.setUsuarioId((long) usuarioId);
+        
+        return response;
     }
     
     /**
@@ -330,6 +373,62 @@ public class PosMapper {
      * @param object
      * @return 
      */
+    public ListOrdenesCambioDomicilioResponse object2ListOrdenesCambioDomicilioResponse(Object object){
+        
+        ListOrdenesCambioDomicilioResponse response = new ListOrdenesCambioDomicilioResponse();
+        Map<String, Object> map = getMapper(object);
+        
+        List<Map<String, Object>> list = (List<Map<String, Object>>) map.get("list");
+        List<OrdenCambioDomicilio> ordenesCambioDomicilio = new ArrayList<>();
+        list.forEach(o -> ordenesCambioDomicilio.add(map2OrdenCambioDomicilio(o)));
+        response.setList(ordenesCambioDomicilio);
+        
+        return response;
+    }
+    
+    /**
+     * 
+     * @param map
+     * @return 
+     */
+    private OrdenCambioDomicilio map2OrdenCambioDomicilio(Map<String, Object> map){
+        
+        OrdenCambioDomicilio ordenCambioDomicilio = new OrdenCambioDomicilio();
+        
+        double contratoId = (double) map.get("contratoId");
+        ordenCambioDomicilio.setContratoId((long) contratoId);
+        ordenCambioDomicilio.setCosto((Double) map.get("costo"));
+        ordenCambioDomicilio.setEstatusOrden((String) map.get("estatusOrden"));
+        double estatusOrdenId = (double) map.get("estatusOrdenId");
+        ordenCambioDomicilio.setEstatusOrdenId((long) estatusOrdenId);
+        if(map.get("fechaAgenda") != null)
+            ordenCambioDomicilio.setFechaAgenda((String) map.get("fechaAgenda"));
+        ordenCambioDomicilio.setFechaRegistro((String) map.get("fechaRegistro"));
+        if(map.get("fechaCambioDomicilio") != null)
+            ordenCambioDomicilio.setFechaCambioDomicilio((String) map.get("fechaCambioDomicilio"));
+        if(map.get("observacionesAgenda") != null)
+            ordenCambioDomicilio.setObservacionesAgenda((String) map.get("observacionesAgenda"));
+        if(map.get("observacionesCambioDomicilio") != null)
+            ordenCambioDomicilio.setObservacionesCambioDomicilio((String) map.get("observacionesCambioDomicilio"));
+        double ordenCambioDomicilioId = (double) map.get("ordenCambioDomicilioId");
+        ordenCambioDomicilio.setOrdenCambioDomicilioId((long) ordenCambioDomicilioId);
+        ordenCambioDomicilio.setServicio((String) map.get("servicio"));
+        double servicioId = (double) map.get("servicioId");
+        ordenCambioDomicilio.setServicioId((long) servicioId);
+        ordenCambioDomicilio.setSuscriptor((String) map.get("suscriptor"));
+        double suscriptorId = (double) map.get("suscriptorId");
+        ordenCambioDomicilio.setSuscriptorId((long) suscriptorId);
+        ordenCambioDomicilio.setUsuario((String) map.get("usuario"));
+        double usuarioId = (double) map.get("usuarioId");
+        ordenCambioDomicilio.setUsuarioId((long) usuarioId);
+        return ordenCambioDomicilio;
+    }
+    
+    /**
+     * 
+     * @param object
+     * @return 
+     */
     public ListSuscriptoresResponse object2ListSuscriptoresResponse(Object object){
         
         ListSuscriptoresResponse response = new ListSuscriptoresResponse();
@@ -431,6 +530,20 @@ public class PosMapper {
      * @param tipoOrden
      * @return 
      */
+    public List<Orden> ordenCambioDomiclioList2Ordenes(List<OrdenCambioDomicilio> list, TipoOrden tipoOrden){
+        List<Orden> ordenes = new ArrayList<>();
+        list.forEach(o -> ordenes.add(
+                new Orden(o.getOrdenCambioDomicilioId(), o.getContratoId(), tipoOrden.getTipoOrdenId(), 
+                        tipoOrden.getDescripcion(), o.getCosto(), o.getFechaRegistro(), o.getCosto())));
+        return ordenes;
+    }
+    
+    /**
+     * 
+     * @param list
+     * @param tipoOrden
+     * @return 
+     */
     public List<Orden> ordenServicioList2Ordenes(List<OrdenServicio> list, TipoOrden tipoOrden){
         List<Orden> ordenes = new ArrayList<>();
         for( OrdenServicio o : list){
@@ -444,5 +557,6 @@ public class PosMapper {
                         tipoOrden.getDescripcion(), o.getCosto(), o.getFechaRegistro(), o.getCosto())));*/
         return ordenes;
     }
+    
     
 }

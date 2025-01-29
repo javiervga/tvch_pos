@@ -26,6 +26,8 @@ import mx.com.tvch.pos.mapper.PosMapper;
 import mx.com.tvch.pos.model.Orden;
 import mx.com.tvch.pos.model.TipoBusquedaCobro;
 import mx.com.tvch.pos.model.TipoOrden;
+import mx.com.tvch.pos.model.client.ListOrdenesCambioDomicilioPosRequest;
+import mx.com.tvch.pos.model.client.ListOrdenesCambioDomicilioResponse;
 import mx.com.tvch.pos.model.client.ListOrdenesInstalacionPosRequest;
 import mx.com.tvch.pos.model.client.ListOrdenesInstalacionResponse;
 import mx.com.tvch.pos.model.client.ListOrdenesServicioPosRequest;
@@ -40,8 +42,10 @@ import mx.com.tvch.pos.model.client.Request;
 import mx.com.tvch.pos.model.client.Response;
 import mx.com.tvch.pos.model.client.Suscriptor;
 import mx.com.tvch.pos.model.client.TipoDescuento;
+import mx.com.tvch.pos.model.client.UpdateEstatusPagadaOrdenCambioDomicilioRequest;
 import mx.com.tvch.pos.model.client.UpdateEstatusPagadaOrdenInstalacionRequest;
 import mx.com.tvch.pos.model.client.UpdateEstatusPagadaOrdenServicioRequest;
+import mx.com.tvch.pos.model.client.UpdateOrdenCambioDomicilioResponse;
 import mx.com.tvch.pos.model.client.UpdateOrdenInstalacionResponse;
 import mx.com.tvch.pos.model.client.UpdateOrdenServicioResponse;
 import mx.com.tvch.pos.util.Constantes;
@@ -199,9 +203,10 @@ public class CobroOrdenController {
                         default:
                             throw new Exception(responseInstalacion.getMessage());
                     }
+                    break;
                 case Constantes.TIPO_ORDEN_SERVICIO:
                     
-                    //segundo actualizar estatus de contrato y orden de instalacion en server
+                    //segundo actualizar orden de instalacion en server
                     UpdateEstatusPagadaOrdenServicioRequest servicioPagadoRequest = new UpdateEstatusPagadaOrdenServicioRequest();
                     servicioPagadoRequest.setOrdenServicioId(orden.getId());
                     Request<UpdateEstatusPagadaOrdenServicioRequest> requestServicio = new Request<>();
@@ -221,6 +226,30 @@ public class CobroOrdenController {
                         default:
                             throw new Exception(responseServicio.getMessage());
                     }
+                    break;
+                case Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO:
+                    
+                    //segundo actualizar orden de cambio en server
+                    UpdateEstatusPagadaOrdenCambioDomicilioRequest cambioDomicilioPagadoRequest = new UpdateEstatusPagadaOrdenCambioDomicilioRequest();
+                    cambioDomicilioPagadoRequest.setOrdenCambioDomicilioId(orden.getId());
+                    Request<UpdateEstatusPagadaOrdenCambioDomicilioRequest> requestCambioDomicilio = new Request<>();
+                    requestCambioDomicilio.setData(cambioDomicilioPagadoRequest);
+                    Response<UpdateOrdenCambioDomicilioResponse> responseCambioDomicilio = client.updateEstatusPagoOrdenCambioDomicilio(requestCambioDomicilio);
+                    switch (responseCambioDomicilio.getCode()) {
+                        case Constantes.CODIGO_HTTP_OK:
+                            //registrar em bd local
+                            transaccionId = registrarTransaccion(orden,Constantes.TIPO_COBRO_ORDEN_CAMBIO_DOMICILIO);
+                            break;
+                        case Constantes.CODIGO_HTTP_TVCH_ERROR:
+                            throw new Exception(responseCambioDomicilio.getMessage());
+                        case Constantes.CODIGO_HTTP_SERVER_ERROR:
+                            throw new Exception(responseCambioDomicilio.getMessage());
+                        case Constantes.CODIGO_HTTP_PERMISOS_ERROR:
+                            throw new Exception("Su usuario no cuenta con los permisos para realizar el pago de la orden");
+                        default:
+                            throw new Exception(responseCambioDomicilio.getMessage());
+                    }
+                    break;
                 default:
                     break;
             }
@@ -345,11 +374,28 @@ public class CobroOrdenController {
                     case Constantes.CODIGO_HTTP_OK:
                         return mapper.ordenServicioList2Ordenes(responseOrdenesServicio.getData().getList(), tipoOrden);
                     case Constantes.CODIGO_HTTP_NO_CONTENT:
-                        throw new Exception("No se encontraron ordenes de instalacion para el contrato solicitado");
+                        throw new Exception("No se encontraron ordenes de servicio para el contrato solicitado");
                     case Constantes.CODIGO_HTTP_PERMISOS_ERROR:
-                        throw new Exception("Su usuario no cuenta con los permisos para realizar la consulta de ordenes de instalación");
+                        throw new Exception("Su usuario no cuenta con los permisos para realizar la consulta de ordenes de servicio");
                     default:
                         throw new Exception(responseOrdenesServicio.getMessage());
+                }
+                
+            case Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO:
+                ListOrdenesCambioDomicilioPosRequest listOrdenesCambioDomicilioRequest = new ListOrdenesCambioDomicilioPosRequest();
+                listOrdenesCambioDomicilioRequest.setContratoId(suscriptor.getContrato());
+                Request<ListOrdenesCambioDomicilioPosRequest> ordenesCambioDomicilioRequest = new Request<>();
+                ordenesCambioDomicilioRequest.setData(listOrdenesCambioDomicilioRequest);
+                Response<ListOrdenesCambioDomicilioResponse> responseOrdenesCambioDomicilio = client.consultarOrdenesCambioDomicilio(ordenesCambioDomicilioRequest);
+                switch (responseOrdenesCambioDomicilio.getCode()) {
+                    case Constantes.CODIGO_HTTP_OK:
+                        return mapper.ordenCambioDomiclioList2Ordenes(responseOrdenesCambioDomicilio.getData().getList(), tipoOrden);
+                    case Constantes.CODIGO_HTTP_NO_CONTENT:
+                        throw new Exception("No se encontraron ordenes de cambio de domicilio para el contrato solicitado");
+                    case Constantes.CODIGO_HTTP_PERMISOS_ERROR:
+                        throw new Exception("Su usuario no cuenta con los permisos para realizar la consulta de ordenes de cambio de domicilio");
+                    default:
+                        throw new Exception(responseOrdenesCambioDomicilio.getMessage());
                 }
             default:
                 throw new Exception();

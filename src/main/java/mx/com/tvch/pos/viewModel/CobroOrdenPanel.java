@@ -117,6 +117,9 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                                 case Constantes.TIPO_ORDEN_SERVICIO:
                                     impresora.imprimirTicketOrdenServicio(transaccionId, ordenSeleccionada, suscriptorSeleccionado, sesion.getSucursal());
                                     break;
+                                case Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO:
+                                    impresora.imprimirTicketOrdenCambioDomicilio(transaccionId, ordenSeleccionada, suscriptorSeleccionado, sesion.getSucursal());
+                                    break;
                             }
                             
                         }catch(Exception ex){
@@ -327,7 +330,9 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                                     etiquetaImporte.setText(String.valueOf(ordenSeleccionada.getCosto()));
                                     break;
                                 case Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO:
-                                    //cargarComboPromocionesOrdenInstalacion();
+                                    cargarTablaOrdenesCambioDomicilio(model, ordenes);
+                                    cargarComboTiposDescuento();
+                                    etiquetaImporte.setText(String.valueOf(ordenSeleccionada.getCosto()));
                                     break;
                                 default:
                                     break;
@@ -515,6 +520,32 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
      * @throws Exception
      */
     private void cargarTablaOrdenesInstalacion(DefaultTableModel model, List<Orden> list) throws Exception {
+
+        if (!list.isEmpty()) {
+
+            model.getDataVector().clear();
+            model.fireTableDataChanged();
+            for (Orden o : list) {
+                model.addRow(new Object[]{
+                    o.getId(),
+                    o.getContratoId(),
+                    o.getTipoOrden(),
+                    o.getFechaRegistro(),
+                    o.getCosto()});
+            }
+        } else {
+            JOptionPane.showMessageDialog(cobroPanel, "No se encontraron ordenes asociadas al contrato seleccionado", "", JOptionPane.WARNING_MESSAGE);
+        }
+
+    }
+    
+    /**
+     *
+     * @param model
+     * @param list
+     * @throws Exception
+     */
+    private void cargarTablaOrdenesCambioDomicilio(DefaultTableModel model, List<Orden> list) throws Exception {
 
         if (!list.isEmpty()) {
 
