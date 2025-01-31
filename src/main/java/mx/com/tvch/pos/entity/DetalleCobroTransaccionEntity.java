@@ -22,6 +22,8 @@ public class DetalleCobroTransaccionEntity {
 
     private Long ordenId;
 
+    private String descripcionOrden;
+
     public Long getDetalleId() {
         return detalleId;
     }
@@ -68,6 +70,14 @@ public class DetalleCobroTransaccionEntity {
 
     public void setOrdenId(Long ordenId) {
         this.ordenId = ordenId;
+    }
+
+    public String getDescripcionOrden() {
+        return descripcionOrden;
+    }
+
+    public void setDescripcionOrden(String descripcionOrden) {
+        this.descripcionOrden = descripcionOrden;
     }
 
 }

@@ -54,7 +54,7 @@ public class DetalleCobroTransaccionDao {
 
             StringBuilder query = new StringBuilder();
             
-            query.append("SELECT id_detalle, id_servicio, id_transaccion, id_tipo_cobro,  monto FROM detalle_cobro_transaccion WHERE id_transaccion =");
+            query.append("SELECT id_detalle, id_servicio, id_transaccion, id_tipo_cobro,  monto, descripcion_orden FROM detalle_cobro_transaccion WHERE id_transaccion =");
             query.append(transaccionId);
             
             ResultSet rs = stmt.executeQuery(query.toString());
@@ -65,6 +65,7 @@ public class DetalleCobroTransaccionDao {
                 entity.setServicioId(rs.getLong("id_servicio"));
                 entity.setTipoCobroId(rs.getLong("id_tipo_cobro"));
                 entity.setTransaccionId(rs.getLong("id_transaccion"));
+                entity.setDescripcionOrden(rs.getString("descripcion_orden"));
                 list.add(entity);
             }
 
@@ -112,16 +113,21 @@ public class DetalleCobroTransaccionDao {
             DbConfig dbConfig = DbConfig.getdDbConfig();
             conn = dbConfig.getConnection();
             
-            String query = "insert into detalle_cobro_transaccion (id_servicio, id_transaccion, id_tipo_cobro, monto, id_orden) values(?,?,?,?,?)";
+            String query = "insert into detalle_cobro_transaccion (id_servicio, id_transaccion, id_tipo_cobro, monto, id_orden, descripcion_orden) values(?,?,?,?,?,?)";
             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setLong(1, entity.getServicioId());
             ps.setLong(2, entity.getTransaccionId());
             ps.setLong(3, entity.getTipoCobroId());
             ps.setDouble(4, entity.getMonto());
+            ps.setString(5, entity.getDescripcionOrden());
             if(entity.getOrdenId() != null)
                 ps.setLong(5, entity.getOrdenId());
             else
                 ps.setObject(5, null);
+            if(entity.getDescripcionOrden() != null)
+                ps.setString(6, entity.getDescripcionOrden());
+            else
+                ps.setString(6, null);
             ps.executeUpdate();
             
             ResultSet rs = ps.getGeneratedKeys();

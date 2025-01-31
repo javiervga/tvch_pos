@@ -13,6 +13,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import javax.swing.text.DateFormatter;
 import mx.com.tvch.pos.config.Sesion;
 
 /**
@@ -38,6 +39,28 @@ public class Utilerias {
     public static void main(String args[]) {
         Utilerias utilerias = getUtilerias();
         System.out.println("hora: " + utilerias.obtenerFechaFormatoMysql());
+    }
+
+    public Date ajustarFechaInicio(Date fecha) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(fecha);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        return calendar.getTime();
+
+    }
+
+    public Date ajustarFechaFin(Date fecha) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(fecha);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        return calendar.getTime();
+
     }
 
     /**
@@ -96,9 +119,10 @@ public class Utilerias {
      */
     public String obtenerNuevaFechaProximoPagoOrdenInstalacion(int diaCorte, Integer mesesGratis) throws ParseException {
 
-        if (diaCorte == 0) 
+        if (diaCorte == 0) {
             diaCorte = 10;
-        
+        }
+
         /*
         
         nuevaFechaPago = Calendar.getInstance();
@@ -107,7 +131,6 @@ public class Utilerias {
         nuevaFechaPago.setTime(fechaPagoActual);
 
         return convertirDateTime2String(nuevaFechaPago.getTime(), Constantes.FORMATO_FECHA_WEB_SERVICE);*/
-        
         Date nuevaFechaPago = obtenerFechaProximoPago(diaCorte);
         Calendar calFecha = Calendar.getInstance();
         calFecha.setTime(nuevaFechaPago);
@@ -116,7 +139,7 @@ public class Utilerias {
             calFecha.add(Calendar.MONTH, mesesGratis);
         }
         return convertirDateTime2String(calFecha.getTime(), Constantes.FORMATO_FECHA_WEB_SERVICE);
-        
+
     }
 
     public Date obtenerFechaProximoPago(int diaCorte) {

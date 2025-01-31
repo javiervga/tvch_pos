@@ -10,29 +10,29 @@
        Colonia La Providencia C.P. 42186       
          Sucursal Providencia                  
                                                
-Fecha:       28/01/2025 14:35:14               
+Fecha:       28/01/2025                        
                                                
 Caja:        1                                 
                                                
-Folio:       120250128143506                   
+Folio:       120250128035942                   
                                                
-Tipo Pago:   Instalacion de Servicio           
+Servicio:    CAMBIO DE DOMICILIO               
                                                
-Contrato:    5629                              
+Contrato:    Providencia-10919                 
                                                
-Suscriptor:  AIDEE LECHUGA LOPEZ               
+Suscriptor:  GIOVANNI  ROMERO OTERO            
                                                
-Domicilio:   CIRCUITO VILLA LA NUEVA  100 VILLA DE LAS FLORES 
+Domicilio:   SANTA REMEDIOS 325 M. 81 PROVIDENCIA
                                                
 Servicio:    TV + INTERNET 15MB                
                                                
-Telefono:    7711306356                        
+Telefono:    7713197702                        
                                                
 Costo Instalacion:                     $ 150.0 
                                                
 Total:                                 $ 150.0 
                                                
-Próximo pago antes de:  10/03/2025             
+Próximo pago antes de:  10/02/2025             
                                                
  RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO
    CANCELACION DEL 25 AL 30 DEL MES PAGADO     

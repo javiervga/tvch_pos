@@ -51,6 +51,27 @@ public class MenuPanel extends javax.swing.JPanel {
         };
         botonSalir.addActionListener(botonSalirActionListener);
         
+        ActionListener botonReimpresionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    AperturaCajaEntity entity = aperturaCajaController.obtenerAperturaCajaActiva();
+                    if(entity != null){
+                        if(entity.getUsuarioId().longValue() == sesion.getUsuarioId().longValue()){
+                            sesion.setAperturaCajaId(entity.getAperturaCajaId());
+                            posFrame.cambiarPantalla(menuPanel, VentanaEnum.REIMPRESION);
+                        }else{
+                            JOptionPane.showMessageDialog(menuPanel, "Se encontro una apertura de caja realizada por un usuario diferente, para registrar una salida debe ingresar con el usuario que realizo la apertura","", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }else
+                        JOptionPane.showMessageDialog(menuPanel, "No se encontro una apertura de caja activa, para registrar un ingreso primero debe abrir caja","", JOptionPane.WARNING_MESSAGE);
+                }catch(Exception ex){
+                    JOptionPane.showMessageDialog(menuPanel, ex.getMessage(),"", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        botonReimpresion.addActionListener(botonReimpresionListener);
+        
         ActionListener botonRegistrarIngresoListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -203,7 +224,7 @@ public class MenuPanel extends javax.swing.JPanel {
         botonRegistrarSalida = new javax.swing.JButton();
         botonRegistrarIngreso = new javax.swing.JButton();
         panelCentral = new javax.swing.JPanel();
-        jButton6 = new javax.swing.JButton();
+        botonReimpresion = new javax.swing.JButton();
         etiquetaLogo = new javax.swing.JLabel();
         botonCobrarServicio = new javax.swing.JButton();
         panelInferior = new javax.swing.JPanel();
@@ -289,14 +310,14 @@ public class MenuPanel extends javax.swing.JPanel {
         panelCentral.setMinimumSize(new java.awt.Dimension(1500, 250));
         panelCentral.setPreferredSize(new java.awt.Dimension(1500, 250));
 
-        jButton6.setBackground(new java.awt.Color(163, 73, 164));
-        jButton6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButton6.setForeground(new java.awt.Color(255, 255, 255));
-        jButton6.setText("Reimprimir Ticket");
-        jButton6.setPreferredSize(new java.awt.Dimension(75, 25));
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        botonReimpresion.setBackground(new java.awt.Color(163, 73, 164));
+        botonReimpresion.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        botonReimpresion.setForeground(new java.awt.Color(255, 255, 255));
+        botonReimpresion.setText("Reimprimir Ticket");
+        botonReimpresion.setPreferredSize(new java.awt.Dimension(75, 25));
+        botonReimpresion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                botonReimpresionActionPerformed(evt);
             }
         });
 
@@ -318,7 +339,7 @@ public class MenuPanel extends javax.swing.JPanel {
                 .addGap(54, 54, 54)
                 .addComponent(etiquetaLogo)
                 .addGap(62, 62, 62)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(botonReimpresion, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(97, 97, 97))
         );
         panelCentralLayout.setVerticalGroup(
@@ -327,7 +348,7 @@ public class MenuPanel extends javax.swing.JPanel {
                 .addGroup(panelCentralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelCentralLayout.createSequentialGroup()
                         .addGap(34, 34, 34)
-                        .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(botonReimpresion, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelCentralLayout.createSequentialGroup()
                         .addGap(17, 17, 17)
                         .addComponent(etiquetaLogo)))
@@ -436,10 +457,11 @@ public class MenuPanel extends javax.swing.JPanel {
                         .addComponent(etiquetaUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(48, 48, 48))
                     .addComponent(panelSuperior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(panelCentral, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelCentral, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(panelInferior, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
-            .addComponent(panelInferior, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -476,9 +498,9 @@ public class MenuPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_botonRegistrarSalidaActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    private void botonReimpresionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonReimpresionActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }//GEN-LAST:event_botonReimpresionActionPerformed
 
     private void botonRegistrarIngresoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonRegistrarIngresoActionPerformed
         // TODO add your handling code here:
@@ -493,12 +515,12 @@ public class MenuPanel extends javax.swing.JPanel {
     private javax.swing.JButton botonCorteCaja;
     private javax.swing.JButton botonRegistrarIngreso;
     private javax.swing.JButton botonRegistrarSalida;
+    private javax.swing.JButton botonReimpresion;
     private javax.swing.JButton botonSalir;
     private javax.swing.JLabel etiquetaLogo;
     private javax.swing.JLabel etiquetaNumeroCaja;
     private javax.swing.JLabel etiquetaSucursal;
     private javax.swing.JLabel etiquetaUsuario;
-    private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
