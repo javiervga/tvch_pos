@@ -11,6 +11,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import mx.com.tvch.pos.client.TvchApiClient;
 import mx.com.tvch.pos.config.Sesion;
+import mx.com.tvch.pos.dao.ContratoDao;
 import mx.com.tvch.pos.dao.ContratoxSuscriptorDao;
 import mx.com.tvch.pos.dao.DetalleCobroTransaccionDao;
 import mx.com.tvch.pos.dao.DetalleDescuentoTransaccionDao;
@@ -71,6 +72,7 @@ public class CobroOrdenController {
     private final DetallePromocionTransaccionDao detallePromocionTransaccionDao;
     private final DetalleDescuentoTransaccionDao detalleDescuentoTransaccionDao;
     private final ContratoxSuscriptorDao contratoxSuscriptorDao;
+    private final ContratoDao contratoDao;
 
     Logger logger = LoggerFactory.getLogger(CobroOrdenController.class);
 
@@ -92,6 +94,7 @@ public class CobroOrdenController {
         detallePromocionTransaccionDao = DetallePromocionTransaccionDao.getDetallePromocionTransaccionDao();
         detalleDescuentoTransaccionDao = DetalleDescuentoTransaccionDao.getDetalleDescuentoTransaccionDao();
         contratoxSuscriptorDao = ContratoxSuscriptorDao.getContratoxSuscriptorDao();
+        contratoDao = ContratoDao.getContratoDao();
     }
 
     /**
@@ -145,6 +148,10 @@ public class CobroOrdenController {
             Long detalleDescuento = detalleDescuentoTransaccionDao.registrarDetalleDescuento(detalleDescuentoTransaccionEntity);
         }
         
+        //actualizar la fecha de pago en el contrato
+        //String nuevaFechaPagoMySql = util.obtenerNuevaFechaProximoPagoOrdenInstalacion(sesion.getDiaCorte(), 0, Constantes.FORMATO_FECHA_MYSQL);
+        //contratoDao.actualizarFechaPagoContrato(orden.getContratoId(), nuevaFechaPagoMySql);
+        
         return transaccionId;
 
     }
@@ -186,7 +193,9 @@ public class CobroOrdenController {
                     //segundo actualizar estatus de contrato y orden de instalacion en server
                     UpdateEstatusPagadaOrdenInstalacionRequest instalacionPagadaRequest = new UpdateEstatusPagadaOrdenInstalacionRequest();
                     instalacionPagadaRequest.setOrdenInstalacionId(orden.getId());
-                    instalacionPagadaRequest.setFechaProximoPago(util.obtenerNuevaFechaProximoPagoOrdenInstalacion(sesion.getDiaCorte(), orden.getMesesGratisPromocion()));
+                    String fechaProximoPago = util.obtenerNuevaFechaProximoPagoOrdenInstalacion(sesion.getDiaCorte(), orden.getMesesGratisPromocion(), Constantes.FORMATO_FECHA_WEB_SERVICE);
+                    instalacionPagadaRequest.setFechaProximoPago(fechaProximoPago);
+                    orden.setFechaProximoPago(fechaProximoPago);
                     Request<UpdateEstatusPagadaOrdenInstalacionRequest> requestInstalacion = new Request<>();
                     requestInstalacion.setData(instalacionPagadaRequest);
                     Response<UpdateOrdenInstalacionResponse> responseInstalacion = client.updateEstatusPagoOrdenInstalacion(requestInstalacion);
@@ -412,7 +421,7 @@ public class CobroOrdenController {
      */
     public String actualizarFechaProximoPago(String fechaPago, PromocionOrdenInstalacion promocion){
         try{
-            return util.obtenerNuevaFechaProximoPagoOrdenInstalacion(sesion.getDiaCorte(), promocion.getMesesGratis());
+            return util.obtenerNuevaFechaProximoPagoOrdenInstalacion(sesion.getDiaCorte(), promocion.getMesesGratis(), Constantes.FORMATO_FECHA_WEB_SERVICE);
         }catch(Exception ex){
             return fechaPago;
         }

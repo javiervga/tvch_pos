@@ -117,7 +117,7 @@ public class Utilerias {
      * @return
      * @throws ParseException
      */
-    public String obtenerNuevaFechaProximoPagoOrdenInstalacion(int diaCorte, Integer mesesGratis) throws ParseException {
+    public String obtenerNuevaFechaProximoPagoOrdenInstalacion(int diaCorte, Integer mesesGratis, String formato) throws ParseException {
 
         if (diaCorte == 0) {
             diaCorte = 10;
@@ -138,7 +138,7 @@ public class Utilerias {
             //agregar los meses
             calFecha.add(Calendar.MONTH, mesesGratis);
         }
-        return convertirDateTime2String(calFecha.getTime(), Constantes.FORMATO_FECHA_WEB_SERVICE);
+        return convertirDateTime2String(calFecha.getTime(), formato);
 
     }
 
