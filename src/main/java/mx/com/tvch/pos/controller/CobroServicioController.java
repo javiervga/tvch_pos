@@ -133,6 +133,7 @@ public class CobroServicioController {
             detalleCobroTransaccionEntity.setServicioId(suscriptor.getServicioId());
             detalleCobroTransaccionEntity.setTipoCobroId(Constantes.TIPO_COBRO_SERVICIO);
             detalleCobroTransaccionEntity.setTransaccionId(transaccionId);
+            detalleCobroTransaccionEntity.setNumeroMeses(1);
             Long detalleCobroId = detalleCobroTransaccionDao.registrarDetalleTransaccion(detalleCobroTransaccionEntity);
 
             //registrar el recargo del servicio
@@ -143,6 +144,7 @@ public class CobroServicioController {
                 detalleRecargoTransaccionEntity.setServicioId(suscriptor.getServicioId());
                 detalleRecargoTransaccionEntity.setTipoCobroId(Constantes.TIPO_COBRO_RECARGO_MENSUALIDAD);
                 detalleRecargoTransaccionEntity.setTransaccionId(transaccionId);
+                detalleRecargoTransaccionEntity.setNumeroMeses(null);
                 Long detalleRecargoId = detalleCobroTransaccionDao.registrarDetalleTransaccion(detalleRecargoTransaccionEntity);
             }
 

@@ -54,7 +54,7 @@ public class DetalleCobroTransaccionDao {
 
             StringBuilder query = new StringBuilder();
             
-            query.append("SELECT id_detalle, id_servicio, id_transaccion, id_tipo_cobro,  monto, descripcion_orden FROM detalle_cobro_transaccion WHERE id_transaccion =");
+            query.append("SELECT id_detalle, id_servicio, id_transaccion, id_tipo_cobro,  monto, descripcion_orden, numero_meses FROM detalle_cobro_transaccion WHERE id_transaccion =");
             query.append(transaccionId);
             
             ResultSet rs = stmt.executeQuery(query.toString());
@@ -66,6 +66,7 @@ public class DetalleCobroTransaccionDao {
                 entity.setTipoCobroId(rs.getLong("id_tipo_cobro"));
                 entity.setTransaccionId(rs.getLong("id_transaccion"));
                 entity.setDescripcionOrden(rs.getString("descripcion_orden"));
+                entity.setNumeroMeses(rs.getInt("numero_meses"));
                 list.add(entity);
             }
 
@@ -113,7 +114,7 @@ public class DetalleCobroTransaccionDao {
             DbConfig dbConfig = DbConfig.getdDbConfig();
             conn = dbConfig.getConnection();
             
-            String query = "insert into detalle_cobro_transaccion (id_servicio, id_transaccion, id_tipo_cobro, monto, id_orden, descripcion_orden) values(?,?,?,?,?,?)";
+            String query = "insert into detalle_cobro_transaccion (id_servicio, id_transaccion, id_tipo_cobro, monto, id_orden, descripcion_orden, numero_meses) values(?,?,?,?,?,?,?)";
             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setLong(1, entity.getServicioId());
             ps.setLong(2, entity.getTransaccionId());
@@ -128,6 +129,10 @@ public class DetalleCobroTransaccionDao {
                 ps.setString(6, entity.getDescripcionOrden());
             else
                 ps.setString(6, null);
+            if(entity.getNumeroMeses() != null)
+                ps.setInt(7, entity.getNumeroMeses());
+            else
+                ps.setObject(7, null);
             ps.executeUpdate();
             
             ResultSet rs = ps.getGeneratedKeys();

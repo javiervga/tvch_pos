@@ -125,6 +125,7 @@ public class CobroOrdenController {
         detalleCobroTransaccionEntity.setTransaccionId(transaccionId);
         detalleCobroTransaccionEntity.setOrdenId(orden.getId());
         detalleCobroTransaccionEntity.setDescripcionOrden(orden.getConceptoOrdenServicio());
+        detalleCobroTransaccionEntity.setNumeroMeses(null);
         Long detalleCobro = detalleCobroTransaccionDao.registrarDetalleTransaccion(detalleCobroTransaccionEntity);
 
         //registrar el detalle de promocion

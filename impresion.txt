@@ -10,29 +10,30 @@
        Colonia La Providencia C.P. 42186       
          Sucursal Providencia                  
                                                
-Fecha:       28/01/2025                        
+Fecha:       04/02/2025 04:06:25               
                                                
 Caja:        1                                 
                                                
-Folio:       120250128035942                   
+Folio:       120250204040625                   
                                                
-Servicio:    CAMBIO DE DOMICILIO               
+Tipo Pago:   Instalacion de Servicio           
                                                
-Contrato:    Providencia-10919                 
+Contrato:    5626                              
                                                
-Suscriptor:  GIOVANNI  ROMERO OTERO            
+Suscriptor:  LUCIA PEREZ LAZCANO               
                                                
-Domicilio:   SANTA REMEDIOS 325 M. 81 PROVIDENCIA
+Domicilio:   NOGALES 116 SAN CRISTOBAL         
                                                
-Servicio:    TV + INTERNET 15MB                
+Servicio:    TV                                
                                                
-Telefono:    7713197702                        
+Telefono:    7712000770                        
                                                
-Costo Instalacion:                     $ 150.0 
+Costo Instalacion:                     $ 100.0 
+Promoción:                           - $ 100.0 
                                                
-Total:                                 $ 150.0 
+Total:                                 $ 0.0   
                                                
-Próximo pago antes de:  10/02/2025             
+Próximo pago antes de:  10/03/2025             
                                                
  RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO
    CANCELACION DEL 25 AL 30 DEL MES PAGADO     
@@ -40,6 +41,7 @@ Próximo pago antes de:  10/02/2025
               SABADO DE 9AM A 2PM              
          Telefono Oficina:  7713212773         
     Soporte Tecnico WhatsApp: 7717769686       
+                                               
                                                
                                                
                                                

@@ -24,6 +24,8 @@ public class DetalleCobroTransaccionEntity {
 
     private String descripcionOrden;
 
+    private Integer numeroMeses;
+
     public Long getDetalleId() {
         return detalleId;
     }
@@ -78,6 +80,14 @@ public class DetalleCobroTransaccionEntity {
 
     public void setDescripcionOrden(String descripcionOrden) {
         this.descripcionOrden = descripcionOrden;
+    }
+
+    public Integer getNumeroMeses() {
+        return numeroMeses;
+    }
+
+    public void setNumeroMeses(Integer numeroMeses) {
+        this.numeroMeses = numeroMeses;
     }
 
 }
