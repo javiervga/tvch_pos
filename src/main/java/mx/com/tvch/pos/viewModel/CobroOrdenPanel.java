@@ -186,18 +186,22 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                                 if (importeDescuento != null && elImporteDescuentoEsNumerico) {
                                     if (importeDescuento <= ordenSeleccionada.getImportePagar()) {
                                         TipoDescuento tipoDescuento = (TipoDescuento) comboTiposDescuento.getModel().getSelectedItem();
-                                        double importePagar = ordenSeleccionada.getImportePagar() - importeDescuento;
-                                        ordenSeleccionada.setTipoDescuentoId(tipoDescuento.getId());
-                                        ordenSeleccionada.setMotivoDescuento(campoMotivoDescuento.getText());
-                                        ordenSeleccionada.setImporteDescuento(importeDescuento);
-                                        ordenSeleccionada.setImportePagar(importePagar);
-                                        StringBuilder sb = new StringBuilder();
-                                        sb.append("$").append(ordenSeleccionada.getImporteDescuento());
-                                        sb.append(" - ").append(ordenSeleccionada.getMotivoDescuento());
-                                        campoDescuentoAplicado.setText(sb.toString());
-                                        campoMotivoDescuento.setText("");
-                                        campoImporteDescuento.setText("");
-                                        etiquetaImporte.setText(String.valueOf(ordenSeleccionada.getImportePagar()));
+                                        if(tipoDescuento != null){
+                                            double importePagar = ordenSeleccionada.getImportePagar() - importeDescuento;
+                                            ordenSeleccionada.setTipoDescuentoId(tipoDescuento.getId());
+                                            ordenSeleccionada.setMotivoDescuento(campoMotivoDescuento.getText());
+                                            ordenSeleccionada.setImporteDescuento(importeDescuento);
+                                            ordenSeleccionada.setImportePagar(importePagar);
+                                            StringBuilder sb = new StringBuilder();
+                                            sb.append("$").append(ordenSeleccionada.getImporteDescuento());
+                                            sb.append(" - ").append(ordenSeleccionada.getMotivoDescuento());
+                                            campoDescuentoAplicado.setText(sb.toString());
+                                            campoMotivoDescuento.setText("");
+                                            campoImporteDescuento.setText("");
+                                            etiquetaImporte.setText(String.valueOf(ordenSeleccionada.getImportePagar()));
+                                        }else{
+                                            
+                                        }
                                     } else {
                                         JOptionPane.showMessageDialog(cobroPanel, "El descuento no puede ser mayor al importe de $" + ordenSeleccionada.getImportePagar() + " por pagar", "", JOptionPane.WARNING_MESSAGE);
                                     }
@@ -302,6 +306,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                     try {
                         ordenSeleccionada = null;
                         etiquetaPromoActiva.setVisible(false);
+                        etiquetaCortesia.setVisible(false);
                         etiquetaImporte.setText("0.00");
                         limpiarTablaOrdenes();
                         comboPromociones.removeAllItems();
@@ -320,18 +325,36 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                             switch (tipoOrden.getTipoOrdenId()) {
                                 case Constantes.TIPO_ORDEN_INSTALACION:
                                     cargarTablaOrdenesInstalacion(model, ordenes);
-                                    cargarComboTiposDescuento();
-                                    cargarComboPromocionesOrdenInstalacion();
+                                    if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
+                                        ordenSeleccionada.setCosto(0.0);
+                                        ordenSeleccionada.setImportePagar(0.0);
+                                        etiquetaCortesia.setVisible(true);
+                                    }else{
+                                        cargarComboTiposDescuento();
+                                        cargarComboPromocionesOrdenInstalacion();       
+                                    }
                                     etiquetaImporte.setText(String.valueOf(ordenSeleccionada.getCosto()));
                                     break;
                                 case Constantes.TIPO_ORDEN_SERVICIO:
                                     cargarTablaOrdenesServicio(model, ordenes);
-                                    cargarComboTiposDescuento();
+                                    if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
+                                        ordenSeleccionada.setCosto(0.0);
+                                        ordenSeleccionada.setImportePagar(0.0);
+                                        etiquetaCortesia.setVisible(true);
+                                    }else{
+                                        cargarComboTiposDescuento();
+                                    }
                                     etiquetaImporte.setText(String.valueOf(ordenSeleccionada.getCosto()));
                                     break;
                                 case Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO:
                                     cargarTablaOrdenesCambioDomicilio(model, ordenes);
-                                    cargarComboTiposDescuento();
+                                    if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
+                                        ordenSeleccionada.setCosto(0.0);
+                                        ordenSeleccionada.setImportePagar(0.0);
+                                        etiquetaCortesia.setVisible(true);
+                                    }else{
+                                        cargarComboTiposDescuento();
+                                    }
                                     etiquetaImporte.setText(String.valueOf(ordenSeleccionada.getCosto()));
                                     break;
                                 default:
@@ -753,6 +776,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
 
         //seccion importe
         etiquetaPromoActiva.setVisible(false);
+        etiquetaCortesia.setVisible(false);
 
         //chooserIni.setBounds(panelCalendarioIni.getX(), panelCalendarioIni.getY(),160,26);
         //chooserFin.setBounds(panelCalendarioFin.getX(), panelCalendarioFin.getY(),160,26);
@@ -766,6 +790,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         comboPromociones.removeAllItems();
         etiquetaImporte.setText("0.00");
         etiquetaPromoActiva.setVisible(false);
+        etiquetaCortesia.setVisible(false);
         campoMotivoDescuento.setText("");
         campoDescuentoAplicado.setText("");
         campoImporteDescuento.setText("");
@@ -807,6 +832,8 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         borrarDescuento();
         suscriptorSeleccionado = null;
         ordenSeleccionada = null;
+        etiquetaCortesia.setVisible(false);
+        etiquetaPromoActiva.setVisible(false);
     }
     
     private void limpiarPantallaCobro() {
@@ -898,6 +925,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         etiquetaImporte = new javax.swing.JLabel();
         botonRegresar = new javax.swing.JButton();
         botonCobrar = new javax.swing.JButton();
+        etiquetaCortesia = new javax.swing.JLabel();
         BotonEliminarDescuento = new javax.swing.JButton();
         comboTiposDescuento = new javax.swing.JComboBox<>();
         etiquetaSeleccionrDescuento = new javax.swing.JLabel();
@@ -1365,26 +1393,32 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         botonCobrar.setForeground(new java.awt.Color(255, 255, 255));
         botonCobrar.setText("Cobrar");
 
+        etiquetaCortesia.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        etiquetaCortesia.setForeground(java.awt.Color.red);
+        etiquetaCortesia.setText("Cortesía!!");
+
         javax.swing.GroupLayout panelImporteLayout = new javax.swing.GroupLayout(panelImporte);
         panelImporte.setLayout(panelImporteLayout);
         panelImporteLayout.setHorizontalGroup(
             panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelImporteLayout.createSequentialGroup()
+                .addGap(57, 57, 57)
                 .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelImporteLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(etiquetaPromoActiva, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel23)
+                        .addGap(18, 18, 18)
+                        .addComponent(etiquetaImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelImporteLayout.createSequentialGroup()
-                        .addGap(57, 57, 57)
+                        .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(etiquetaCortesia)
+                            .addComponent(botonCobrar, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelImporteLayout.createSequentialGroup()
-                                .addComponent(jLabel23)
-                                .addGap(18, 18, 18)
-                                .addComponent(etiquetaImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(panelImporteLayout.createSequentialGroup()
-                                .addComponent(botonCobrar, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(botonRegresar)))))
+                                .addComponent(botonRegresar))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelImporteLayout.createSequentialGroup()
+                                .addGap(32, 32, 32)
+                                .addComponent(etiquetaPromoActiva, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(76, Short.MAX_VALUE))
         );
         panelImporteLayout.setVerticalGroup(
@@ -1395,7 +1429,9 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                     .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(etiquetaImporte))
                 .addGap(18, 18, 18)
-                .addComponent(etiquetaPromoActiva, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(etiquetaPromoActiva, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(etiquetaCortesia))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
                 .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(botonCobrar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1609,6 +1645,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
     private javax.swing.JComboBox<TipoBusquedaCobro> comboTiposBusqueda;
     private javax.swing.JComboBox<TipoDescuento> comboTiposDescuento;
     private javax.swing.JComboBox<TipoOrden> comboTiposOrden;
+    private javax.swing.JLabel etiquetaCortesia;
     private javax.swing.JLabel etiquetaDescuentoAplicado;
     private javax.swing.JLabel etiquetaImporte;
     private javax.swing.JLabel etiquetaImporteDescuento;
