@@ -27,6 +27,8 @@ public class DetallePagoServicio {
     private String fechaProximoPago;
 
     private Integer mesesGratis;
+    
+    private Integer numeroMeses;
 
     public Integer getTipoDetalle() {
         return tipoDetalle;
@@ -98,6 +100,14 @@ public class DetallePagoServicio {
 
     public void setMesesGratis(Integer mesesGratis) {
         this.mesesGratis = mesesGratis;
+    }
+
+    public Integer getNumeroMeses() {
+        return numeroMeses;
+    }
+
+    public void setNumeroMeses(Integer numeroMeses) {
+        this.numeroMeses = numeroMeses;
     }
 
 }

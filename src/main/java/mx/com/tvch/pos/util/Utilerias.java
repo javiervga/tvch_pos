@@ -72,7 +72,7 @@ public class Utilerias {
      * @return
      * @throws ParseException
      */
-    public String obtenerNuevaFechaProximoPago(int diaCorte, Integer mesesGratis, Date fechaPagoActual, String formato) throws ParseException {
+    public String obtenerNuevaFechaProximoPago(int diaCorte, Integer mesesGratis, Date fechaPagoActual, String formato, Integer numeroMesesPagados) throws ParseException {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat(Constantes.FORMATO_FECHA_MYSQL);
         Calendar cfechaPagoActual = Calendar.getInstance();
@@ -84,7 +84,7 @@ public class Utilerias {
         }
 
         cfechaPagoActual.set(Calendar.DAY_OF_MONTH, diaCorte);
-        cfechaPagoActual.add(Calendar.MONTH, 1);
+        cfechaPagoActual.add(Calendar.MONTH, numeroMesesPagados);
 
         if (mesesGratis != null) {
 

@@ -68,76 +68,6 @@ public class ReimpresionesController {
     public void reimprimirTicket(TransaccionTicketEntity entity) throws Exception {
 
         try {
-
-            /*
-            if (entity.getTipoCobroId() == Constantes.TIPO_COBRO_SERVICIO) {
-                List<DetallePagoServicio> detallesPago = obtenerDetallesPago(entity);
-                impresora.reimprimirTicketServicio(entity, detallesPago, sesion.getSucursal());
-            } else if (entity.getTipoCobroId() == Constantes.TIPO_COBRO_ORDEN_INSTALACION) {
-                //List<DetallePagoServicio> detallesPago = obtenerDetallesPago(entity);
-                List<DetalleCobroTransaccionEntity> detallesTransaccion = detalleCobroTransaccionDao.obtenerDetallesCobroPorTransaccion(entity.getTransaccionId());
-                if (!detallesTransaccion.isEmpty()) {
-
-                    List<DetalleDescuentoTransaccionEntity> detallesDescuento = detalleDescuentoTransaccionDao
-                            .obtenerDetallesDescuentoPorTransaccion(entity.getTransaccionId());
-                    DetalleDescuentoTransaccionEntity detalleDescuento = null;
-                    if (!detallesDescuento.isEmpty()) {
-                        detalleDescuento = detallesDescuento.get(0);
-                    }
-
-                    List<DetallePromocionTransaccionEntity> detallesPromocion = detallePromocionTransaccionDao
-                            .obtenerDetallesPromocionPorTransaccion(entity.getTransaccionId());
-                    DetallePromocionTransaccionEntity detallePromocion = null;
-                    if (!detallesPromocion.isEmpty()) {
-                        detallePromocion = detallesPromocion.get(0);
-                    }
-
-                    impresora.reimprimirTicketOrdenInstalacion(entity, sesion.getSucursal(), detallesTransaccion.get(0), detallePromocion, detalleDescuento);
-                }
-            } else if (entity.getTipoCobroId() == Constantes.TIPO_COBRO_ORDEN_SERVICIO) {
-                //List<DetallePagoServicio> detallesPago = obtenerDetallesPago(entity);
-                List<DetalleCobroTransaccionEntity> detallesTransaccion = detalleCobroTransaccionDao.obtenerDetallesCobroPorTransaccion(entity.getTransaccionId());
-                if (!detallesTransaccion.isEmpty()) {
-
-                    List<DetalleDescuentoTransaccionEntity> detallesDescuento = detalleDescuentoTransaccionDao
-                            .obtenerDetallesDescuentoPorTransaccion(entity.getTransaccionId());
-                    DetalleDescuentoTransaccionEntity detalleDescuento = null;
-                    if (!detallesDescuento.isEmpty()) {
-                        detalleDescuento = detallesDescuento.get(0);
-                    }
-
-                    List<DetallePromocionTransaccionEntity> detallesPromocion = detallePromocionTransaccionDao
-                            .obtenerDetallesPromocionPorTransaccion(entity.getTransaccionId());
-                    DetallePromocionTransaccionEntity detallePromocion = null;
-                    if (!detallesPromocion.isEmpty()) {
-                        detallePromocion = detallesPromocion.get(0);
-                    }
-
-                    impresora.reimprimirTicketOrdenServicio(entity, sesion.getSucursal(), detallesTransaccion.get(0), detallePromocion, detalleDescuento);
-                }
-            } else if (entity.getTipoCobroId() == Constantes.TIPO_COBRO_ORDEN_CAMBIO_DOMICILIO) {
-                //List<DetallePagoServicio> detallesPago = obtenerDetallesPago(entity);
-                List<DetalleCobroTransaccionEntity> detallesTransaccion = detalleCobroTransaccionDao.obtenerDetallesCobroPorTransaccion(entity.getTransaccionId());
-                if (!detallesTransaccion.isEmpty()) {
-
-                    List<DetalleDescuentoTransaccionEntity> detallesDescuento = detalleDescuentoTransaccionDao
-                            .obtenerDetallesDescuentoPorTransaccion(entity.getTransaccionId());
-                    DetalleDescuentoTransaccionEntity detalleDescuento = null;
-                    if (!detallesDescuento.isEmpty()) {
-                        detalleDescuento = detallesDescuento.get(0);
-                    }
-
-                    List<DetallePromocionTransaccionEntity> detallesPromocion = detallePromocionTransaccionDao
-                            .obtenerDetallesPromocionPorTransaccion(entity.getTransaccionId());
-                    DetallePromocionTransaccionEntity detallePromocion = null;
-                    if (!detallesPromocion.isEmpty()) {
-                        detallePromocion = detallesPromocion.get(0);
-                    }
-
-                    impresora.reimprimirTicketOrdenCambioDomicilio(entity, sesion.getSucursal(), detallesTransaccion.get(0), detallePromocion, detalleDescuento);
-                }
-            }
-            */
             
             if (entity.getTipoCobroId() == Constantes.TIPO_COBRO_SERVICIO) {
                 List<DetallePagoServicio> detallesPago = obtenerDetallesPago(entity);
@@ -194,6 +124,7 @@ public class ReimpresionesController {
                     detalle.setCadenaMonto("  $".concat(String.valueOf(detalleCobro.getMonto())));
                     detalle.setTipoDetalle(Constantes.TIPO_DETALLE_COBRO_SERVICIO);
                     detalle.setFechaProximoPago(entity.getFechaProximoPago());
+                    detalle.setNumeroMeses(detalleCobro.getNumeroMeses());
                     listaDetallesPago.add(detalle);
                 } else if (detalleCobro.getTipoCobroId() == Constantes.TIPO_COBRO_RECARGO_MENSUALIDAD) {
                     detalle.setConcepto("Recargo por pago tardío");

@@ -78,7 +78,7 @@ public class CobroServicioController {
         sesion = Sesion.getSesion();
     }
 
-    public Long cobrarServicio(ContratoxSuscriptorEntity suscriptor, List<DetallePagoServicio> detallesPago) throws Exception {
+    public Long cobrarServicio(ContratoxSuscriptorEntity suscriptor, List<DetallePagoServicio> detallesPago, Integer numeroMeses) throws Exception {
 
         Long transaccionId = null;
 
@@ -93,24 +93,28 @@ public class CobroServicioController {
                             sesion.getDiaCorte(),
                         detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get().getMesesGratis(),
                         suscriptor.getFechaProximoPago(), 
-                        Constantes.FORMATO_FECHA_MYSQL);
+                        Constantes.FORMATO_FECHA_MYSQL,
+                        numeroMeses);
                     nuevaFechaPagoTicket = util.obtenerNuevaFechaProximoPago(
                             sesion.getDiaCorte(),
                         detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get().getMesesGratis(),
                         suscriptor.getFechaProximoPago(), 
-                        Constantes.FORMATO_FECHA_TICKET);
+                        Constantes.FORMATO_FECHA_TICKET,
+                        numeroMeses);
 
             } else {
                     nuevaFechaPagoMySql = util.obtenerNuevaFechaProximoPago(
                             sesion.getDiaCorte(), 
                             null, 
                             suscriptor.getFechaProximoPago(), 
-                            Constantes.FORMATO_FECHA_MYSQL);
+                            Constantes.FORMATO_FECHA_MYSQL,
+                            numeroMeses);
                     nuevaFechaPagoTicket = util.obtenerNuevaFechaProximoPago(
                             sesion.getDiaCorte(), 
                             null, 
                             suscriptor.getFechaProximoPago(), 
-                            Constantes.FORMATO_FECHA_TICKET);
+                            Constantes.FORMATO_FECHA_TICKET,
+                            numeroMeses);
 
             }
 
@@ -133,7 +137,7 @@ public class CobroServicioController {
             detalleCobroTransaccionEntity.setServicioId(suscriptor.getServicioId());
             detalleCobroTransaccionEntity.setTipoCobroId(Constantes.TIPO_COBRO_SERVICIO);
             detalleCobroTransaccionEntity.setTransaccionId(transaccionId);
-            detalleCobroTransaccionEntity.setNumeroMeses(1);
+            detalleCobroTransaccionEntity.setNumeroMeses(numeroMeses);
             Long detalleCobroId = detalleCobroTransaccionDao.registrarDetalleTransaccion(detalleCobroTransaccionEntity);
 
             //registrar el recargo del servicio
