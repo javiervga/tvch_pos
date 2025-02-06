@@ -384,7 +384,7 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, String.valueOf(entity.getTransaccionId()));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Tipo Pago:");
-        if(detalleCobro.getNumeroMeses() == 1)
+        if(detalleCobro.getNumeroMeses() == 1 || detalleCobro.getNumeroMeses() == 0 || detalleCobro.getNumeroMeses() == null)
             pm.printTextLinCol(linea, 14, "Pago de Mensualidad");
         else{
             StringBuilder descripcionPago = new StringBuilder();
