@@ -51,6 +51,27 @@ public class MenuPanel extends javax.swing.JPanel {
         };
         botonSalir.addActionListener(botonSalirActionListener);
         
+        ActionListener botonCancelarContratoListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    AperturaCajaEntity entity = aperturaCajaController.obtenerAperturaCajaActiva();
+                    if(entity != null){
+                        if(entity.getUsuarioId().longValue() == sesion.getUsuarioId().longValue()){
+                            sesion.setAperturaCajaId(entity.getAperturaCajaId());
+                            posFrame.cambiarPantalla(menuPanel, VentanaEnum.CANCELACION_CONTRATO);
+                        }else{
+                            JOptionPane.showMessageDialog(menuPanel, "Se encontro una apertura de caja realizada por un usuario diferente, para realizar la cancelacion de un contrato debe ingresar con el usuario que realizo la apertura","", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }else
+                        JOptionPane.showMessageDialog(menuPanel, "No se encontro una apertura de caja activa, para cancelar un contrato primero debe abrir caja","", JOptionPane.WARNING_MESSAGE);
+                }catch(Exception ex){
+                    JOptionPane.showMessageDialog(menuPanel, ex.getMessage(),"", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        botonCancelarContrato.addActionListener(botonCancelarContratoListener);
+        
         ActionListener botonReimpresionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -223,6 +244,7 @@ public class MenuPanel extends javax.swing.JPanel {
         panelSuperior = new javax.swing.JPanel();
         botonRegistrarSalida = new javax.swing.JButton();
         botonRegistrarIngreso = new javax.swing.JButton();
+        botonCancelarContrato = new javax.swing.JButton();
         panelCentral = new javax.swing.JPanel();
         botonReimpresion = new javax.swing.JButton();
         etiquetaLogo = new javax.swing.JLabel();
@@ -284,25 +306,34 @@ public class MenuPanel extends javax.swing.JPanel {
             }
         });
 
+        botonCancelarContrato.setBackground(new java.awt.Color(163, 73, 164));
+        botonCancelarContrato.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        botonCancelarContrato.setForeground(new java.awt.Color(255, 255, 255));
+        botonCancelarContrato.setText("Cancelar Contrato");
+        botonCancelarContrato.setPreferredSize(new java.awt.Dimension(75, 25));
+
         javax.swing.GroupLayout panelSuperiorLayout = new javax.swing.GroupLayout(panelSuperior);
         panelSuperior.setLayout(panelSuperiorLayout);
         panelSuperiorLayout.setHorizontalGroup(
             panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSuperiorLayout.createSequentialGroup()
-                .addContainerGap(456, Short.MAX_VALUE)
+                .addGap(207, 207, 207)
                 .addComponent(botonRegistrarSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(134, 134, 134)
+                .addGap(141, 141, 141)
                 .addComponent(botonRegistrarIngreso, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(434, 434, 434))
+                .addGap(127, 127, 127)
+                .addComponent(botonCancelarContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(311, Short.MAX_VALUE))
         );
         panelSuperiorLayout.setVerticalGroup(
             panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSuperiorLayout.createSequentialGroup()
-                .addContainerGap(58, Short.MAX_VALUE)
+            .addGroup(panelSuperiorLayout.createSequentialGroup()
+                .addContainerGap(69, Short.MAX_VALUE)
                 .addGroup(panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(botonRegistrarSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botonRegistrarIngreso, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(17, 17, 17))
+                    .addComponent(botonRegistrarIngreso, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botonCancelarContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         panelCentral.setBackground(new java.awt.Color(255, 255, 255));
@@ -509,6 +540,7 @@ public class MenuPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonAbrirCaja;
+    private javax.swing.JButton botonCancelarContrato;
     private javax.swing.JButton botonCobrarOrden;
     private javax.swing.JButton botonCobrarOtraSucursal;
     private javax.swing.JButton botonCobrarServicio;

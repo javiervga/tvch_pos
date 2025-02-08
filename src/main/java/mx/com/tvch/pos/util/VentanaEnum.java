@@ -20,6 +20,7 @@ public enum VentanaEnum {
     REIMPRESION,
     SALIDA,
     INGRESO,
+    CANCELACION_CONTRATO,
     LOADING
     
 }

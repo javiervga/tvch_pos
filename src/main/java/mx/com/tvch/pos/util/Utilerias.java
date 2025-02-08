@@ -4,6 +4,7 @@
  */
 package mx.com.tvch.pos.util;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -24,6 +25,12 @@ public class Utilerias {
 
     private static Utilerias utilerias;
     private final Sesion sesion;
+    DecimalFormat df = new DecimalFormat("#.##");
+    
+    public Double redondearMonto(Double monto){
+        String montoCadena = df.format(monto);
+        return Double.valueOf(montoCadena);
+    }
 
     public static Utilerias getUtilerias() {
         if (utilerias == null) {

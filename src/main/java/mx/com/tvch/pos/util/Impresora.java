@@ -72,6 +72,126 @@ public class Impresora {
             java.util.logging.Logger.getLogger(Impresora.class.getName()).log(Level.SEVERE, null, ex);
         }
     }*/
+    
+    /**
+     *
+     * @param transaccionId
+     * @param detallesPago
+     * @param nombreSucursal
+     * @param suscriptor
+     * @throws Exception
+     */
+    public void imprimirTicketCancelacion(
+            Long transaccionId, 
+            List<DetallePagoServicio> detallesPago, 
+            ContratoxSuscriptorEntity suscriptor, 
+            String nombreSucursal) throws Exception {
+
+        StringBuilder nombre = new StringBuilder();
+        nombre.append(suscriptor.getNombre()).append(" ").append(suscriptor.getApellidoPaterno()).append(" ").append(suscriptor.getApellidoMaterno());
+
+        StringBuilder domicilio = new StringBuilder();
+        if (suscriptor.getCalle() != null) {
+            domicilio.append(suscriptor.getCalle()).append(" ");
+        }
+        if (suscriptor.getNumeroCalle() != null) {
+            domicilio.append(suscriptor.getNumeroCalle()).append(" ");
+        }
+        if (suscriptor.getColonia() != null) {
+            domicilio.append(suscriptor.getColonia());
+        }
+
+        String contrato = String.valueOf(suscriptor.getContratoId());
+        if (suscriptor.getContratoAnteriorId() != null && suscriptor.getContratoAnteriorId() > 0) {
+            contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getContratoAnteriorId()));
+        }
+
+        DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_CANCELACION).findAny().get();
+        Double importeTotal = detalleCobro.getMonto();
+
+        PrinterMatrix pm = new PrinterMatrix();
+
+        int cantidadLineas = 51;
+
+        pm.setOutSize(cantidadLineas, 47);
+        //pm.printCharAtCol(1, 1, 47, "=");
+
+        int linea = 2;
+        pm.printTextLinCol(linea, 1, "\n");
+        linea++;
+        pm.printTextWrap(linea, 1, 13, 47, "Comprobante de Pago");
+        linea = linea + 2;
+        pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
+        linea++;
+        pm.printTextWrap(linea, 1, 2, 47, "Mineral de la Reforma   R.F.C. TCH151120HY6");
+        linea++;
+        pm.printTextWrap(linea, 1, 11, 47, "Calle San Rafael No. 150,");
+        linea++;
+        pm.printTextWrap(linea, 1, 7, 47, "Colonia La Providencia C.P. 42186");
+        linea++;
+        pm.printTextWrap(linea, 1, 9, 47, "Sucursal ".concat(nombreSucursal));
+        linea = linea + 3;
+
+        pm.printTextLinCol(linea, 1, "Fecha:");
+        pm.printTextLinCol(linea, 14, utilerias.convertirDateTime2String(new Date(), "dd/MM/yyyy HH:mm:ss"));
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Caja:");
+        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getCajaId()));
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Folio:");
+        pm.printTextLinCol(linea, 14, String.valueOf(transaccionId));
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Tipo Pago:");
+        pm.printTextLinCol(linea, 14, "Cancelación de Contrato");
+ 
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Contrato:");
+        pm.printTextLinCol(linea, 14, contrato);
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Suscriptor:");
+        pm.printTextLinCol(linea, 14, nombre.toString());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Domicilio:");
+        pm.printTextLinCol(linea, 14, domicilio.toString());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Servicio:");
+        pm.printTextLinCol(linea, 14, suscriptor.getServicio());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Telefono:");
+        pm.printTextLinCol(linea, 14, suscriptor.getTelefono());
+
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Total a pagar:");
+        pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(importeTotal)));
+
+        linea++;
+        pm.printTextWrap(linea, 1, 1, 47, "RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO");
+        linea++;
+        pm.printTextWrap(linea, 1, 3, 47, "CANCELACION DEL 25 AL 30 DEL MES PAGADO");
+        linea++;
+        pm.printTextWrap(linea, 1, 2, 47, "HORARIO DE OFICINA LUNES A VIERNES 9AM A 6PM,");
+        linea++;
+        pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
+        linea = linea + 2;
+        
+        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+            pm.printTextLinCol(linea, 10, "Telefono Oficina:");
+            pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
+            linea++;
+        }
+        if(sesion.getUsaWhats() != null && sesion.getUsaWhats() == 1){
+            pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
+            pm.printTextLinCol(linea, 31, properties.obtenerPropiedad("tvch.soporte.whats"));
+        }
+
+        String nombreArchivo = ("impresion.txt");
+        pm.toFile(nombreArchivo);
+
+        imprimirArchivo(nombreArchivo);
+
+    }
+    
+    
     public void imprimirTicketCorteCaja(List<DetalleCorte> list, CorteCaja corteCaja) throws Exception{
 
         DetalleCorte detalleId = list.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_CORTE_ID).findFirst().get();

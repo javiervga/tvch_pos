@@ -29,6 +29,47 @@ public class ContratoDao {
         return dao;
     }
     
+    public void actualizarEstatus(Long contratoId, Long estatus) {
+        
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            query.append("update contratos set id_estatus = ");
+            query.append(estatus);
+            query.append(" where id_contrato = ");
+            query.append(contratoId);
+            stmt.executeUpdate(query.toString());
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al actualizar estatus de contrato: " + sw.toString());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        
+    }
+    
     public void actualizarFechaPagoContrato(Long contratoId, String fechaPago) {
         
         Connection conn = null;

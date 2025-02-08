@@ -58,6 +58,7 @@ public class Constantes {
     public static final int TIPO_DETALLE_COBRO_RECARGO = 2;
     public static final int TIPO_DETALLE_COBRO_PROMOCION = 3;
     public static final int TIPO_DETALLE_COBRO_DESCUENTO = 4;
+    public static final int TIPO_DETALLE_COBRO_CANCELACION = 6;
     
     public static final int TIPO_BUSQUEDA_CONTRATO = 1;
     public static final int TIPO_BUSQUEDA_CONTRATO_ANTERIOR = 2;
@@ -75,6 +76,7 @@ public class Constantes {
     public static final long TIPO_COBRO_ORDEN_SERVICIO = 3;
     public static final long TIPO_COBRO_ORDEN_CAMBIO_DOMICILIO = 4;
     public static final long TIPO_COBRO_RECARGO_MENSUALIDAD = 5;
+    public static final long TIPO_COBRO_CANCELACION_CONTRATO = 6;
     
     // Propiedades
     public static final String TVCH_API_URL = "tvch.api.path.url";
