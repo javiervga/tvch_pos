@@ -8,10 +8,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import mx.com.tvch.pos.client.TvchApiClient;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.dao.ContratoDao;
 import mx.com.tvch.pos.dao.ContratoxSuscriptorDao;
@@ -23,6 +23,8 @@ import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
 import mx.com.tvch.pos.entity.TransaccionEntity;
 import mx.com.tvch.pos.model.DetallePagoServicio;
+import mx.com.tvch.pos.model.client.Request;
+import mx.com.tvch.pos.model.client.UpdateContratoEstatusCanceladoPosRequest;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Utilerias;
 import org.slf4j.Logger;
@@ -42,6 +44,7 @@ public class CancelarContratoController {
     private final DetalleCobroTransaccionDao detalleCobroTransaccionDao;
     private final Sesion sesion;
     private final Utilerias util;
+    private final TvchApiClient client;
     
     Logger logger = LoggerFactory.getLogger(CancelarContratoController.class);
     
@@ -59,6 +62,7 @@ public class CancelarContratoController {
         contratoDao = ContratoDao.getContratoDao();
         sesion = Sesion.getSesion();
         util = Utilerias.getUtilerias();
+        client = TvchApiClient.getTvchApiClient();
     }
     
     /**
@@ -96,6 +100,16 @@ public class CancelarContratoController {
             Long detalleCobroId = detalleCobroTransaccionDao.registrarDetalleTransaccion(detalleCobroTransaccionEntity);
             
             contratoDao.actualizarEstatus(suscriptor.getContratoId(), Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO);
+            
+            try{
+                UpdateContratoEstatusCanceladoPosRequest updateContratoEstatusCanceladoPosRequest = new UpdateContratoEstatusCanceladoPosRequest();
+                updateContratoEstatusCanceladoPosRequest.setContratoId(suscriptor.getContratoId());
+                Request<UpdateContratoEstatusCanceladoPosRequest> request = new Request<>();
+                request.setData(updateContratoEstatusCanceladoPosRequest);
+                client.updateEstatusContrato(request);
+            }catch(Exception exception){
+                
+            }
             
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();

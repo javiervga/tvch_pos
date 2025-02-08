@@ -25,6 +25,8 @@ import mx.com.tvch.pos.model.client.ListSuscriptoresResponse;
 import mx.com.tvch.pos.model.client.ListTiposDescuentoResponse;
 import mx.com.tvch.pos.model.client.Request;
 import mx.com.tvch.pos.model.client.Response;
+import mx.com.tvch.pos.model.client.UpdateContratoEstatusCanceladoPosRequest;
+import mx.com.tvch.pos.model.client.UpdateContratoResponse;
 import mx.com.tvch.pos.model.client.UpdateEstatusPagadaOrdenCambioDomicilioRequest;
 import mx.com.tvch.pos.model.client.UpdateEstatusPagadaOrdenInstalacionRequest;
 import mx.com.tvch.pos.model.client.UpdateEstatusPagadaOrdenServicioRequest;
@@ -69,6 +71,55 @@ public class TvchApiClient {
         properties = LectorProperties.getLectorProperties();
         jwtSesion = JwtSesion.getJwtSesion();
         sesion = Sesion.getSesion();
+    }
+    
+    /**
+     * 
+     * @param request
+     * @return
+     * @throws UnsupportedEncodingException
+     * @throws IOException
+     * @throws Exception 
+     */
+    public Response<UpdateContratoResponse> updateEstatusContrato(Request<UpdateContratoEstatusCanceladoPosRequest> request) throws UnsupportedEncodingException, IOException, Exception {
+        
+        Response<UpdateContratoResponse> response = new Response<>();
+        String url = properties.obtenerPropiedad(Constantes.TVCH_API_URL);
+
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(request);
+        System.out.println("Request update estatus pago orden de servicio: " + jsonString);
+
+        StringEntity entity = new StringEntity(jsonString);
+        HttpPut httpPut = new HttpPut(url + properties.obtenerPropiedad(Constantes.TVCH_API_CONTRATO_UPDATE_CANCELACION));
+        
+        httpPut.setHeader("Content-type", "application/json");
+        httpPut.setHeader("Authorization", obtenerToken());
+        httpPut.setEntity(entity);
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+
+        logger.info("Enviando peticion de update estatus cancelacion contrato");
+        CloseableHttpResponse httpResponse = httpClient.execute(httpPut);
+
+        if (httpResponse.getStatusLine().getStatusCode() == Constantes.CODIGO_HTTP_OK
+                && httpResponse.getStatusLine().getStatusCode() != Constantes.CODIGO_HTTP_NO_CONTENT) {
+            String responseBody = EntityUtils.toString(httpResponse.getEntity());
+            logger.info("Respuesta de update de estatus contrato cancelado: \n"+responseBody);
+            response = gson.fromJson(responseBody, Response.class);
+            response.setData(mapper.object2UpdateContratoResponse(response.getData()));
+            jwtSesion.setToken(httpResponse.getFirstHeader("Authorization").getValue());
+        }else{
+            if(httpResponse.getEntity() != null){
+                String responseBody = EntityUtils.toString(httpResponse.getEntity());
+                logger.warn("Fallo en respuesta de update de contrato cancelado: \n"+responseBody);
+            }else{
+                logger.warn("Fallo en respuesta de update de contrato cancelado: \nCódigo"+httpResponse.getStatusLine());
+            }
+            response.setCode(httpResponse.getStatusLine().getStatusCode());
+        }
+
+        return response;
+        
     }
     
     /**

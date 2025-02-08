@@ -24,6 +24,7 @@ import mx.com.tvch.pos.model.client.OrdenServicio;
 import mx.com.tvch.pos.model.client.PromocionOrdenInstalacion;
 import mx.com.tvch.pos.model.client.Suscriptor;
 import mx.com.tvch.pos.model.client.TipoDescuento;
+import mx.com.tvch.pos.model.client.UpdateContratoResponse;
 import mx.com.tvch.pos.model.client.UpdateOrdenCambioDomicilioResponse;
 import mx.com.tvch.pos.model.client.UpdateOrdenInstalacionResponse;
 import mx.com.tvch.pos.model.client.UpdateOrdenServicioResponse;
@@ -51,6 +52,34 @@ public class PosMapper {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper
                 .convertValue(object, new TypeReference<Map<String,Object>>(){});
+    }
+    
+    /**
+     * 
+     * @param object
+     * @return 
+     */
+    public UpdateContratoResponse object2UpdateContratoResponse(Object object){
+        
+        UpdateContratoResponse response = new UpdateContratoResponse();
+        Map<String, Object> map = getMapper(object);
+        
+        double contratoId = (double) map.get("contratoId");
+        response.setContratoId((long) contratoId);
+        double contratoAnteriorId = (double) map.get("contratoAnteriorId");
+        response.setContratoAnteriorId((long) contratoAnteriorId);
+        response.setEstatus((String) map.get("estatus"));;
+        response.setFechaRegistro((String) map.get("fechaRegistro"));
+        response.setUsuario((String) map.get("usuario"));
+        if(map.get("fechaServicio") != null){
+            double tvsContratadas = (double) map.get("tvsContratadas");
+            response.setTvsContratadas((int) tvsContratadas);  
+        }
+        response.setFechaProximoPago((String) map.get("fechaProximoPago"));
+        if(map.get("tipoServicioInternet") != null)
+            response.setTipoServicioInternet((String) map.get("tipoServicioInternet"));
+        
+        return response;
     }
     
     /**
