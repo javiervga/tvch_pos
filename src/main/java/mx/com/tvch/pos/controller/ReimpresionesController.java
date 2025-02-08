@@ -72,7 +72,10 @@ public class ReimpresionesController {
             if (entity.getTipoCobroId() == Constantes.TIPO_COBRO_SERVICIO) {
                 List<DetallePagoServicio> detallesPago = obtenerDetallesPago(entity);
                 impresora.reimprimirTicketServicio(entity, detallesPago, sesion.getSucursal());
-            } else {
+            }else if (entity.getTipoCobroId() == Constantes.TIPO_COBRO_CANCELACION_CONTRATO) {
+                List<DetallePagoServicio> detallesPago = obtenerDetallesPagoCancelacion(entity);
+                impresora.reimprimirTicketCancelacion(entity, detallesPago, sesion.getSucursal());
+            }else {
                 //List<DetallePagoServicio> detallesPago = obtenerDetallesPago(entity);
                 List<DetalleCobroTransaccionEntity> detallesTransaccion = detalleCobroTransaccionDao.obtenerDetallesCobroPorTransaccion(entity.getTransaccionId());
                 if (!detallesTransaccion.isEmpty()) {
@@ -108,7 +111,45 @@ public class ReimpresionesController {
             throw new Exception(ex.getMessage());
         }
     }
+    
+    /**
+     * 
+     * @param entity
+     * @return
+     * @throws Exception 
+     */
+    private List<DetallePagoServicio> obtenerDetallesPagoCancelacion(TransaccionTicketEntity entity) throws Exception {
 
+        List<DetallePagoServicio> listaDetallesPago = new ArrayList<>();
+
+        List<DetalleCobroTransaccionEntity> detallesTransaccion = detalleCobroTransaccionDao
+                .obtenerDetallesCobroPorTransaccion(entity.getTransaccionId());
+        if (!detallesTransaccion.isEmpty()) {
+
+            for (DetalleCobroTransaccionEntity detalleCobro : detallesTransaccion) {
+                DetallePagoServicio detalle = new DetallePagoServicio();
+                detalle.setConcepto("Pago Mensualidad ");
+                detalle.setMonto(detalleCobro.getMonto());
+                detalle.setCadenaMonto("  $".concat(String.valueOf(detalleCobro.getMonto())));
+                detalle.setTipoDetalle(Constantes.TIPO_DETALLE_COBRO_CANCELACION);
+                detalle.setFechaProximoPago(entity.getFechaProximoPago());
+                detalle.setNumeroMeses(detalleCobro.getNumeroMeses());
+                listaDetallesPago.add(detalle);
+            }
+
+        } else {
+            throw new Exception("No se encontró información de la transacción");
+        }
+
+        return listaDetallesPago;
+    }
+    
+    /**
+     * 
+     * @param entity
+     * @return
+     * @throws Exception 
+     */
     private List<DetallePagoServicio> obtenerDetallesPago(TransaccionTicketEntity entity) throws Exception {
 
         List<DetallePagoServicio> listaDetallesPago = new ArrayList<>();

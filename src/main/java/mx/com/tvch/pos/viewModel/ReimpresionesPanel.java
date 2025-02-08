@@ -18,17 +18,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import mx.com.tvch.pos.config.Sesion;
-import mx.com.tvch.pos.controller.CorteCajaController;
 import mx.com.tvch.pos.controller.ReimpresionesController;
-import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
-import mx.com.tvch.pos.entity.TransaccionEntity;
 import mx.com.tvch.pos.entity.TransaccionTicketEntity;
-import mx.com.tvch.pos.model.DetalleCorte;
 import mx.com.tvch.pos.model.TipoCobro;
 import mx.com.tvch.pos.util.Calendario;
 import mx.com.tvch.pos.util.Constantes;
@@ -109,6 +104,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                 if(transaccionSeleccionada != null){
                     try {
                         controller.reimprimirTicket(transaccionSeleccionada);
+                        limpiarPantalla();
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(panel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
                     }
@@ -278,6 +274,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         tiposCobro.add(new TipoCobro(3, "ORDEN DE SERVICIO"));
         tiposCobro.add(new TipoCobro(4, "ORDEN DE CAMBIO DE DOMICILIO"));
         //tiposCobro.add(new TipoCobro(5, "RECARGO EN MENSUALIDAD DE SERVICIO"));
+        tiposCobro.add(new TipoCobro(6, "CANCELACION DE CONTRATO"));
         tiposCobro.forEach(t -> comboTipoOperacion.addItem(t));
 
     }
