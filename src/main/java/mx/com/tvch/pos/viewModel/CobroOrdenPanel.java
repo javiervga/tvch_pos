@@ -1010,7 +1010,6 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         panelBusqueda.setVerifyInputWhenFocusTarget(false);
 
         tablaSuscriptores.setBackground(new java.awt.Color(204, 204, 204));
-        tablaSuscriptores.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tablaSuscriptores.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
@@ -1037,10 +1036,10 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        tablaSuscriptores.setMaximumSize(new java.awt.Dimension(1438, 170));
-        tablaSuscriptores.setMinimumSize(new java.awt.Dimension(1438, 170));
-        tablaSuscriptores.setPreferredSize(new java.awt.Dimension(1438, 170));
-        tablaSuscriptores.setRowHeight(22);
+        tablaSuscriptores.setMaximumSize(new java.awt.Dimension(1438, 750));
+        tablaSuscriptores.setMinimumSize(new java.awt.Dimension(1438, 750));
+        tablaSuscriptores.setPreferredSize(new java.awt.Dimension(1438, 750));
+        tablaSuscriptores.setRowHeight(15);
         tablaSuscriptores.setShowGrid(false);
         tablaSuscriptores.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tablaSuscriptores);

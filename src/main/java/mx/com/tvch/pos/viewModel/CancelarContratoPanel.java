@@ -625,7 +625,6 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         tablaSuscriptores.setBackground(new java.awt.Color(204, 204, 204));
-        tablaSuscriptores.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         tablaSuscriptores.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
@@ -652,10 +651,10 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        tablaSuscriptores.setMaximumSize(new java.awt.Dimension(1438, 170));
-        tablaSuscriptores.setMinimumSize(new java.awt.Dimension(1438, 170));
-        tablaSuscriptores.setPreferredSize(new java.awt.Dimension(1438, 170));
-        tablaSuscriptores.setRowHeight(22);
+        tablaSuscriptores.setMaximumSize(new java.awt.Dimension(1438, 750));
+        tablaSuscriptores.setMinimumSize(new java.awt.Dimension(1438, 750));
+        tablaSuscriptores.setPreferredSize(new java.awt.Dimension(1438, 750));
+        tablaSuscriptores.setRowHeight(15);
         tablaSuscriptores.setShowGrid(false);
         jScrollPane1.setViewportView(tablaSuscriptores);
         if (tablaSuscriptores.getColumnModel().getColumnCount() > 0) {
