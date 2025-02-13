@@ -30,6 +30,7 @@ import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.controller.CancelarContratoController;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
 import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
+import mx.com.tvch.pos.entity.MotivoCancelacionEntity;
 import mx.com.tvch.pos.model.DetallePagoServicio;
 import mx.com.tvch.pos.model.TipoBusquedaCobro;
 import mx.com.tvch.pos.util.Constantes;
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CancelarContratoPanel extends javax.swing.JPanel {
 
-    private static CancelarContratoPanel cobroPanel;
+    private static CancelarContratoPanel cancelacionPanel;
     private static PosFrame posFrame;
 
     private final Sesion sesion;
@@ -59,11 +60,11 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
     org.slf4j.Logger logger = LoggerFactory.getLogger(CancelarContratoPanel.class);
 
     public static CancelarContratoPanel getCobroPanel(PosFrame frame) {
-        if (cobroPanel == null) {
-            cobroPanel = new CancelarContratoPanel();
+        if (cancelacionPanel == null) {
+            cancelacionPanel = new CancelarContratoPanel();
         }
         posFrame = frame;
-        return cobroPanel;
+        return cancelacionPanel;
     }
 
     /**
@@ -82,6 +83,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
         crearEventos();
         cargarComboTiposBusqueda();
         cargarComboEstatusSuscriptor();
+        cargarComboMotivosCancelacion();
     }
 
 
@@ -93,26 +95,38 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
             public void actionPerformed(ActionEvent e) {
 
                 if (suscriptorSeleccionado != null && !listaDetallesPago.isEmpty()) {
-                    try {
-                        Long transaccionId = controller.cobrarCancelacion(suscriptorSeleccionado, listaDetallesPago);
-                        try {
-                            impresora.imprimirTicketCancelacion(transaccionId, listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal());
-                        } catch (Exception ex) {
-                            StringWriter sw = new StringWriter();
-                            PrintWriter pw = new PrintWriter(sw);
-                            ex.printStackTrace(pw);
-                            logger.error("Fallo al imprimir ticket de transaccion: \n" + sw.toString());
-                            JOptionPane.showMessageDialog(cobroPanel, "El cobro se realizó correctamente pero ocurrió un error al imprimir su ticket. Si desea una rempresión vaya a sección de reimpresiones", "", JOptionPane.WARNING_MESSAGE);
+                 
+                    if(!campoObservaciones.getText().isEmpty()){
+                        if(!campoObservaciones.getText().isEmpty()){
+                            try {
+                            
+                                MotivoCancelacionEntity motivoCancelacionEntity = (MotivoCancelacionEntity) comboMotivosCancelacion.getModel().getSelectedItem();
+                            
+                                Long transaccionId = controller.cobrarCancelacion(suscriptorSeleccionado, listaDetallesPago, motivoCancelacionEntity.getMotivoId(), campoObservaciones.getText());
+                                try {
+                                    impresora.imprimirTicketCancelacion(transaccionId, listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal());
+                                } catch (Exception ex) {
+                                    StringWriter sw = new StringWriter();
+                                    PrintWriter pw = new PrintWriter(sw);
+                                    ex.printStackTrace(pw);
+                                    logger.error("Fallo al imprimir ticket de transaccion: \n" + sw.toString());
+                                    JOptionPane.showMessageDialog(cancelacionPanel, "El cobro se realizó correctamente pero ocurrió un error al imprimir su ticket. Si desea una rempresión vaya a sección de reimpresiones", "", JOptionPane.WARNING_MESSAGE);
+                                }
+                                System.out.println("transaccionId: " + transaccionId);
+                                limpiarPantalla();
+                            } catch (Exception ex) {
+                                StringWriter sw = new StringWriter();
+                                PrintWriter pw = new PrintWriter(sw);
+                                ex.printStackTrace(pw);
+                                logger.error("Fallo al cobrar transaccion: \n" + sw.toString());
+                                JOptionPane.showMessageDialog(cancelacionPanel, "Ocurrió un error al realizar el cobro, por favor reintente. Si el problema persiste consulte a soporte.", "", JOptionPane.WARNING_MESSAGE);
+                            }
+                        }else{
+                            JOptionPane.showMessageDialog(cancelacionPanel, "Observaciones deben tener un maximo de 100 caracteres", "", JOptionPane.WARNING_MESSAGE);
                         }
-                        System.out.println("transaccionId: " + transaccionId);
-                        limpiarPantalla();
-                    } catch (Exception ex) {
-                        StringWriter sw = new StringWriter();
-                        PrintWriter pw = new PrintWriter(sw);
-                        ex.printStackTrace(pw);
-                        logger.error("Fallo al cobrar transaccion: \n" + sw.toString());
-                        JOptionPane.showMessageDialog(cobroPanel, "Ocurrió un error al realizar el cobro, por favor reintente. Si el problema persiste consulte a soporte.", "", JOptionPane.WARNING_MESSAGE);
                     }
+                }else{
+                    JOptionPane.showMessageDialog(cancelacionPanel, "Para realizar la cancelacion es necesario que capture sus observaciones", "", JOptionPane.WARNING_MESSAGE);
                 }
 
             }
@@ -168,7 +182,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                         campoMontoCancelacion.setText("");
 
                     }else{
-                        JOptionPane.showMessageDialog(cobroPanel, "Por favor, ingrese un monto numérico", "", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(cancelacionPanel, "Por favor, ingrese un monto numérico", "", JOptionPane.WARNING_MESSAGE);
                     }
 
                 }
@@ -221,7 +235,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 limpiarPantalla();
-                posFrame.cambiarPantalla(cobroPanel, VentanaEnum.MENU);
+                posFrame.cambiarPantalla(cancelacionPanel, VentanaEnum.MENU);
             }
         };
         botonRegresar.addActionListener(botonRegresarActionListener);
@@ -276,7 +290,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                         limpiarDatosSuscriptor();
 
                     } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(cobroPanel, "Formato de contrato incorrecto. Por favor ingrese un contrato numérico", "", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(cancelacionPanel, "Formato de contrato incorrecto. Por favor ingrese un contrato numérico", "", JOptionPane.WARNING_MESSAGE);
                     }
                 } else {
 
@@ -286,19 +300,19 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                         limpiarDatosSuscriptor();
 
                     } else {
-                        JOptionPane.showMessageDialog(cobroPanel, "Por favor ingrese ingrese un texto a buscar válido.", "", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(cancelacionPanel, "Por favor ingrese ingrese un texto a buscar válido.", "", JOptionPane.WARNING_MESSAGE);
                     }
 
                 }
 
             } catch (NoSuchElementException ex) {
-                JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(cancelacionPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(cancelacionPanel, ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
             }
 
         } else {
-            JOptionPane.showMessageDialog(cobroPanel, "Por favor ingrese información para realizar la busqueda.", "", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(cancelacionPanel, "Por favor ingrese información para realizar la busqueda.", "", JOptionPane.WARNING_MESSAGE);
         }
 
     }
@@ -420,7 +434,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                     c.getEstatusContrato()});
             }
         } else {
-            JOptionPane.showMessageDialog(cobroPanel, "No se encontraron suscriptores con la información solicitada", "", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(cancelacionPanel, "No se encontraron suscriptores con la información solicitada", "", JOptionPane.WARNING_MESSAGE);
         }
 
     }
@@ -489,7 +503,20 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
             list.forEach(e -> comboEstatusSuscriptor.addItem(e));
 
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(cancelacionPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+        }
+
+    }
+    
+    private void cargarComboMotivosCancelacion() {
+
+        try {
+
+            List<MotivoCancelacionEntity> list = controller.consultarMotivosCancelacion();
+            list.forEach(e -> comboMotivosCancelacion.addItem(e));
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(cancelacionPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
         }
 
     }
@@ -540,12 +567,6 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
         jLabel14 = new javax.swing.JLabel();
         campoFechaPago = new javax.swing.JTextField();
         campoTelefono = new javax.swing.JTextField();
-        panelPromociones = new javax.swing.JPanel();
-        jLabel16 = new javax.swing.JLabel();
-        jLabel17 = new javax.swing.JLabel();
-        botonAplicarMonto = new javax.swing.JButton();
-        botonRestablecerMonto = new javax.swing.JButton();
-        campoMontoCancelacion = new javax.swing.JTextField();
         panelInfoPago = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaDetallesPago = new javax.swing.JTable();
@@ -555,11 +576,21 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
         botonCobrar = new javax.swing.JButton();
         botonRegresar = new javax.swing.JButton();
         panelBotones = new javax.swing.JPanel();
+        panelPromociones = new javax.swing.JPanel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        botonAplicarMonto = new javax.swing.JButton();
+        botonRestablecerMonto = new javax.swing.JButton();
+        campoMontoCancelacion = new javax.swing.JTextField();
+        comboMotivosCancelacion = new javax.swing.JComboBox<>();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        campoObservaciones = new javax.swing.JTextField();
 
         setBackground(new java.awt.Color(204, 204, 204));
-        setMaximumSize(new java.awt.Dimension(1500, 800));
-        setMinimumSize(new java.awt.Dimension(1500, 800));
-        setPreferredSize(new java.awt.Dimension(1500, 800));
+        setMaximumSize(new java.awt.Dimension(1500, 1900));
+        setMinimumSize(new java.awt.Dimension(1500, 1900));
+        setPreferredSize(new java.awt.Dimension(1500, 1900));
 
         panelCabecero.setBackground(new java.awt.Color(255, 255, 255));
         panelCabecero.setMaximumSize(new java.awt.Dimension(1500, 30));
@@ -874,64 +905,6 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panelPromociones.setBackground(new java.awt.Color(255, 255, 255));
-
-        jLabel16.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel16.setForeground(new java.awt.Color(255, 51, 51));
-        jLabel16.setText("Captura de Monto");
-
-        jLabel17.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel17.setText("Ingrese monto a cobrar:");
-
-        botonAplicarMonto.setBackground(new java.awt.Color(227, 126, 75));
-        botonAplicarMonto.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        botonAplicarMonto.setForeground(new java.awt.Color(255, 255, 255));
-        botonAplicarMonto.setText("Aplicar Monto");
-
-        botonRestablecerMonto.setBackground(java.awt.Color.red);
-        botonRestablecerMonto.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        botonRestablecerMonto.setForeground(new java.awt.Color(255, 255, 255));
-        botonRestablecerMonto.setText("Reestablecer Monto Sugerido");
-        botonRestablecerMonto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonRestablecerMontoActionPerformed(evt);
-            }
-        });
-
-        campoMontoCancelacion.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-
-        javax.swing.GroupLayout panelPromocionesLayout = new javax.swing.GroupLayout(panelPromociones);
-        panelPromociones.setLayout(panelPromocionesLayout);
-        panelPromocionesLayout.setHorizontalGroup(
-            panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelPromocionesLayout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelPromocionesLayout.createSequentialGroup()
-                        .addComponent(jLabel17)
-                        .addGap(18, 18, 18)
-                        .addComponent(campoMontoCancelacion, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(botonAplicarMonto)
-                        .addGap(47, 47, 47)
-                        .addComponent(botonRestablecerMonto))
-                    .addComponent(jLabel16))
-                .addContainerGap(824, Short.MAX_VALUE))
-        );
-        panelPromocionesLayout.setVerticalGroup(
-            panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPromocionesLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel17)
-                    .addComponent(botonAplicarMonto)
-                    .addComponent(botonRestablecerMonto)
-                    .addComponent(campoMontoCancelacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(17, 17, 17))
-        );
-
         jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
         tablaDetallesPago.setBackground(new java.awt.Color(227, 126, 75));
@@ -996,23 +969,23 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
         panelImportes.setLayout(panelImportesLayout);
         panelImportesLayout.setHorizontalGroup(
             panelImportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelImportesLayout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addComponent(etiquetaPesos)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
-                .addComponent(etiquetaImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(16, 16, 16))
             .addGroup(panelImportesLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(botonCobrar, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(botonRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(75, Short.MAX_VALUE))
+            .addGroup(panelImportesLayout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(etiquetaPesos)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
+                .addComponent(etiquetaImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         panelImportesLayout.setVerticalGroup(
             panelImportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelImportesLayout.createSequentialGroup()
-                .addContainerGap(36, Short.MAX_VALUE)
+                .addContainerGap(24, Short.MAX_VALUE)
                 .addGroup(panelImportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(etiquetaImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(etiquetaPesos, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1020,7 +993,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                 .addGroup(panelImportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(botonCobrar, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(botonRegresar))
-                .addContainerGap())
+                .addGap(18, 18, 18))
         );
 
         javax.swing.GroupLayout panelBotonesLayout = new javax.swing.GroupLayout(panelBotones);
@@ -1053,11 +1026,95 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
             panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelInfoPagoLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(panelImportes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelImportes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelBotones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        panelPromociones.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel16.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 51, 51));
+        jLabel16.setText("Captura de Monto");
+
+        jLabel17.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel17.setText("Ingrese monto a cobrar:");
+
+        botonAplicarMonto.setBackground(new java.awt.Color(227, 126, 75));
+        botonAplicarMonto.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        botonAplicarMonto.setForeground(new java.awt.Color(255, 255, 255));
+        botonAplicarMonto.setText("Aplicar Monto");
+
+        botonRestablecerMonto.setBackground(java.awt.Color.red);
+        botonRestablecerMonto.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        botonRestablecerMonto.setForeground(new java.awt.Color(255, 255, 255));
+        botonRestablecerMonto.setText("Reestablecer Monto Sugerido");
+        botonRestablecerMonto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonRestablecerMontoActionPerformed(evt);
+            }
+        });
+
+        campoMontoCancelacion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        comboMotivosCancelacion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel15.setText("Seleccione Motivo:");
+
+        jLabel18.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel18.setText("Observaciones:");
+
+        campoObservaciones.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        javax.swing.GroupLayout panelPromocionesLayout = new javax.swing.GroupLayout(panelPromociones);
+        panelPromociones.setLayout(panelPromocionesLayout);
+        panelPromocionesLayout.setHorizontalGroup(
+            panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelPromocionesLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelPromocionesLayout.createSequentialGroup()
+                        .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(campoMontoCancelacion, javax.swing.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
+                            .addComponent(comboMotivosCancelacion, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelPromocionesLayout.createSequentialGroup()
+                                .addComponent(botonAplicarMonto)
+                                .addGap(47, 47, 47)
+                                .addComponent(botonRestablecerMonto))
+                            .addGroup(panelPromocionesLayout.createSequentialGroup()
+                                .addComponent(jLabel18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(campoObservaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 812, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(jLabel16))
+                .addContainerGap(305, Short.MAX_VALUE))
+        );
+        panelPromocionesLayout.setVerticalGroup(
+            panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPromocionesLayout.createSequentialGroup()
+                .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel17)
+                    .addComponent(botonAplicarMonto)
+                    .addComponent(botonRestablecerMonto)
+                    .addComponent(campoMontoCancelacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel15)
+                    .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(comboMotivosCancelacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel18)
+                        .addComponent(campoObservaciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -1066,14 +1123,13 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelCabecero, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1724, Short.MAX_VALUE)
-                    .addComponent(panelBusqueda, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1724, Short.MAX_VALUE)
+                    .addComponent(panelCabecero, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1653, Short.MAX_VALUE)
+                    .addComponent(panelBusqueda, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1653, Short.MAX_VALUE)
                     .addComponent(panelInfoContrato, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(panelInfoPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(panelInfoPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -1084,12 +1140,12 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(panelInfoContrato, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panelInfoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(9, 9, 9)
                 .addComponent(panelInfoPago, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(19, 19, 19))
+                .addContainerGap(1102, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -1111,10 +1167,12 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
     private javax.swing.JTextField campoEstatus;
     private javax.swing.JTextField campoFechaPago;
     private javax.swing.JTextField campoMontoCancelacion;
+    private javax.swing.JTextField campoObservaciones;
     private javax.swing.JTextField campoServicioContratado;
     private javax.swing.JTextField campoSuscriptor;
     private javax.swing.JTextField campoTelefono;
     private javax.swing.JComboBox<EstatusSuscriptorEntity> comboEstatusSuscriptor;
+    private javax.swing.JComboBox<MotivoCancelacionEntity> comboMotivosCancelacion;
     private javax.swing.JComboBox<TipoBusquedaCobro> comboTiposBusqueda;
     private javax.swing.JLabel etiquetaImporte;
     private javax.swing.JLabel etiquetaLogo;
@@ -1128,8 +1186,10 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;

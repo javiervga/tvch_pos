@@ -1036,9 +1036,9 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        tablaSuscriptores.setMaximumSize(new java.awt.Dimension(1438, 750));
-        tablaSuscriptores.setMinimumSize(new java.awt.Dimension(1438, 750));
-        tablaSuscriptores.setPreferredSize(new java.awt.Dimension(1438, 750));
+        tablaSuscriptores.setMaximumSize(new java.awt.Dimension(1438, 1900));
+        tablaSuscriptores.setMinimumSize(new java.awt.Dimension(1438, 1900));
+        tablaSuscriptores.setPreferredSize(new java.awt.Dimension(1438, 1900));
         tablaSuscriptores.setRowHeight(15);
         tablaSuscriptores.setShowGrid(false);
         tablaSuscriptores.getTableHeader().setReorderingAllowed(false);

@@ -13,14 +13,18 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import mx.com.tvch.pos.client.TvchApiClient;
 import mx.com.tvch.pos.config.Sesion;
+import mx.com.tvch.pos.dao.CancelacionDao;
 import mx.com.tvch.pos.dao.ContratoDao;
 import mx.com.tvch.pos.dao.ContratoxSuscriptorDao;
 import mx.com.tvch.pos.dao.DetalleCobroTransaccionDao;
 import mx.com.tvch.pos.dao.EstatusSuscriptorDao;
+import mx.com.tvch.pos.dao.MotivoCancelacionDao;
 import mx.com.tvch.pos.dao.TransaccionDao;
+import mx.com.tvch.pos.entity.CancelacionEntity;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
 import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
+import mx.com.tvch.pos.entity.MotivoCancelacionEntity;
 import mx.com.tvch.pos.entity.TransaccionEntity;
 import mx.com.tvch.pos.model.DetallePagoServicio;
 import mx.com.tvch.pos.model.client.Request;
@@ -42,6 +46,8 @@ public class CancelarContratoController {
     private final ContratoDao contratoDao;
     private final TransaccionDao transaccionDao;
     private final DetalleCobroTransaccionDao detalleCobroTransaccionDao;
+    private final CancelacionDao cancelacionDao;
+    private final MotivoCancelacionDao motivoCancelacionDao;
     private final Sesion sesion;
     private final Utilerias util;
     private final TvchApiClient client;
@@ -60,6 +66,8 @@ public class CancelarContratoController {
         transaccionDao = TransaccionDao.getTransaccionDao();
         detalleCobroTransaccionDao = DetalleCobroTransaccionDao.getDetalleCobroTransaccionDao();
         contratoDao = ContratoDao.getContratoDao();
+        cancelacionDao = CancelacionDao.getCancelacionDao();
+        motivoCancelacionDao = MotivoCancelacionDao.getMotivoCancelacionDao();
         sesion = Sesion.getSesion();
         util = Utilerias.getUtilerias();
         client = TvchApiClient.getTvchApiClient();
@@ -71,11 +79,25 @@ public class CancelarContratoController {
      * @param detallesPago
      * @return 
      */
-    public Long cobrarCancelacion(ContratoxSuscriptorEntity suscriptor, List<DetallePagoServicio> detallesPago) throws Exception{
+    public Long cobrarCancelacion(
+            ContratoxSuscriptorEntity suscriptor, 
+            List<DetallePagoServicio> detallesPago, 
+            Long motivoCancelacionId,
+            String observaciones) throws Exception{
         
         Long transaccionId = null;
         
         try{
+            
+            CancelacionEntity cancelacionEntity = new CancelacionEntity();
+            cancelacionEntity.setCancelacionId(util.generarIdLocal());
+            cancelacionEntity.setContratoId(suscriptor.getContratoId());
+            cancelacionEntity.setFechaCancelacion(util.convertirDateTime2String(new Date(), Constantes.FORMATO_FECHA_MYSQL));
+            cancelacionEntity.setMotivoId(motivoCancelacionId);
+            cancelacionEntity.setServicioId(suscriptor.getServicioId());
+            cancelacionEntity.setUsuarioId(sesion.getUsuarioId());
+            cancelacionEntity.setObservaciones(observaciones);
+            cancelacionDao.registrarCancelacion(cancelacionEntity);
             
             Double importePagar = Double.valueOf(obtenerImporteActualizado(detallesPago));
             
@@ -323,6 +345,33 @@ public class CancelarContratoController {
         }
         
         return monto;
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws Exception 
+     */
+    public List<MotivoCancelacionEntity> consultarMotivosCancelacion() throws Exception {
+
+        try {
+
+            List<MotivoCancelacionEntity> list = motivoCancelacionDao.obtenerMotivosCancelacion();
+
+            if (list == null) {
+                throw new NoSuchElementException(("No se encontraron motivos de cancelacion registrados."));
+            }
+
+            return list;
+
+        } catch (Exception e) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            logger.error("Fallo al consultar motivos de cancelacion: \n" + sw.toString());
+            throw new Exception("Error al consultar motivos de cancelacion. Por favor vuelva a intentar, si el problema persiste contacte a soporte.");
+        }
+
     }
     
 }

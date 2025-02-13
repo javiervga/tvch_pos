@@ -10,30 +10,25 @@
        Colonia La Providencia C.P. 42186       
          Sucursal Providencia                  
                                                
-Fecha:       04/02/2025 04:06:25               
+Fecha:       12/02/2025 00:21:26               
                                                
 Caja:        1                                 
                                                
-Folio:       120250204040625                   
+Folio:       120250212002124                   
                                                
-Tipo Pago:   Instalacion de Servicio           
+Tipo Pago:   Cancelación de Contrato           
                                                
-Contrato:    5626                              
+Contrato:    Providencia-2558                  
                                                
-Suscriptor:  LUCIA PEREZ LAZCANO               
+Suscriptor:  MARIA EUGENIA HERNANDEZ RAMIREZ   
                                                
-Domicilio:   NOGALES 116 SAN CRISTOBAL         
+Domicilio:   SANTA LUCIA M. 52 L. 24 PROVIDENCIA
                                                
-Servicio:    TV                                
+Servicio:    TV + INTERNET 8MB                 
                                                
-Telefono:    7712000770                        
+Telefono:    7711374743                        
                                                
-Costo Instalacion:                     $ 100.0 
-Promoción:                           - $ 100.0 
-                                               
-Total:                                 $ 0.0   
-                                               
-Próximo pago antes de:  10/03/2025             
+Total a pagar:                         $ 0.0   
                                                
  RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO
    CANCELACION DEL 25 AL 30 DEL MES PAGADO     
@@ -41,6 +36,9 @@ Próximo pago antes de:  10/03/2025
               SABADO DE 9AM A 2PM              
          Telefono Oficina:  7713212773         
     Soporte Tecnico WhatsApp: 7717769686       
+                                               
+                                               
+                                               
                                                
                                                
                                                
