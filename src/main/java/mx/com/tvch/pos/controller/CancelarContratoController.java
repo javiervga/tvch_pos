@@ -127,6 +127,7 @@ public class CancelarContratoController {
             try{
                 UpdateContratoEstatusCanceladoPosRequest updateContratoEstatusCanceladoPosRequest = new UpdateContratoEstatusCanceladoPosRequest();
                 updateContratoEstatusCanceladoPosRequest.setContratoId(suscriptor.getContratoId());
+                updateContratoEstatusCanceladoPosRequest.setUsuarioId(sesion.getUsuarioId());
                 Request<UpdateContratoEstatusCanceladoPosRequest> request = new Request<>();
                 request.setData(updateContratoEstatusCanceladoPosRequest);
                 client.updateEstatusContrato(request);

@@ -10,23 +10,23 @@
        Colonia La Providencia C.P. 42186       
          Sucursal Providencia                  
                                                
-Fecha:       12/02/2025 00:21:26               
+Fecha:       14/02/2025 03:34:25               
                                                
 Caja:        1                                 
                                                
-Folio:       120250212002124                   
+Folio:       120250214033334                   
                                                
 Tipo Pago:   Cancelación de Contrato           
                                                
-Contrato:    Providencia-2558                  
+Contrato:    Providencia-10320                 
                                                
-Suscriptor:  MARIA EUGENIA HERNANDEZ RAMIREZ   
+Suscriptor:  SIMON GARCIA RUIZ                 
                                                
-Domicilio:   SANTA LUCIA M. 52 L. 24 PROVIDENCIA
+Domicilio:   AV. CENTRAL 108 PROVIDENCIA       
                                                
 Servicio:    TV + INTERNET 8MB                 
                                                
-Telefono:    7711374743                        
+Telefono:    7711945726                        
                                                
 Total a pagar:                         $ 0.0   
                                                

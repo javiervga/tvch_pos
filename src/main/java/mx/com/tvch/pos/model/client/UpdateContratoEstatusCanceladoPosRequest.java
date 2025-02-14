@@ -12,12 +12,22 @@ public class UpdateContratoEstatusCanceladoPosRequest {
 
     private Long contratoId;
 
+    private Long usuarioId;
+
     public Long getContratoId() {
         return contratoId;
     }
 
     public void setContratoId(Long contratoId) {
         this.contratoId = contratoId;
+    }
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
 }
