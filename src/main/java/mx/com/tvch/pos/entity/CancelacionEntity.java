@@ -23,6 +23,8 @@ public class CancelacionEntity {
     private Long servicioId;
 
     private Long motivoId;
+    
+    private Long sucursalId;
 
     private String observaciones;
 
@@ -80,6 +82,14 @@ public class CancelacionEntity {
 
     public void setMotivoId(Long motivoId) {
         this.motivoId = motivoId;
+    }
+
+    public Long getSucursalId() {
+        return sucursalId;
+    }
+
+    public void setSucursalId(Long sucursalId) {
+        this.sucursalId = sucursalId;
     }
 
     public String getObservaciones() {

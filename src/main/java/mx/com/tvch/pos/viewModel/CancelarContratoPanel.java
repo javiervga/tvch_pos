@@ -96,7 +96,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
 
                 if (suscriptorSeleccionado != null && !listaDetallesPago.isEmpty()) {
                  
-                    if(!campoObservaciones.getText().isEmpty()){
+                    //if(!campoObservaciones.getText().isEmpty()){
                         if(!campoObservaciones.getText().isEmpty()){
                             try {
                             
@@ -124,7 +124,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                         }else{
                             JOptionPane.showMessageDialog(cancelacionPanel, "Observaciones deben tener un maximo de 100 caracteres", "", JOptionPane.WARNING_MESSAGE);
                         }
-                    }
+                    //}
                 }else{
                     JOptionPane.showMessageDialog(cancelacionPanel, "Para realizar la cancelacion es necesario que capture sus observaciones", "", JOptionPane.WARNING_MESSAGE);
                 }

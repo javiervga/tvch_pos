@@ -56,7 +56,7 @@ public class CancelacionDao {
             DbConfig dbConfig = DbConfig.getdDbConfig();
             conn = dbConfig.getConnection();
             
-            String query = "insert into cancelaciones_contrato (id_cancelacion, id_contrato, fecha_cancelacion, id_usuario, id_servicio, id_motivo, observaciones) values(?,?,?,?,?,?,?)";
+            String query = "insert into cancelaciones_contrato (id_cancelacion, id_contrato, fecha_cancelacion, id_usuario, id_servicio, id_motivo, id_sucursal, observaciones) values(?,?,?,?,?,?,?,?)";
             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setLong(1, entity.getCancelacionId());
             ps.setLong(2, entity.getContratoId());
@@ -64,7 +64,8 @@ public class CancelacionDao {
             ps.setLong(4, entity.getUsuarioId());
             ps.setLong(5, entity.getServicioId());
             ps.setLong(6, entity.getMotivoId());
-            ps.setString(7, entity.getObservaciones());
+            ps.setLong(7, entity.getSucursalId());
+            ps.setString(8, entity.getObservaciones());
             ps.executeUpdate();
             
             ResultSet rs = ps.getGeneratedKeys();

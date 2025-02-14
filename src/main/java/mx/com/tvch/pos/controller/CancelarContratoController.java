@@ -97,6 +97,7 @@ public class CancelarContratoController {
             cancelacionEntity.setServicioId(suscriptor.getServicioId());
             cancelacionEntity.setUsuarioId(sesion.getUsuarioId());
             cancelacionEntity.setObservaciones(observaciones);
+            cancelacionEntity.setSucursalId(sesion.getSucursalId());
             cancelacionDao.registrarCancelacion(cancelacionEntity);
             
             Double importePagar = Double.valueOf(obtenerImporteActualizado(detallesPago));
