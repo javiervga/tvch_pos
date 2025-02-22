@@ -90,6 +90,7 @@ public class Constantes {
     public static final String TVCH_API_LIST_ORDENES_SERVICIO = "tvch.api.path.ordenes.servicio";
     public static final String TVCH_API_LIST_ORDENES_CAMBIO_DOMICILIO = "tvch.api.path.ordenes.cambio.domicilio";
     public static final String TVCH_API_CONTRATO_UPDATE_CANCELACION = "tvch.api.path.cancelacion.contrato";
+    public static final String TVCH_API_CONTRATO_UPDATE_RECONEXION = "tvch.api.path.reconexion.contrato";
     
     public static final String TVCH_API_LOGIN_URL = "tvch.api.login.url";
     public static final String TVCH_API_LIST_ZONAS = "tvch.api.zonas.url";

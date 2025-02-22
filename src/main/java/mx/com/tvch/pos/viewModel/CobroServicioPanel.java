@@ -35,6 +35,8 @@ import mx.com.tvch.pos.entity.PromocionEntity;
 import mx.com.tvch.pos.entity.TipoDescuentoEntity;
 import mx.com.tvch.pos.model.DetallePagoServicio;
 import mx.com.tvch.pos.model.TipoBusquedaCobro;
+import mx.com.tvch.pos.model.client.Response;
+import mx.com.tvch.pos.model.client.UpdateContratoResponse;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Impresora;
 import mx.com.tvch.pos.util.Utilerias;
@@ -136,19 +138,76 @@ public class CobroServicioPanel extends javax.swing.JPanel {
 
                 if (suscriptorSeleccionado != null && !listaDetallesPago.isEmpty()) {
                     try {
-                        Integer numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
-                        Long transaccionId = controller.cobrarServicio(suscriptorSeleccionado, listaDetallesPago, numeroMeses);
-                        try {
-                            impresora.imprimirTicketServicio(transaccionId, listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal(), numeroMeses);
-                        } catch (Exception ex) {
-                            StringWriter sw = new StringWriter();
-                            PrintWriter pw = new PrintWriter(sw);
-                            ex.printStackTrace(pw);
-                            logger.error("Fallo al imprimir ticket de transaccion: \n" + sw.toString());
-                            JOptionPane.showMessageDialog(cobroPanel, "El cobro se realizó correctamente pero ocurrió un error al imprimir su ticket. Si desea una rempresión vaya a sección de reimpresiones", "", JOptionPane.WARNING_MESSAGE);
+                        
+                        Long transaccionId = null;
+                        boolean seDebeGenerarOrden = false;
+                        boolean seCanceloPago = false;
+                        if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
+                            
+                            seDebeGenerarOrden = true;
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("El contrato que esta cobrando se en cuentra En Corte:\n");
+                            sb.append("¿Desea generar Orden de Reconexión? \n");
+                            int input = JOptionPane.showConfirmDialog(null, sb.toString());
+                            if (input == 0) {
+                                seDebeGenerarOrden = true;
+                            }else if (input == 1){
+                                seDebeGenerarOrden = false;
+                            }else{
+                                seCanceloPago = true;
+                            }
+                            
                         }
-                        System.out.println("transaccionId: " + transaccionId);
-                        limpiarPantalla();
+                        
+                        if(!seCanceloPago){
+                            
+                            Integer numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
+                            transaccionId = controller.cobrarServicio(suscriptorSeleccionado, listaDetallesPago, numeroMeses);
+                            
+                            try {
+                                impresora.imprimirTicketServicio(transaccionId, listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal(), numeroMeses);
+                            } catch (Exception ex) {
+                                StringWriter sw = new StringWriter();
+                                PrintWriter pw = new PrintWriter(sw);
+                                ex.printStackTrace(pw);
+                                logger.error("Fallo al imprimir ticket de transaccion: \n" + sw.toString());
+                                JOptionPane.showMessageDialog(cobroPanel, "El cobro se realizó correctamente pero ocurrió un error al imprimir su ticket. Si desea una reimpresión vaya a sección de reimpresiones", "", JOptionPane.WARNING_MESSAGE);
+                            }
+                            System.out.println("transaccionId: " + transaccionId);
+                            
+                            if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
+                                try{
+                                    //actualizar en local el estatus del contrato y en server el estatus y la orden en caso de requerirse
+                                    Response<UpdateContratoResponse> response = controller.actualizarContratoReconexion(suscriptorSeleccionado, seDebeGenerarOrden);
+                                    switch (response.getCode()) {
+                                        case Constantes.CODIGO_HTTP_OK:
+                                            if(seDebeGenerarOrden)
+                                                JOptionPane.showMessageDialog(cobroPanel, "Su orden de reconexión se generó correctamente, por favor verifique", "", JOptionPane.INFORMATION_MESSAGE);
+                                            else
+                                                JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus ACTIVmdelgado, por favor verifique", "", JOptionPane.INFORMATION_MESSAGE);
+                                            break;
+                                        case Constantes.CODIGO_HTTP_OK_WARNING:
+                                            JOptionPane.showMessageDialog(cobroPanel, response.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+                                            break;
+                                        default:
+                                            if(seDebeGenerarOrden){
+                                                JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error al actualizar su contrato y generar su orden en el servidor, por favor realice sus cambios directamente en el sistema web.", null, JOptionPane.WARNING_MESSAGE);
+                                            }else{
+                                                JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error al actualizar su contrato en el servidor, por favor actualice directamente en sistema web", null, JOptionPane.WARNING_MESSAGE);
+                                            }   break;
+                                    }
+                                }catch(Exception ex){
+                                    if(seDebeGenerarOrden){
+                                        JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error al actualizar su contrato y generar su orden en el servidor, por favor realice sus cambios directamente en el sistema web.", null, JOptionPane.WARNING_MESSAGE);
+                                    }else{
+                                        JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error al actualizar su contrato en el servidor, por favor actualice directamente en sistema web", null, JOptionPane.WARNING_MESSAGE);
+                                    }
+                                }
+                            }
+                            
+                            limpiarPantalla();
+                        }
+       
                     } catch (Exception ex) {
                         StringWriter sw = new StringWriter();
                         PrintWriter pw = new PrintWriter(sw);

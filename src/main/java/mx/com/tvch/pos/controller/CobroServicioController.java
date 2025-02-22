@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import mx.com.tvch.pos.client.TvchApiClient;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.dao.ContratoDao;
 import mx.com.tvch.pos.dao.ContratoxSuscriptorDao;
@@ -30,6 +31,10 @@ import mx.com.tvch.pos.entity.PromocionEntity;
 import mx.com.tvch.pos.entity.TipoDescuentoEntity;
 import mx.com.tvch.pos.entity.TransaccionEntity;
 import mx.com.tvch.pos.model.DetallePagoServicio;
+import mx.com.tvch.pos.model.client.Request;
+import mx.com.tvch.pos.model.client.Response;
+import mx.com.tvch.pos.model.client.UpdateContratoEstatusReconexionPosRequest;
+import mx.com.tvch.pos.model.client.UpdateContratoResponse;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Utilerias;
 import org.slf4j.Logger;
@@ -54,6 +59,7 @@ public class CobroServicioController {
     private final DetalleDescuentoTransaccionDao detalleDescuentoTransaccionDao;
     private final Utilerias util;
     private final Sesion sesion;
+    private final TvchApiClient client;
 
     Logger logger = LoggerFactory.getLogger(CobroServicioController.class);
 
@@ -76,8 +82,56 @@ public class CobroServicioController {
         detallePromocionTransaccionDao = DetallePromocionTransaccionDao.getDetallePromocionTransaccionDao();
         util = Utilerias.getUtilerias();
         sesion = Sesion.getSesion();
+        client = TvchApiClient.getTvchApiClient();
     }
-
+    
+    /**
+     * 
+     * @param suscriptorSeleccionado
+     * @param seDebeGenerarorden
+     * @throws Exception 
+     */
+    public Response<UpdateContratoResponse> actualizarContratoReconexion(ContratoxSuscriptorEntity suscriptorSeleccionado, boolean seDebeGenerarorden) throws Exception{
+        
+        try{
+            
+            //paso 1 -> actualizar el estatus del contrato en local
+            if(seDebeGenerarorden)
+                contratoDao.actualizarEstatus(suscriptorSeleccionado.getContratoId(), Constantes.ESTATUS_CONTRATO_RECONEXION);
+            else
+                contratoDao.actualizarEstatus(suscriptorSeleccionado.getContratoId(), Constantes.ESTATUS_CONTRATO_ACTIVO);
+        
+            //paso 2-> enviar peticion de actualizacion de estaus y posible generacion de orden a central
+            UpdateContratoEstatusReconexionPosRequest reconexionPosRequest = new UpdateContratoEstatusReconexionPosRequest();
+            reconexionPosRequest.setContratoId(suscriptorSeleccionado.getContratoId());
+            reconexionPosRequest.setUsuarioId(sesion.getUsuarioId());
+            if(seDebeGenerarorden)
+                reconexionPosRequest.setGenerarOrdenReconexion(1);
+            else
+                reconexionPosRequest.setGenerarOrdenReconexion(0);
+            Request<UpdateContratoEstatusReconexionPosRequest> request = new Request<>();
+            request.setData(reconexionPosRequest);
+            Response<UpdateContratoResponse> response = client.updateEstatusContratoReconexion(request);
+            return response;
+            
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Fallo al realizar cobro: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        }
+    
+    }
+    
+    /**
+     * 
+     * @param suscriptor
+     * @param detallesPago
+     * @param numeroMeses
+     * @return
+     * @throws Exception 
+     */
     public Long cobrarServicio(ContratoxSuscriptorEntity suscriptor, List<DetallePagoServicio> detallesPago, Integer numeroMeses) throws Exception {
 
         Long transaccionId = null;
