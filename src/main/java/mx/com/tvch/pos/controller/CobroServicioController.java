@@ -148,13 +148,15 @@ public class CobroServicioController {
                         detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get().getMesesGratis(),
                         suscriptor.getFechaProximoPago(), 
                         Constantes.FORMATO_FECHA_MYSQL,
-                        numeroMeses);
+                        numeroMeses,
+                        suscriptor.getEstatusContratoId());
                     nuevaFechaPagoTicket = util.obtenerNuevaFechaProximoPago(
                             sesion.getDiaCorte(),
                         detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get().getMesesGratis(),
                         suscriptor.getFechaProximoPago(), 
                         Constantes.FORMATO_FECHA_TICKET,
-                        numeroMeses);
+                        numeroMeses,
+                        suscriptor.getEstatusContratoId());
 
             } else {
                     nuevaFechaPagoMySql = util.obtenerNuevaFechaProximoPago(
@@ -162,13 +164,15 @@ public class CobroServicioController {
                             null, 
                             suscriptor.getFechaProximoPago(), 
                             Constantes.FORMATO_FECHA_MYSQL,
-                            numeroMeses);
+                            numeroMeses,
+                            suscriptor.getEstatusContratoId());
                     nuevaFechaPagoTicket = util.obtenerNuevaFechaProximoPago(
                             sesion.getDiaCorte(), 
                             null, 
                             suscriptor.getFechaProximoPago(), 
                             Constantes.FORMATO_FECHA_TICKET,
-                            numeroMeses);
+                            numeroMeses,
+                            suscriptor.getEstatusContratoId());
 
             }
 
@@ -413,6 +417,71 @@ public class CobroServicioController {
 
         return cadenaImporte;
 
+    }
+    
+    public Double obtenerMontoAtrasado(ContratoxSuscriptorEntity suscriptorSeleccionado){
+        
+        Double monto = 0.0;
+                    
+        Calendar fechaProximoPago = Calendar.getInstance();
+        fechaProximoPago.setTime(suscriptorSeleccionado.getFechaProximoPago());
+        int anioFechaProximoPago = fechaProximoPago.get(Calendar.YEAR);
+        int mesFechaProximoPago = fechaProximoPago.get(Calendar.MONTH);
+        int diaFechaProximoPago = fechaProximoPago.get(Calendar.DAY_OF_MONTH);
+        fechaProximoPago.set(Calendar.HOUR_OF_DAY, 0);
+        fechaProximoPago.set(Calendar.MINUTE, 0);
+        fechaProximoPago.set(Calendar.SECOND, 0);
+        fechaProximoPago.set(Calendar.MILLISECOND, 0);
+            
+        Calendar fechaHoy = Calendar.getInstance();
+        fechaHoy.setTime(new Date());
+        int mesCancelacion = fechaHoy.get(Calendar.MONTH);
+        int anioCancelacion = fechaHoy.get(Calendar.YEAR);
+        int diaCancelacion = fechaHoy.get(Calendar.DAY_OF_MONTH);
+        fechaHoy.set(Calendar.HOUR_OF_DAY, 0);
+        fechaHoy.set(Calendar.MINUTE, 0);
+        fechaHoy.set(Calendar.SECOND, 0);
+        fechaHoy.set(Calendar.MILLISECOND, 0);
+        
+ 
+        //si esta vencido es porque la fecha ya se paso
+        int diferenciaAnios = anioCancelacion - anioFechaProximoPago;
+        int diferenciaMeses = (diferenciaAnios*12) + mesCancelacion - mesFechaProximoPago;
+        monto = (suscriptorSeleccionado.getCostoServicio() * (diferenciaMeses+1)) ;
+       
+        return monto;
+    }
+    
+    public Integer obtenerMesesAtrasado(ContratoxSuscriptorEntity suscriptorSeleccionado){
+        
+        Double monto = 0.0;
+                    
+        Calendar fechaProximoPago = Calendar.getInstance();
+        fechaProximoPago.setTime(suscriptorSeleccionado.getFechaProximoPago());
+        int anioFechaProximoPago = fechaProximoPago.get(Calendar.YEAR);
+        int mesFechaProximoPago = fechaProximoPago.get(Calendar.MONTH);
+        int diaFechaProximoPago = fechaProximoPago.get(Calendar.DAY_OF_MONTH);
+        fechaProximoPago.set(Calendar.HOUR_OF_DAY, 0);
+        fechaProximoPago.set(Calendar.MINUTE, 0);
+        fechaProximoPago.set(Calendar.SECOND, 0);
+        fechaProximoPago.set(Calendar.MILLISECOND, 0);
+            
+        Calendar fechaHoy = Calendar.getInstance();
+        fechaHoy.setTime(new Date());
+        int mesCancelacion = fechaHoy.get(Calendar.MONTH);
+        int anioCancelacion = fechaHoy.get(Calendar.YEAR);
+        int diaCancelacion = fechaHoy.get(Calendar.DAY_OF_MONTH);
+        fechaHoy.set(Calendar.HOUR_OF_DAY, 0);
+        fechaHoy.set(Calendar.MINUTE, 0);
+        fechaHoy.set(Calendar.SECOND, 0);
+        fechaHoy.set(Calendar.MILLISECOND, 0);
+        
+ 
+        //si esta vencido es porque la fecha ya se paso
+        int diferenciaAnios = anioCancelacion - anioFechaProximoPago;
+        int diferenciaMeses = (diferenciaAnios*12) + mesCancelacion - mesFechaProximoPago;
+       
+        return diferenciaMeses+1;
     }
 
 }

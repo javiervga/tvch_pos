@@ -693,6 +693,8 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                 listTiposOrden.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO, "Orden de Servicio"));
             } else if (estatusContratoId == Constantes.ESTATUS_CONTRATO_RECONEXION) {
                 listTiposOrden.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO, "Orden de Servicio"));
+            } else if (estatusContratoId == Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO) {
+                listTiposOrden.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO, "Orden de Servicio"));
             }
         }
 

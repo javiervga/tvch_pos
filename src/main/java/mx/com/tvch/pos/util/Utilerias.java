@@ -74,24 +74,34 @@ public class Utilerias {
      *
      * @param diaCorte
      * @param mesesGratis
-     * @param fechaPago
+     * @param fechaPagoActual
+     * @param numeroMesesPagados
      * @param formato
      * @return
      * @throws ParseException
      */
-    public String obtenerNuevaFechaProximoPago(int diaCorte, Integer mesesGratis, Date fechaPagoActual, String formato, Integer numeroMesesPagados) throws ParseException {
+    public String obtenerNuevaFechaProximoPago(
+            int diaCorte, 
+            Integer mesesGratis, 
+            Date fechaPagoActual, 
+            String formato, 
+            Integer numeroMesesPagados,
+            Integer estatusContrato) throws ParseException {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat(Constantes.FORMATO_FECHA_MYSQL);
         Calendar cfechaPagoActual = Calendar.getInstance();
 
-        if (fechaPagoActual != null) {
+        if (fechaPagoActual != null && estatusContrato != Constantes.ESTATUS_CONTRATO_CORTE) {
             cfechaPagoActual.setTime(fechaPagoActual);
         } else {
             cfechaPagoActual.setTime(new Date());
         }
 
         cfechaPagoActual.set(Calendar.DAY_OF_MONTH, diaCorte);
-        cfechaPagoActual.add(Calendar.MONTH, numeroMesesPagados);
+        if(estatusContrato == Constantes.ESTATUS_CONTRATO_CORTE)
+            cfechaPagoActual.add(Calendar.MONTH, 1);
+        else
+            cfechaPagoActual.add(Calendar.MONTH, numeroMesesPagados);
 
         if (mesesGratis != null) {
 

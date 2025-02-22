@@ -483,8 +483,25 @@ public class CobroServicioPanel extends javax.swing.JPanel {
     private void cargarDatosSuscriptor(ContratoxSuscriptorEntity contratosuscriptor) {
 
         System.out.println("Seelccionado: " + contratosuscriptor.getContratoId());
+        comboNumeroMeses.setEnabled(true);
         
-        Integer numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
+        // primero borrar los datos de suscriptores que se hayan seleccionado antes
+        limpiarDatosSuscriptor();
+        suscriptorSeleccionado = contratosuscriptor;
+        Integer numeroMeses = 1;
+        Double montoTotalMeses = 0.0;
+        if(contratosuscriptor.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
+            comboNumeroMeses.setEnabled(false);
+            numeroMeses = controller.obtenerMesesAtrasado(suscriptorSeleccionado);
+            montoTotalMeses = controller.obtenerMontoAtrasado(suscriptorSeleccionado);
+        }else if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
+            numeroMeses = 1;
+            montoTotalMeses = 0.0;
+        }else{
+            numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
+            montoTotalMeses = suscriptorSeleccionado.getCostoServicio()*numeroMeses;
+        }
+        
         StringBuilder descripcionMes = new StringBuilder();
         if(numeroMeses == 1)
             descripcionMes.append("Un mes ");
@@ -493,15 +510,20 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         
         String descFechaProximoPago = null;
         try {
-            descFechaProximoPago = util.obtenerNuevaFechaProximoPago(sesion.getDiaCorte(), 0, contratosuscriptor.getFechaProximoPago(), Constantes.FORMATO_FECHA_TICKET, numeroMeses);
+            descFechaProximoPago = util.obtenerNuevaFechaProximoPago(
+                    sesion.getDiaCorte(), 
+                    0, 
+                    contratosuscriptor.getFechaProximoPago(), 
+                    Constantes.FORMATO_FECHA_TICKET, 
+                    numeroMeses,
+                    contratosuscriptor.getEstatusContratoId());
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger(CobroServicioPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        // primero borrar los datos de suscriptores que se hayan seleccionado antes
-        limpiarDatosSuscriptor();
+        
 
-        suscriptorSeleccionado = contratosuscriptor;
+        
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptorSeleccionado.getNombre());
         if (suscriptorSeleccionado.getApellidoPaterno() != null) {
@@ -535,7 +557,16 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         if(descFechaProximoPago != null)
             conceptoMontoPago.append(" >> Proximo pago hasta: ").append(descFechaProximoPago);
         detalleMontoPago.setConcepto(conceptoMontoPago.toString());
-        Double montoTotalMeses = suscriptorSeleccionado.getCostoServicio()*numeroMeses;
+        
+        
+        /*if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
+            montoTotalMeses = controller.obtenerMontoAtrasado(suscriptorSeleccionado);
+        }else if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
+            montoTotalMeses = 0.0;
+        }else{
+            montoTotalMeses = suscriptorSeleccionado.getCostoServicio()*numeroMeses;
+        }*/
+        
         detalleMontoPago.setMonto(montoTotalMeses);
         detalleMontoPago.setCadenaMonto("  $".concat(String.valueOf(montoTotalMeses)));
         detalleMontoPago.setTipoDetalle(Constantes.TIPO_DETALLE_COBRO_SERVICIO);
@@ -587,6 +618,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         model.fireTableDataChanged();
         etiquetaImporte.setText("0.00");
         etiquetaPromocionAplicada.setVisible(false);
+        campoDescuentoAplicado.setText("");
     }
 
     /**
@@ -686,6 +718,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         campoDescuentoAplicado.setText("");
         etiquetaImporte.setText("0.00");
         comboNumeroMeses.setSelectedIndex(0);
+        comboNumeroMeses.setEnabled(true);
     }
 
     public void cargarDatosSesion() {

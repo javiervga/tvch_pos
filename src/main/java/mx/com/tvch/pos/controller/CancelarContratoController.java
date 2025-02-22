@@ -161,7 +161,8 @@ public class CancelarContratoController {
             //quitar los cancelados
             list = list
                     .stream()
-                    .filter(s -> s.getEstatusContratoId() != Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO && s.getEstatusContratoId() != Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO)
+                    .filter(s -> s.getEstatusContratoId() != Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO && 
+                            s.getEstatusContratoId() != Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO)
                     .collect(Collectors.toList());
 
             if (list == null) {
