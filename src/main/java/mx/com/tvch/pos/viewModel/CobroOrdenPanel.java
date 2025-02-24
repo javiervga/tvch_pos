@@ -449,7 +449,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                     try {
                         TipoBusquedaCobro tipoBusquedaCobro = (TipoBusquedaCobro) comboTiposBusqueda.getModel().getSelectedItem();
                         EstatusSuscriptorEntity estatus = (EstatusSuscriptorEntity) comboEstatusSuscriptor.getModel().getSelectedItem();
-                        suscriptoresConsultaList = controller.consultarSuscriptores(tipoBusquedaCobro, campoBusqueda.getText(), estatus);
+                        suscriptoresConsultaList = controller.consultarSuscriptores(tipoBusquedaCobro, campoBusqueda.getText().trim(), estatus);
 
                         limpiarTablaOrdenes();
                         DefaultTableModel model = (DefaultTableModel) tablaSuscriptores.getModel();

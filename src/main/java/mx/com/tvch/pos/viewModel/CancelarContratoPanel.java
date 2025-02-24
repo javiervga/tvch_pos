@@ -285,7 +285,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                         || tipoBusquedaCobro.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_CONTRATO_ANTERIOR) {
                     try {
 
-                        contrato = Long.parseLong(campoBusqueda.getText());
+                        contrato = Long.parseLong(campoBusqueda.getText().trim());
                         cargarTablaSuscriptores(model, contrato, tipoBusquedaCobro.getTipoCobroId(), "");
                         limpiarDatosSuscriptor();
 
@@ -294,9 +294,9 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                     }
                 } else {
 
-                    if (!campoBusqueda.getText().isEmpty()) {
+                    if (!campoBusqueda.getText().trim().isEmpty()) {
 
-                        cargarTablaSuscriptores(model, contrato, tipoBusquedaCobro.getTipoCobroId(), campoBusqueda.getText().toUpperCase());
+                        cargarTablaSuscriptores(model, contrato, tipoBusquedaCobro.getTipoCobroId(), campoBusqueda.getText().trim().toUpperCase());
                         limpiarDatosSuscriptor();
 
                     } else {
