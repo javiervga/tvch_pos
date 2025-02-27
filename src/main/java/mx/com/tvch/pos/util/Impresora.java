@@ -1212,7 +1212,12 @@ public class Impresora {
      * @param suscriptor
      * @throws Exception
      */
-    public void imprimirTicketOrdenInstalacion(Long transaccionId, Orden orden, Suscriptor suscriptor, String nombreSucursal) throws Exception {
+    public void imprimirTicketOrdenInstalacion(
+            Long transaccionId, 
+            Orden orden, 
+            Suscriptor suscriptor, 
+            String nombreSucursal,
+            String fechaProximoPago) throws Exception {
 
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptor.getNombre()).append(" ").append(suscriptor.getApellidoPaterno()).append(" ").append(suscriptor.getApellidoMaterno());
@@ -1295,7 +1300,7 @@ public class Impresora {
         pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(orden.getImportePagar())));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Próximo pago antes de:");
-        pm.printTextLinCol(linea, 25, orden.getFechaProximoPago());
+        pm.printTextLinCol(linea, 25, fechaProximoPago);
         linea++;
         pm.printTextWrap(linea, 1, 1, 47, "RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO");
         linea++;

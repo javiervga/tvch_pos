@@ -111,6 +111,7 @@ public class Constantes {
     public static final int CODIGO_HTTP_OK = 200;
     public static final int CODIGO_HTTP_OK_WARNING = 202;
     public static final int CODIGO_HTTP_NO_CONTENT = 204;
+    public static final int CODIGO_HTTP_BAD_REQUEST = 400;
     public static final int CODIGO_HTTP_PERMISOS_ERROR = 403;
     public static final int CODIGO_HTTP_TVCH_ERROR = 409;
     public static final int CODIGO_HTTP_SERVER_ERROR = 500;

@@ -38,6 +38,7 @@ import mx.com.tvch.pos.model.client.TipoDescuento;
 import mx.com.tvch.pos.util.Calendario;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Impresora;
+import mx.com.tvch.pos.util.Utilerias;
 import mx.com.tvch.pos.util.VentanaEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
     private Suscriptor suscriptorSeleccionado;
     private Orden ordenSeleccionada;
     private final Impresora impresora;
+    private final Utilerias util;
 
     private List<Suscriptor> suscriptoresConsultaList;
     private final JCalendar calendarioIni;
@@ -90,6 +92,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         chooserIni = calendario.obtenerChooser();
         chooserFin = calendario.obtenerChooser();
         impresora = Impresora.getImpresora();
+        util = Utilerias.getUtilerias();
 
         crearEventos();
         cargarComboTiposBusqueda();
@@ -112,7 +115,17 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                         try{
                             switch (ordenSeleccionada.getTipoOrdenId()) {
                                 case Constantes.TIPO_ORDEN_INSTALACION:
-                                    impresora.imprimirTicketOrdenInstalacion(transaccionId, ordenSeleccionada, suscriptorSeleccionado, sesion.getSucursal());
+                                    String fechaProximoPago = util
+                                            .obtenerNuevaFechaProximoPagoOrdenInstalacion(
+                                                    sesion.getDiaCorte(), 
+                                                    ordenSeleccionada.getMesesGratisPromocion(), 
+                                                    Constantes.FORMATO_FECHA_WEB_SERVICE);
+                                    impresora.imprimirTicketOrdenInstalacion(
+                                            transaccionId, 
+                                            ordenSeleccionada, 
+                                            suscriptorSeleccionado, 
+                                            sesion.getSucursal(),
+                                            fechaProximoPago);
                                     break;
                                 case Constantes.TIPO_ORDEN_SERVICIO:
                                     impresora.imprimirTicketOrdenServicio(transaccionId, ordenSeleccionada, suscriptorSeleccionado, sesion.getSucursal());
@@ -1038,9 +1051,9 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        tablaSuscriptores.setMaximumSize(new java.awt.Dimension(1438, 1900));
-        tablaSuscriptores.setMinimumSize(new java.awt.Dimension(1438, 1900));
-        tablaSuscriptores.setPreferredSize(new java.awt.Dimension(1438, 1900));
+        tablaSuscriptores.setMaximumSize(new java.awt.Dimension(1438, 2200));
+        tablaSuscriptores.setMinimumSize(new java.awt.Dimension(1438, 2200));
+        tablaSuscriptores.setPreferredSize(new java.awt.Dimension(1438, 2200));
         tablaSuscriptores.setRowHeight(15);
         tablaSuscriptores.setShowGrid(false);
         tablaSuscriptores.getTableHeader().setReorderingAllowed(false);

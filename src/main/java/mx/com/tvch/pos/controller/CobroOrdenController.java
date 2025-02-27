@@ -50,7 +50,9 @@ import mx.com.tvch.pos.model.client.UpdateOrdenCambioDomicilioResponse;
 import mx.com.tvch.pos.model.client.UpdateOrdenInstalacionResponse;
 import mx.com.tvch.pos.model.client.UpdateOrdenServicioResponse;
 import mx.com.tvch.pos.util.Constantes;
+import mx.com.tvch.pos.util.TvchException;
 import mx.com.tvch.pos.util.Utilerias;
+import org.apache.http.conn.HttpHostConnectException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -204,6 +206,12 @@ public class CobroOrdenController {
                         case Constantes.CODIGO_HTTP_OK:
                             //registrar em bd local
                             transaccionId = registrarTransaccion(orden,Constantes.TIPO_COBRO_ORDEN_INSTALACION);
+                            //actualizar la fecha de pago en el contrato
+                            try{
+                                contratoDao.actualizarFechaPagoContrato(orden.getContratoId(), fechaProximoPago);
+                            }catch(Exception e){
+                                
+                            }
                             break;
                         case Constantes.CODIGO_HTTP_TVCH_ERROR:
                             throw new Exception(responseInstalacion.getMessage());
@@ -444,20 +452,15 @@ public class CobroOrdenController {
             suscriptoresRequest.setSucursalId(sesion.getSucursalId());
             suscriptoresRequest.setEstatusSuscriptorId(estatusSuscriptor.getEstatusId());
 
-            if (tipoBusqueda.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_CONTRATO) {
-                try {
-                    Long contratoId = Long.parseLong(cadenaBuscar);
-                    suscriptoresRequest.setContrato(contratoId);
-                } catch (NumberFormatException ex) {
-                    throw new Exception("Por favor, ingrese un número de contrato numérico");
-                }
+            /*if (tipoBusqueda.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_CONTRATO) {
+                suscriptoresRequest.setValor(cadenaBuscar);
             } else if (tipoBusqueda.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_CONTRATO_ANTERIOR) {
-                try {
-                    Long contratoAnteriorId = Long.parseLong(cadenaBuscar);
-                    suscriptoresRequest.setContratoAnterior(contratoAnteriorId);
-                } catch (NumberFormatException ex) {
-                    throw new Exception("Por favor, ingrese un número de contrato numérico");
-                }
+                //try {
+                  //  Long contratoAnteriorId = Long.parseLong(cadenaBuscar);
+                    suscriptoresRequest.setValor(cadenaBuscar);
+                //} catch (NumberFormatException ex) {
+                  //  throw new Exception("Por favor, ingrese un número de contrato numérico");
+                //}
             } else if (tipoBusqueda.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_APELLIDO_MATERNO) {
                 suscriptoresRequest.setApellidoMaterno(cadenaBuscar);
             } else if (tipoBusqueda.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_APELLIDO_PATERNO) {
@@ -466,7 +469,10 @@ public class CobroOrdenController {
                 suscriptoresRequest.setDomicilio(cadenaBuscar);
             } else if (tipoBusqueda.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_NOMBRE) {
                 suscriptoresRequest.setNombre(cadenaBuscar);
-            }
+            }*/
+            
+            suscriptoresRequest.setTipoBusqueda(tipoBusqueda.getTipoCobroId());
+            suscriptoresRequest.setValor(cadenaBuscar);
 
             Request<ListSuscriptoresRequest> request = new Request<>();
             request.setData(suscriptoresRequest);
@@ -482,19 +488,33 @@ public class CobroOrdenController {
                                             s.getEstatusContratoId() != Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO) )
                             .collect(Collectors.toList());
                 case Constantes.CODIGO_HTTP_NO_CONTENT:
-                    throw new NoSuchElementException("No se encontraron suscriptores con la informacion recibida");
+                    throw new TvchException("No se encontraron suscriptores con la informacion recibida");
                 case Constantes.CODIGO_HTTP_TVCH_ERROR:
-                    throw new Exception(response.getMessage());
+                    throw new TvchException(response.getMessage());
+                case Constantes.CODIGO_HTTP_BAD_REQUEST:
+                    throw new TvchException("Ocurrió un error al conectar con servidor ya que la versión de su sistema no se encuentra actualizada. Por favor contacte a soporte.");
                 default:
-                    throw new Exception("Ocurrió un error al intentar conectar con servidor. Por favor reintente");
+                    throw new TvchException("Ocurrió un error al intentar conectar con servidor. Por favor reintente");
             }
 
-        } catch (Exception ex) {
+        } catch (TvchException ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error controlado consultar suscriptores: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        }catch (HttpHostConnectException ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
             logger.error("Fallo al consultar suscriptores: \n" + sw.toString());
-            throw new Exception(ex.getMessage());
+            throw new Exception("No se logro establecer comunicación con el servidor");
+        }catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Fallo al consultar suscriptores: \n" + sw.toString());
+            throw new Exception("Ocurrió un error al consultar suscriptores. Por favor intente nuevamente, si el problema persiste llame a soporte.");
         }
 
     }
