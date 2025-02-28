@@ -137,8 +137,10 @@ public class CobroServicioController {
         Long transaccionId = null;
 
         try {
-
             Double importePagar = Double.valueOf(obtenerImporteActualizado(detallesPago));
+            //validar si hay meses gratis y agregarlos a la nueva fecha de pago
+            if(suscriptor.getMesesGratis() != null && suscriptor.getMesesGratis() > 0)
+                numeroMeses = numeroMeses + suscriptor.getMesesGratis();
 
             String nuevaFechaPagoTicket = "";
             String nuevaFechaPagoMySql = "";

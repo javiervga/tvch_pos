@@ -122,11 +122,21 @@ public class CobroServicioPanel extends javax.swing.JPanel {
 
     private void crearEventos() {
         
+        ActionListener comboPromocionesActionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(suscriptorSeleccionado != null){
+                    cargarDatosSuscriptor(suscriptorSeleccionado, false);
+                }
+            }
+        };
+        comboPromociones.addActionListener(comboPromocionesActionListener);
+        
         ActionListener comboMesesActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(suscriptorSeleccionado != null){
-                    cargarDatosSuscriptor(suscriptorSeleccionado);
+                    cargarDatosSuscriptor(suscriptorSeleccionado, false);
                 }
             }
         };
@@ -232,6 +242,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                         actualizarTablaDetallesPago();
                         etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
                         etiquetaPromocionAplicada.setVisible(false);
+                        suscriptorSeleccionado.setMesesGratis(0);
                     }
 
                 }
@@ -250,21 +261,46 @@ public class CobroServicioPanel extends javax.swing.JPanel {
 
                             PromocionEntity entity = (PromocionEntity) comboPromociones.getModel().getSelectedItem();
                             Integer numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
+                            
+                            if(entity.getMesesPagados() == numeroMeses){
+                                
+                                String descFechaProximoPago = null;
+                                try {
+                                    descFechaProximoPago = util.obtenerNuevaFechaProximoPago(
+                                        sesion.getDiaCorte(), 
+                                        0, 
+                                        suscriptorSeleccionado.getFechaProximoPago(), 
+                                        Constantes.FORMATO_FECHA_TICKET, 
+                                        numeroMeses+entity.getMesesGratis(),
+                                        suscriptorSeleccionado.getEstatusContratoId());
+                                } catch (Exception ex) {
+                                    java.util.logging.Logger.getLogger(CobroServicioPanel.class.getName()).log(Level.SEVERE, null, ex);
+                                }
 
-                            DetallePagoServicio detallePromocion = new DetallePagoServicio();
-                            StringBuilder promocion = new StringBuilder();
-                            promocion.append("Promoción - ");
-                            promocion.append(entity.getDescripcion());
-                            detallePromocion.setTipoDetalle(Constantes.TIPO_DETALLE_COBRO_PROMOCION);
-                            detallePromocion.setConcepto(promocion.toString());
-                            detallePromocion.setMonto(entity.getCostoPromocion()*numeroMeses);
-                            Double costoTotalMenosPromocion = (suscriptorSeleccionado.getCostoServicio()-entity.getCostoPromocion())*numeroMeses;
-                            detallePromocion.setCadenaMonto("- $".concat(String.valueOf(costoTotalMenosPromocion)));
-                            detallePromocion.setPromocionId(entity.getPromocionId());
-                            listaDetallesPago.add(detallePromocion);
-                            actualizarTablaDetallesPago();
-                            etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
-                            etiquetaPromocionAplicada.setVisible(true);
+                                DetallePagoServicio detallePromocion = new DetallePagoServicio();
+                                StringBuilder promocion = new StringBuilder();
+                                //promocion.append("Promoción - ");
+                                promocion.append(entity.getDescripcion());
+                                if(descFechaProximoPago != null){
+                                    promocion.append(" >> Próximo pago hasta: ");
+                                    promocion.append(descFechaProximoPago);
+                                }
+                                detallePromocion.setTipoDetalle(Constantes.TIPO_DETALLE_COBRO_PROMOCION);
+                                detallePromocion.setConcepto(promocion.toString());
+                                detallePromocion.setMonto(entity.getCostoPromocion()*numeroMeses);
+                                Double costoTotalMenosPromocion = (suscriptorSeleccionado.getCostoServicio()-entity.getCostoPromocion())*numeroMeses;
+                                detallePromocion.setCadenaMonto("- $".concat(String.valueOf(costoTotalMenosPromocion)));
+                                detallePromocion.setPromocionId(entity.getPromocionId());
+                                listaDetallesPago.add(detallePromocion);
+                                actualizarTablaDetallesPago();
+                                etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
+                                etiquetaPromocionAplicada.setVisible(true);
+                                if(entity.getMesesGratis() != null)
+                                    suscriptorSeleccionado.setMesesGratis(entity.getMesesGratis());
+                            
+                            }else{
+                                JOptionPane.showMessageDialog(cobroPanel, "Para aplicar la promoción es necesario el pago de "+entity.getMesesPagados()+" meses", "", JOptionPane.WARNING_MESSAGE);
+                            }
                         } else {
                             JOptionPane.showMessageDialog(cobroPanel, "Ya existe un descuento aplicado en el cobro. Si desea aplicar una promoción es necesario eliminar el descuento.", "", JOptionPane.WARNING_MESSAGE);
                         }
@@ -363,7 +399,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                             if (suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
                                 comboNumeroMeses.setSelectedIndex(0);
                                 ContratoxSuscriptorEntity entity = suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
-                                cargarDatosSuscriptor(entity);
+                                cargarDatosSuscriptor(entity, true);
                             }
                         }
                     }
@@ -385,7 +421,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                         if (suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
                             comboNumeroMeses.setSelectedIndex(0);
                             ContratoxSuscriptorEntity entity = suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
-                            cargarDatosSuscriptor(entity);
+                            cargarDatosSuscriptor(entity, true);
                         }
                     }
                     mouseEvent.consume();
@@ -480,7 +516,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
 
     }
 
-    private void cargarDatosSuscriptor(ContratoxSuscriptorEntity contratosuscriptor) {
+    private void cargarDatosSuscriptor(ContratoxSuscriptorEntity contratosuscriptor, boolean seRefrescanPromociones) {
 
         System.out.println("Seelccionado: " + contratosuscriptor.getContratoId());
         comboNumeroMeses.setEnabled(true);
@@ -584,9 +620,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         actualizarTablaDetallesPago();
         etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
 
-        ///carcagr combo promociones
-        comboPromociones.removeAllItems();
-        cargarComboPromociones(suscriptorSeleccionado.getServicioId());
+        if(seRefrescanPromociones){
+            ///carcagr combo promociones
+            comboPromociones.removeAllItems();
+            cargarComboPromociones(suscriptorSeleccionado.getServicioId());
+        }
     }
 
     private void actualizarTablaDetallesPago() {
@@ -619,6 +657,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         etiquetaImporte.setText("0.00");
         etiquetaPromocionAplicada.setVisible(false);
         campoDescuentoAplicado.setText("");
+        
     }
 
     /**
