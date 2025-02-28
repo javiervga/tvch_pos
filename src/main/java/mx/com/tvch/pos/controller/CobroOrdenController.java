@@ -493,6 +493,8 @@ public class CobroOrdenController {
                     throw new TvchException(response.getMessage());
                 case Constantes.CODIGO_HTTP_BAD_REQUEST:
                     throw new TvchException("Ocurrió un error al conectar con servidor ya que la versión de su sistema no se encuentra actualizada. Por favor contacte a soporte.");
+                case Constantes.CODIGO_HTTP_PERMISOS_ERROR:
+                    throw new TvchException(response.getMessage());
                 default:
                     throw new TvchException("Ocurrió un error al intentar conectar con servidor. Por favor reintente");
             }
