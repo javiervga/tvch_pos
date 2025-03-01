@@ -10,6 +10,7 @@ import mx.com.tvch.pos.dao.UsuarioDao;
 import mx.com.tvch.pos.entity.CajaEntity;
 import mx.com.tvch.pos.entity.SucursalEntity;
 import mx.com.tvch.pos.entity.UsuarioEntity;
+import mx.com.tvch.pos.util.Constantes;
 
 /**
  *
@@ -38,7 +39,13 @@ public class LoginController {
 
     public UsuarioEntity autenticarUsuario(String usuario, String password) throws Exception {
 
-        return usuarioDao.autenticarUsuario(usuario, password); 
+        UsuarioEntity entity = usuarioDao.autenticarUsuario(usuario, password);
+        if(entity.getEstatus() == Constantes.ESTATUS_USUARIO_BLOQUEADO)
+            throw new Exception("Su usuario esta bloqueado. Contacte a Soporte Técnico");
+        if(entity.getEstatus() == Constantes.ESTATUS_USUARIO_INACTIVO)
+            throw new Exception("El usuario ha sido dado de baja");
+            
+        return entity; 
 
     }
     
