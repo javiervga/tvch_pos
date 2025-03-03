@@ -27,7 +27,6 @@ import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
 import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import mx.com.tvch.pos.entity.DetalleDescuentoTransaccionEntity;
 import mx.com.tvch.pos.entity.DetallePromocionTransaccionEntity;
-import mx.com.tvch.pos.entity.TipoOrdenServicioEntity;
 import mx.com.tvch.pos.entity.TransaccionTicketEntity;
 import mx.com.tvch.pos.model.CorteCaja;
 import mx.com.tvch.pos.model.DetalleCorte;
@@ -121,13 +120,21 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 1, 2, 47, "Mineral de la Reforma   R.F.C. TCH151120HY6");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
+                47, properties.obtenerPropiedad("ticket.rfc"));
         linea++;
-        pm.printTextWrap(linea, 1, 11, 47, "Calle San Rafael No. 150,");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
         linea++;
-        pm.printTextWrap(linea, 1, 7, 47, "Colonia La Providencia C.P. 42186");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
         linea++;
-        pm.printTextWrap(linea, 1, 9, 47, "Sucursal ".concat(nombreSucursal));
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
         pm.printTextLinCol(linea, 1, "Fecha:");
@@ -438,13 +445,21 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 1, 2, 47, "Mineral de la Reforma   R.F.C. TCH151120HY6");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
+                47, properties.obtenerPropiedad("ticket.rfc"));
         linea++;
-        pm.printTextWrap(linea, 1, 11, 47, "Calle San Rafael No. 150,");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
         linea++;
-        pm.printTextWrap(linea, 1, 7, 47, "Colonia La Providencia C.P. 42186");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
         linea++;
-        pm.printTextWrap(linea, 1, 9, 47, "Sucursal ".concat(nombreSucursal));
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
         pm.printTextLinCol(linea, 1, "Fecha:");
@@ -600,13 +615,21 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 1, 2, 47, "Mineral de la Reforma   R.F.C. TCH151120HY6");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
+                47, properties.obtenerPropiedad("ticket.rfc"));
         linea++;
-        pm.printTextWrap(linea, 1, 11, 47, "Calle San Rafael No. 150,");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
         linea++;
-        pm.printTextWrap(linea, 1, 7, 47, "Colonia La Providencia C.P. 42186");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
         linea++;
-        pm.printTextWrap(linea, 1, 9, 47, "Sucursal ".concat(nombreSucursal));
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
         pm.printTextLinCol(linea, 1, "Fecha:");
@@ -742,13 +765,21 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 1, 2, 47, "Mineral de la Reforma   R.F.C. TCH151120HY6");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
+                47, properties.obtenerPropiedad("ticket.rfc"));
         linea++;
-        pm.printTextWrap(linea, 1, 11, 47, "Calle San Rafael No. 150,");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
         linea++;
-        pm.printTextWrap(linea, 1, 7, 47, "Colonia La Providencia C.P. 42186");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
         linea++;
-        pm.printTextWrap(linea, 1, 9, 47, "Sucursal ".concat(nombreSucursal));
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
         pm.printTextLinCol(linea, 1, "Fecha:");
@@ -874,13 +905,21 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 1, 2, 47, "Mineral de la Reforma   R.F.C. TCH151120HY6");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
+                47, properties.obtenerPropiedad("ticket.rfc"));
         linea++;
-        pm.printTextWrap(linea, 1, 11, 47, "Calle San Rafael No. 150,");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
         linea++;
-        pm.printTextWrap(linea, 1, 7, 47, "Colonia La Providencia C.P. 42186");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
         linea++;
-        pm.printTextWrap(linea, 1, 9, 47, "Sucursal ".concat(nombreSucursal));
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
         pm.printTextLinCol(linea, 1, "Fecha:");
@@ -990,13 +1029,21 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 1, 2, 47, "Mineral de la Reforma   R.F.C. TCH151120HY6");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
+                47, properties.obtenerPropiedad("ticket.rfc"));
         linea++;
-        pm.printTextWrap(linea, 1, 11, 47, "Calle San Rafael No. 150,");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
         linea++;
-        pm.printTextWrap(linea, 1, 7, 47, "Colonia La Providencia C.P. 42186");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
         linea++;
-        pm.printTextWrap(linea, 1, 9, 47, "Sucursal ".concat(nombreSucursal));
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
         pm.printTextLinCol(linea, 1, "Fecha:");
@@ -1125,13 +1172,21 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 1, 2, 47, "Mineral de la Reforma   R.F.C. TCH151120HY6");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
+                47, properties.obtenerPropiedad("ticket.rfc"));
         linea++;
-        pm.printTextWrap(linea, 1, 11, 47, "Calle San Rafael No. 150,");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
         linea++;
-        pm.printTextWrap(linea, 1, 7, 47, "Colonia La Providencia C.P. 42186");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
         linea++;
-        pm.printTextWrap(linea, 1, 9, 47, "Sucursal ".concat(nombreSucursal));
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
         pm.printTextLinCol(linea, 1, "Fecha:");
@@ -1245,13 +1300,21 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 1, 2, 47, "Mineral de la Reforma   R.F.C. TCH151120HY6");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
+                47, properties.obtenerPropiedad("ticket.rfc"));
         linea++;
-        pm.printTextWrap(linea, 1, 11, 47, "Calle San Rafael No. 150,");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
         linea++;
-        pm.printTextWrap(linea, 1, 7, 47, "Colonia La Providencia C.P. 42186");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
         linea++;
-        pm.printTextWrap(linea, 1, 9, 47, "Sucursal ".concat(nombreSucursal));
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
         pm.printTextLinCol(linea, 1, "Fecha:");
@@ -1373,13 +1436,21 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 1, 2, 47, "Mineral de la Reforma   R.F.C. TCH151120HY6");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
+                47, properties.obtenerPropiedad("ticket.rfc"));
         linea++;
-        pm.printTextWrap(linea, 1, 11, 47, "Calle San Rafael No. 150,");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
         linea++;
-        pm.printTextWrap(linea, 1, 7, 47, "Colonia La Providencia C.P. 42186");
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
+                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
         linea++;
-        pm.printTextWrap(linea, 1, 9, 47, "Sucursal ".concat(nombreSucursal));
+        pm.printTextWrap(linea, 
+                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
         pm.printTextLinCol(linea, 1, "Fecha:");

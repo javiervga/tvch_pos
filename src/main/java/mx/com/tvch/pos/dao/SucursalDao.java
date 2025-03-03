@@ -62,7 +62,7 @@ public class SucursalDao {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
-            logger.error("Error al obtener caja en bd: \n" + sw.toString());
+            logger.error("Error al obtener sucursal en bd: \n" + sw.toString());
         } finally {
             try {
                 if (stmt != null) {
