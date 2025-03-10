@@ -78,7 +78,7 @@ public class CorteCajaPanel extends javax.swing.JPanel {
                     JOptionPane.showMessageDialog(panel, "Por favor ingrese un monto correcto", "", JOptionPane.WARNING_MESSAGE);
                 }
                 
-                if(montoIngresado != null && montoIngresado > 0){
+                if(montoIngresado != null && montoIngresado >= 0){
                     
                     try {
                         CorteCaja corteCaja = controller.realizarCorte(detallesCorteConsultados, montoIngresado);
