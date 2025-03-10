@@ -258,7 +258,7 @@ public class CobroServicioController {
 
         try {
 
-            List<PromocionEntity> list = promocionDao.obtenerPromocionesActivas(servicioId);
+            List<PromocionEntity> list = promocionDao.obtenerPromocionesActivas(servicioId, sesion.getSucursalId());
 
             if (list == null) {
                 throw new NoSuchElementException(("No se encontraron tipos de descuentos registrados."));

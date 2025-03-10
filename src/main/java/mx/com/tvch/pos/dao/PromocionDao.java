@@ -37,10 +37,11 @@ public class PromocionDao {
     /**
      * 
      * @param servicioId
+     * @param sucursalId
      * @return
      * @throws Exception 
      */
-    public List<PromocionEntity> obtenerPromocionesActivas(Long servicioId) throws Exception{
+    public List<PromocionEntity> obtenerPromocionesActivas(Long servicioId, Long sucursalId) throws Exception{
 
         List<PromocionEntity> list = new ArrayList<>();
 
@@ -55,7 +56,9 @@ public class PromocionDao {
             StringBuilder query = new StringBuilder();
             
             query.append("SELECT id_promocion, descripcion, id_sucursal, id_servicio, costo_promocion, meses_pagados, meses_gratis, estatus FROM promociones WHERE id_servicio =");
-            query.append(servicioId);
+            query.append(servicioId).append(" ");
+            query.append("and id_sucursal = ").append(sucursalId).append(" ");
+            query.append("and estatus = 1");
             
             ResultSet rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
