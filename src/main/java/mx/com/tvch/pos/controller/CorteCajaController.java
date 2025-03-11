@@ -309,7 +309,7 @@ public class CorteCajaController {
                     List<DetallePromocionTransaccionEntity> promociones = detallePromocionTransaccionDao.obtenerDetallesPromocionPorTransaccion(t.getTransaccionId());
                     if (!promociones.isEmpty()) {
                         existenPromociones = true;
-                        cantidadPromociones = cantidadPromociones = promociones.size();
+                        cantidadPromociones = cantidadPromociones + 1;
                     }
 
                 }

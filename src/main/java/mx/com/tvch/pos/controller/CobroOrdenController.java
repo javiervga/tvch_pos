@@ -128,7 +128,7 @@ public class CobroOrdenController {
         detalleCobroTransaccionEntity.setOrdenId(orden.getId());
         detalleCobroTransaccionEntity.setDescripcionOrden(orden.getConceptoOrdenServicio());
         detalleCobroTransaccionEntity.setNumeroMeses(null);
-        Long detalleCobro = detalleCobroTransaccionDao.registrarDetalleTransaccion(detalleCobroTransaccionEntity);
+        
 
         //registrar el detalle de promocion
         if (orden.getPromocionId() != null) {
@@ -139,6 +139,8 @@ public class CobroOrdenController {
             detallePromocionTransaccionEntity.setTransaccionId(transaccionId);
             detallePromocionTransaccionEntity.setTipoPromocionId(Constantes.TIPO_PROMOCION_ORDEN_INSTALACION);
             Long detallePromocion = detallePromocionTransaccionDao.registrarDetallePromocion(detallePromocionTransaccionEntity);
+            //como hay una promocion poner el costo de la promocion en eld etalle de pago
+            detalleCobroTransaccionEntity.setMonto(orden.getCostoPromocion());
         }
 
         //registrar el detalle de decuento
@@ -150,6 +152,9 @@ public class CobroOrdenController {
             detalleDescuentoTransaccionEntity.setTransaccionId(transaccionId);
             Long detalleDescuento = detalleDescuentoTransaccionDao.registrarDetalleDescuento(detalleDescuentoTransaccionEntity);
         }
+        
+        // se guarda ala final el detalle de cobro, esto ya que sino, las promociones no se ven afectadas
+        Long detalleCobro = detalleCobroTransaccionDao.registrarDetalleTransaccion(detalleCobroTransaccionEntity);
         
         //actualizar la fecha de pago en el contrato
         //String nuevaFechaPagoMySql = util.obtenerNuevaFechaProximoPagoOrdenInstalacion(sesion.getDiaCorte(), 0, Constantes.FORMATO_FECHA_MYSQL);
