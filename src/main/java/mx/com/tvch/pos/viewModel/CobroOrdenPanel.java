@@ -38,6 +38,7 @@ import mx.com.tvch.pos.model.client.TipoDescuento;
 import mx.com.tvch.pos.util.Calendario;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Impresora;
+import mx.com.tvch.pos.util.TvchException;
 import mx.com.tvch.pos.util.Utilerias;
 import mx.com.tvch.pos.util.VentanaEnum;
 import org.slf4j.Logger;
@@ -475,8 +476,10 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
 
                     } catch (NoSuchElementException ex) {
                         JOptionPane.showMessageDialog(cobroPanel, "No se encontraron suscriptores con la informacion recibida", "", JOptionPane.WARNING_MESSAGE);
-                    } catch (Exception ex) {
+                    } catch (TvchException ex) {
                         JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
                     }
                     posFrame.ocultarLoading();
                 } else {

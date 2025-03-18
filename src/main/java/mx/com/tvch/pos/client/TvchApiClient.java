@@ -584,22 +584,56 @@ public class TvchApiClient {
         logger.info("Enviando peticion de consulta de suscriptores: \n"+jsonString);
         CloseableHttpResponse httpResponse = httpClient.execute(httpPost);
 
+        String responseBody = null;
         if (httpResponse.getStatusLine().getStatusCode() == Constantes.CODIGO_HTTP_OK
-                && httpResponse.getStatusLine().getStatusCode() != Constantes.CODIGO_HTTP_NO_CONTENT) {
-            String responseBody = EntityUtils.toString(httpResponse.getEntity());
+                /*&& httpResponse.getStatusLine().getStatusCode() != Constantes.CODIGO_HTTP_NO_CONTENT*/) {
+            responseBody = EntityUtils.toString(httpResponse.getEntity());
             logger.info("Respuesta de consulta de suscriptores exitosa: \n"+responseBody);
             response = gson.fromJson(responseBody, Response.class);
             response.setData(mapper.object2ListSuscriptoresResponse(response.getData()));
             jwtSesion.setToken(httpResponse.getFirstHeader("Authorization").getValue());
-        }else{
+        }else {
+            
             if(httpResponse.getEntity() != null){
-                String responseBody = EntityUtils.toString(httpResponse.getEntity());
+                responseBody = EntityUtils.toString(httpResponse.getEntity());
                 logger.warn("Fallo en respuesta de consulta de suscriptores: \n"+responseBody);
             }else{
                 logger.warn("Fallo en respuesta de consulta de suscriptores: \nCódigo"+httpResponse.getStatusLine());
             }
             response.setCode(httpResponse.getStatusLine().getStatusCode());
+            
+            if (httpResponse.getStatusLine().getStatusCode() == Constantes.CODIGO_HTTP_NO_CONTENT ){
+                response.setCode(204);
+                response.setMessage("Sin resultados");
+            }else if (httpResponse.getStatusLine().getStatusCode() == Constantes.CODIGO_HTTP_TVCH_ERROR ){ 
+                response.setCode(409);
+                if(responseBody != null){
+                    response = gson.fromJson(responseBody, Response.class);
+                    response.setMessage(response.getMessage());
+                    logger.warn("Fallo controlado en respuesta de consulta de suscriptores: \n"+response.getMessage());
+                }else{
+                    response = gson.fromJson(responseBody, Response.class);
+                    response.setMessage(response.getMessage());
+                    logger.warn("Fallo controlado en respuesta de consulta de suscriptores: \n"+response.getMessage());
+                }  
+            }else if (httpResponse.getStatusLine().getStatusCode() == Constantes.CODIGO_HTTP_PERMISOS_ERROR ){ 
+                response.setCode(403);
+                response.setMessage("Su usuario no cuenta con los permisos necesarios para realiza la operacion solicitada. Por favor, contacte a soporte.");
+                logger.warn("Fallo por permisos en respuesta de consulta de suscriptores: \n"+response.getMessage());
+            }else if (httpResponse.getStatusLine().getStatusCode() == Constantes.CODIGO_HTTP_SERVER_ERROR ){ 
+                response.setCode(403);
+                response.setMessage("Error de servidor. Por favor reintente, si el problema persiste contacte a soporte.");
+                logger.warn("Fallo de servidor en respuesta de consulta de suscriptores: \n"+response.getMessage());
+            }
         }
+        
+        if(responseBody != null){
+            //String responseBody = EntityUtils.toString(httpResponse.getEntity());
+            logger.warn("Fallo en respuesta de consulta de suscriptores: \n"+responseBody);
+        }else{
+            logger.warn("Fallo en respuesta de consulta de suscriptores: \nCódigo"+httpResponse.getStatusLine());
+        }
+        response.setCode(httpResponse.getStatusLine().getStatusCode());
 
         return response;
         
