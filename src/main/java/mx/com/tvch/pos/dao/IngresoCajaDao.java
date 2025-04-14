@@ -1,0 +1,158 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package mx.com.tvch.pos.dao;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import mx.com.tvch.pos.config.DbConfig;
+import mx.com.tvch.pos.config.Sesion;
+import mx.com.tvch.pos.entity.IngresoCajaEntity;
+import mx.com.tvch.pos.util.Utilerias;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ *
+ * @author fvega
+ */
+public class IngresoCajaDao {
+    
+    private static IngresoCajaDao dao;
+    
+    private final Utilerias utilerias;
+    
+    Logger logger = LoggerFactory.getLogger(IngresoCajaDao.class);
+    
+    public static IngresoCajaDao getIngresoCajaDao(){
+        if(dao == null)
+            dao = new IngresoCajaDao();
+        return dao;
+    }
+    
+    public IngresoCajaDao(){
+        utilerias = Utilerias.getUtilerias();
+    }
+    
+    /**
+     * 
+     * @param aperturaCajaId
+     * @return
+     * @throws Exception 
+     */
+    public List<IngresoCajaEntity> obtenerIngresoPorAperturaCaja(Long aperturaCajaId) throws Exception{
+
+        List<IngresoCajaEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("SELECT id_ingreso_caja , id_apertura_caja , id_tipo_ingreso , observaciones, monto FROM ingresos_caja WHERE id_apertura_caja =");
+            query.append(aperturaCajaId);
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                IngresoCajaEntity entity = new IngresoCajaEntity();
+                entity.setAperturaCajaId(rs.getLong("id_apertura_caja"));
+                entity.setMonto(rs.getDouble("monto"));
+                entity.setObservaciones(rs.getString("observaciones"));
+                entity.setIngresoCajaId(rs.getLong("id_ingreso_caja"));
+                entity.setTipoIngresoId(rs.getLong("id_tipo_ingreso"));
+                list.add(entity);
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar ingresos de caja en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return list;
+
+        
+    }
+    
+    /**
+     * 
+     * @param sesion
+     * @param montoSalida
+     * @param tipoIngresoId
+     * @param observaciones
+     * @throws Exception 
+     */
+    public void registrarIngresoCaja(Sesion sesion, Double montoSalida, Long tipoIngresoId, String observaciones) throws Exception {
+        
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            query.append("insert into ingresos_caja ( id_apertura_caja, id_tipo_ingreso, observaciones, monto, fecha_ingreso) values (");
+            query.append(sesion.getAperturaCajaId()).append(",");
+            query.append(tipoIngresoId).append(",'");
+            query.append(observaciones).append("',");
+            query.append(montoSalida).append(",'");
+            query.append(utilerias.obtenerFechaFormatoMysql()).append("')");
+            stmt.executeUpdate(query.toString());
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al registrar ingreso de caja: " + sw.toString());
+            throw new Exception("Ocurrió un error al registrar su ingreso de caja. Por favor reintente.");
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        
+    }
+    
+}
