@@ -117,6 +117,14 @@ public class LoginPanel extends javax.swing.JPanel {
         sesion.setPassword(password);
         sesion.setTelefonoSucursal(sucursalEntity.getTelefono());
         sesion.setUsaWhats(sucursalEntity.getUsaWhats());
+        sesion.setTelefonoSoporte(sucursalEntity.getTelefonoSoporte());
+        sesion.setTicketLineaCiudadRfc(sucursalEntity.getTicketLineaCiudadRfc());
+        sesion.setTicketSangriaCiudadRfc(sucursalEntity.getTicketSangriaCiudadRfc());
+        sesion.setTicketLineaCalle(sucursalEntity.getTicketLineaCalle());
+        sesion.setTicketSangriaCalle(sucursalEntity.getTicketSangriaCalle());
+        sesion.setTicketLineaColonia(sucursalEntity.getTicketLineaColonia());
+        sesion.setTicketSangriaColonia(sucursalEntity.getTicketSangriaColonia());
+        sesion.setTicketSangriaSucursal(sucursalEntity.getTicketSangriaSucursal());
         
         if(sucursalEntity.getDiaCorte() != 0)
             sesion.setDiaCorte(sucursalEntity.getDiaCorte());

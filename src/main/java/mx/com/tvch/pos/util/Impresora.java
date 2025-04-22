@@ -44,7 +44,7 @@ public class Impresora {
 
     private static Impresora impresora;
 
-    private final LectorProperties properties;
+    //private final LectorProperties properties;
     private final Sesion sesion;
     private final Utilerias utilerias;
 
@@ -58,7 +58,7 @@ public class Impresora {
     }
 
     public Impresora() {
-        properties = LectorProperties.getLectorProperties();
+        //properties = LectorProperties.getLectorProperties();
         sesion = Sesion.getSesion();
         utilerias = Utilerias.getUtilerias();
     }
@@ -121,19 +121,19 @@ public class Impresora {
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
-                47, properties.obtenerPropiedad("ticket.rfc"));
+                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+                47, sesion.getTicketLineaCiudadRfc());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
+                1, sesion.getTicketSangriaCalle().intValue() , 
+                47, sesion.getTicketLineaCalle());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
+                1, sesion.getTicketSangriaColonia() , 
+                47, sesion.getTicketLineaColonia());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                1, sesion.getTicketSangriaSucursal() , 
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -183,9 +183,9 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getUsaWhats() != null && sesion.getUsaWhats() == 1){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, properties.obtenerPropiedad("tvch.soporte.whats"));
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
 
         String nombreArchivo = ("impresion.txt");
@@ -245,13 +245,21 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 1, 2, 47, "Mineral de la Reforma   R.F.C. TCH151120HY6");
+        pm.printTextWrap(linea, 
+                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+                47, sesion.getTicketLineaCiudadRfc());
         linea++;
-        pm.printTextWrap(linea, 1, 11, 47, "Calle San Rafael No. 150,");
+        pm.printTextWrap(linea, 
+                1, sesion.getTicketSangriaCalle().intValue() , 
+                47, sesion.getTicketLineaCalle());
         linea++;
-        pm.printTextWrap(linea, 1, 7, 47, "Colonia La Providencia C.P. 42186");
+        pm.printTextWrap(linea, 
+                1, sesion.getTicketSangriaColonia() , 
+                47, sesion.getTicketLineaColonia());
         linea++;
-        pm.printTextWrap(linea, 1, 9, 47, "Sucursal ".concat(nombreSucursal));
+        pm.printTextWrap(linea, 
+                1, sesion.getTicketSangriaSucursal() , 
+                47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
         pm.printTextLinCol(linea, 1, "Fecha:");
@@ -301,9 +309,9 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getUsaWhats() != null && sesion.getUsaWhats() == 1){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, properties.obtenerPropiedad("tvch.soporte.whats"));
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
 
         String nombreArchivo = ("impresion.txt");
@@ -446,19 +454,19 @@ public class Impresora {
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
-                47, properties.obtenerPropiedad("ticket.rfc"));
+                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+                47, sesion.getTicketLineaCiudadRfc());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
+                1, sesion.getTicketSangriaCalle().intValue() , 
+                47, sesion.getTicketLineaCalle());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
+                1, sesion.getTicketSangriaColonia() , 
+                47, sesion.getTicketLineaColonia());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                1, sesion.getTicketSangriaSucursal() , 
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -542,9 +550,9 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getUsaWhats() != null && sesion.getUsaWhats() == 1){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, properties.obtenerPropiedad("tvch.soporte.whats"));
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
@@ -616,19 +624,19 @@ public class Impresora {
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
-                47, properties.obtenerPropiedad("ticket.rfc"));
+                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+                47, sesion.getTicketLineaCiudadRfc());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
+                1, sesion.getTicketSangriaCalle().intValue() , 
+                47, sesion.getTicketLineaCalle());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
+                1, sesion.getTicketSangriaColonia() , 
+                47, sesion.getTicketLineaColonia());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                1, sesion.getTicketSangriaSucursal() , 
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -712,9 +720,9 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getUsaWhats() != null && sesion.getUsaWhats() == 1){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, properties.obtenerPropiedad("tvch.soporte.whats"));
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
@@ -766,19 +774,19 @@ public class Impresora {
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
-                47, properties.obtenerPropiedad("ticket.rfc"));
+                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+                47, sesion.getTicketLineaCiudadRfc());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
+                1, sesion.getTicketSangriaCalle().intValue() , 
+                47, sesion.getTicketLineaCalle());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
+                1, sesion.getTicketSangriaColonia() , 
+                47, sesion.getTicketLineaColonia());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                1, sesion.getTicketSangriaSucursal() , 
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -906,19 +914,19 @@ public class Impresora {
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
-                47, properties.obtenerPropiedad("ticket.rfc"));
+                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+                47, sesion.getTicketLineaCiudadRfc());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
+                1, sesion.getTicketSangriaCalle().intValue() , 
+                47, sesion.getTicketLineaCalle());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
+                1, sesion.getTicketSangriaColonia() , 
+                47, sesion.getTicketLineaColonia());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                1, sesion.getTicketSangriaSucursal() , 
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -1030,19 +1038,19 @@ public class Impresora {
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
-                47, properties.obtenerPropiedad("ticket.rfc"));
+                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+                47, sesion.getTicketLineaCiudadRfc());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
+                1, sesion.getTicketSangriaCalle().intValue() , 
+                47, sesion.getTicketLineaCalle());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
+                1, sesion.getTicketSangriaColonia() , 
+                47, sesion.getTicketLineaColonia());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                1, sesion.getTicketSangriaSucursal() , 
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -1173,19 +1181,19 @@ public class Impresora {
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
-                47, properties.obtenerPropiedad("ticket.rfc"));
+                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+                47, sesion.getTicketLineaCiudadRfc());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
+                1, sesion.getTicketSangriaCalle().intValue() , 
+                47, sesion.getTicketLineaCalle());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
+                1, sesion.getTicketSangriaColonia() , 
+                47, sesion.getTicketLineaColonia());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                1, sesion.getTicketSangriaSucursal() , 
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -1301,19 +1309,19 @@ public class Impresora {
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
-                47, properties.obtenerPropiedad("ticket.rfc"));
+                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+                47, sesion.getTicketLineaCiudadRfc());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
+                1, sesion.getTicketSangriaCalle().intValue() , 
+                47, sesion.getTicketLineaCalle());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
+                1, sesion.getTicketSangriaColonia() , 
+                47, sesion.getTicketLineaColonia());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                1, sesion.getTicketSangriaSucursal() , 
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -1437,19 +1445,19 @@ public class Impresora {
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.rfc.sangria")), 
-                47, properties.obtenerPropiedad("ticket.rfc"));
+                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+                47, sesion.getTicketLineaCiudadRfc());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria1")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon1"));
+                1, sesion.getTicketSangriaCalle().intValue() , 
+                47, sesion.getTicketLineaCalle());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.direccion.sangria2")), 
-                47, properties.obtenerPropiedad("ticket.direccion.renglon2"));
+                1, sesion.getTicketSangriaColonia() , 
+                47, sesion.getTicketLineaColonia());
         linea++;
         pm.printTextWrap(linea, 
-                1, Integer.parseInt(properties.obtenerPropiedad("ticket.sucursal.sangria")), 
+                1, sesion.getTicketSangriaSucursal() , 
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
