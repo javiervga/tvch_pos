@@ -846,11 +846,15 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        pm.printTextLinCol(linea, 10, "Telefono Oficina:");
-        pm.printTextLinCol(linea, 29, "7713212773");
-        linea++;
-        pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-        pm.printTextLinCol(linea, 31, "7717769686");
+        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+            pm.printTextLinCol(linea, 10, "Telefono Oficina:");
+            pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
+            linea++;
+        }
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+            pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+        }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
         //pm.printTextLinCol(4, 15, "");
@@ -987,11 +991,15 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        pm.printTextLinCol(linea, 10, "Telefono Oficina:");
-        pm.printTextLinCol(linea, 29, "7713212773");
-        linea++;
-        pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-        pm.printTextLinCol(linea, 31, "7717769686");
+        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+            pm.printTextLinCol(linea, 10, "Telefono Oficina:");
+            pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
+            linea++;
+        }
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+            pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+        }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
         //pm.printTextLinCol(4, 15, "");
@@ -1110,11 +1118,15 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        pm.printTextLinCol(linea, 10, "Telefono Oficina:");
-        pm.printTextLinCol(linea, 29, "7713212773");
-        linea++;
-        pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-        pm.printTextLinCol(linea, 31, "7717769686");
+        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+            pm.printTextLinCol(linea, 10, "Telefono Oficina:");
+            pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
+            linea++;
+        }
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+            pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+        }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
         //pm.printTextLinCol(4, 15, "");
@@ -1253,11 +1265,15 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        pm.printTextLinCol(linea, 10, "Telefono Oficina:");
-        pm.printTextLinCol(linea, 29, "7713212773");
-        linea++;
-        pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-        pm.printTextLinCol(linea, 31, "7717769686");
+        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+            pm.printTextLinCol(linea, 10, "Telefono Oficina:");
+            pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
+            linea++;
+        }
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+            pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+        }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
         //pm.printTextLinCol(4, 15, "");
@@ -1381,11 +1397,15 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        pm.printTextLinCol(linea, 10, "Telefono Oficina:");
-        pm.printTextLinCol(linea, 29, "7713212773");
-        linea++;
-        pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-        pm.printTextLinCol(linea, 31, "7717769686");
+        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+            pm.printTextLinCol(linea, 10, "Telefono Oficina:");
+            pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
+            linea++;
+        }
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+            pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+        }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
         //pm.printTextLinCol(4, 15, "");
@@ -1517,11 +1537,15 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        pm.printTextLinCol(linea, 10, "Telefono Oficina:");
-        pm.printTextLinCol(linea, 29, "7713212773");
-        linea++;
-        pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-        pm.printTextLinCol(linea, 31, "7717769686");
+        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+            pm.printTextLinCol(linea, 10, "Telefono Oficina:");
+            pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
+            linea++;
+        }
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+            pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+        }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
         //pm.printTextLinCol(4, 15, "");
