@@ -141,7 +141,7 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, entity.getFechaTransaccion());
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Caja:");
-        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getCajaId()));
+        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getNumeroCaja()));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Folio:");
         pm.printTextLinCol(linea, 14, String.valueOf(entity.getTransaccionId()));
@@ -266,7 +266,7 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, utilerias.convertirDateTime2String(new Date(), "dd/MM/yyyy HH:mm:ss"));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Caja:");
-        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getCajaId()));
+        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getNumeroCaja()));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Folio:");
         pm.printTextLinCol(linea, 14, String.valueOf(transaccionId));
@@ -474,7 +474,7 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, utilerias.convertirDateTime2String(new Date(), "dd/MM/yyyy HH:mm:ss"));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Caja:");
-        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getCajaId()));
+        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getNumeroCaja()));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Folio:");
         pm.printTextLinCol(linea, 14, String.valueOf(transaccionId));
@@ -644,7 +644,7 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, entity.getFechaTransaccion());
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Caja:");
-        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getCajaId()));
+        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getNumeroCaja()));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Folio:");
         pm.printTextLinCol(linea, 14, String.valueOf(entity.getTransaccionId()));
@@ -794,7 +794,7 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, utilerias.convertirDateTime2String(new Date(), "dd/MM/yyyy HH:mm:ss"));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Caja:");
-        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getCajaId()));
+        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getNumeroCaja()));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Folio:");
         pm.printTextLinCol(linea, 14, String.valueOf(transaccionId));
@@ -938,7 +938,7 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, entity.getFechaTransaccion());
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Caja:");
-        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getCajaId()));
+        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getNumeroCaja()));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Folio:");
         pm.printTextLinCol(linea, 14, String.valueOf(entity.getTransaccionId()));
@@ -1066,7 +1066,7 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, utilerias.convertirDateTime2String(new Date(), "dd/MM/yyyy HH:mm:ss"));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Caja:");
-        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getCajaId()));
+        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getNumeroCaja()));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Folio:");
         pm.printTextLinCol(linea, 14, String.valueOf(transaccionId));
@@ -1213,7 +1213,7 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, entity.getFechaTransaccion());
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Caja:");
-        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getCajaId()));
+        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getNumeroCaja()));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Folio:");
         pm.printTextLinCol(linea, 14, String.valueOf(entity.getTransaccionId()));
@@ -1345,7 +1345,7 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, utilerias.convertirDateTime2String(new Date(), "dd/MM/yyyy HH:mm:ss"));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Caja:");
-        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getCajaId()));
+        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getNumeroCaja()));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Folio:");
         pm.printTextLinCol(linea, 14, String.valueOf(transaccionId));
@@ -1485,7 +1485,7 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, entity.getFechaTransaccion());
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Caja:");
-        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getCajaId()));
+        pm.printTextLinCol(linea, 14, String.valueOf(sesion.getNumeroCaja()));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Folio:");
         pm.printTextLinCol(linea, 14, String.valueOf(entity.getTransaccionId()));
