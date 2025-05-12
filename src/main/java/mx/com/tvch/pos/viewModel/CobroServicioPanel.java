@@ -194,7 +194,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                                             if(seDebeGenerarOrden)
                                                 JOptionPane.showMessageDialog(cobroPanel, "Su orden de reconexión se generó correctamente, por favor verifique", "", JOptionPane.INFORMATION_MESSAGE);
                                             else
-                                                JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus ACTIVmdelgado, por favor verifique", "", JOptionPane.INFORMATION_MESSAGE);
+                                                JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus ACTIVO, por favor verifique", "", JOptionPane.INFORMATION_MESSAGE);
                                             break;
                                         case Constantes.CODIGO_HTTP_OK_WARNING:
                                             JOptionPane.showMessageDialog(cobroPanel, response.getMessage(), "", JOptionPane.WARNING_MESSAGE);
