@@ -192,7 +192,8 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                                     switch (response.getCode()) {
                                         case Constantes.CODIGO_HTTP_OK:
                                             if(seDebeGenerarOrden)
-                                                JOptionPane.showMessageDialog(cobroPanel, "Su orden de reconexión se generó correctamente, por favor verifique", "", JOptionPane.INFORMATION_MESSAGE);
+                                                JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus RECONEXION, \n "
+                                                        + "Su orden de reconexión se generó correctamente, por favor verifique en su portal web", "", JOptionPane.INFORMATION_MESSAGE);
                                             else
                                                 JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus ACTIVO, por favor verifique", "", JOptionPane.INFORMATION_MESSAGE);
                                             break;
@@ -201,16 +202,20 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                                             break;
                                         default:
                                             if(seDebeGenerarOrden){
-                                                JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error al actualizar su contrato y generar su orden en el servidor, por favor realice sus cambios directamente en el sistema web.", null, JOptionPane.WARNING_MESSAGE);
+                                                JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación con el servidor al actualizar su contrato y generar su orden en línea,\n"
+                                                        + "No fue posible validar que se haya generado la orden de reconexión solicitada, por favor revise, de ser necesario favor de generarla manualmente en el portal web", null, JOptionPane.WARNING_MESSAGE);
                                             }else{
-                                                JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error al actualizar su contrato en el servidor, por favor actualice directamente en sistema web", null, JOptionPane.WARNING_MESSAGE);
+                                                JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación al actualizar su contrato en el servidor en línea, "
+                                                        + "Su pago se sincronizará posteriormente y el contrato pasará a estatus RECONEXION, de ser necesario actualice a Activo en el portal web", null, JOptionPane.WARNING_MESSAGE);
                                             }   break;
                                     }
                                 }catch(Exception ex){
                                     if(seDebeGenerarOrden){
-                                        JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error al actualizar su contrato y generar su orden en el servidor, por favor realice sus cambios directamente en el sistema web.", null, JOptionPane.WARNING_MESSAGE);
+                                        JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación con el servidor al actualizar su contrato y generar su orden en línea,\n"
+                                            + "No fue posible validar que se haya generado la orden de reconexión solicitada, por favor revise, de ser necesario favor de generarla manualmente en el portal web", null, JOptionPane.WARNING_MESSAGE);
                                     }else{
-                                        JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error al actualizar su contrato en el servidor, por favor actualice directamente en sistema web", null, JOptionPane.WARNING_MESSAGE);
+                                        JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación al actualizar su contrato en el servidor en línea, "
+                                            + "Su pago se sincronizará posteriormente y el contrato pasará a estatus RECONEXION, de ser necesario actualice a Activo en el portal web", null, JOptionPane.WARNING_MESSAGE);
                                     }
                                 }
                             }
