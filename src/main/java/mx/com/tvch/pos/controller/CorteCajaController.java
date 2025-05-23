@@ -293,10 +293,20 @@ public class CorteCajaController {
                 Double montoDetallesCobro = 0.0;
                 for (TransaccionEntity t : transacciones) {
 
+                    // se guarda en una variable temporal porque al final se valida si se toma del
+                    // detalle de cobro o del detalle de promocion
+                    Double montoDetallesCobroTemp = montoDetallesCobro;
+                    Double montoRecargo = 0.0;
                     List<DetalleCobroTransaccionEntity> cobros = detalleCobroTransaccionDao.obtenerDetallesCobroPorTransaccion(t.getTransaccionId());
                     if (!cobros.isEmpty()) {
                         cantidadCobros = cantidadCobros + cobros.size();
-                        montoDetallesCobro = montoDetallesCobro + cobros.stream().mapToDouble(DetalleCobroTransaccionEntity::getMonto).sum();
+                        montoDetallesCobroTemp = montoDetallesCobro + cobros.stream().mapToDouble(DetalleCobroTransaccionEntity::getMonto).sum();
+                        //si hay algun detalle de recargo guardarlo en una variable para sumarlo al final
+                        for(DetalleCobroTransaccionEntity d : cobros){
+                            if(d.getTipoCobroId() == Constantes.TIPO_COBRO_RECARGO_MENSUALIDAD){
+                                montoRecargo = montoRecargo = d.getMonto();
+                            }
+                        }
                     }
 
                     List<DetalleDescuentoTransaccionEntity> descuentos = detalleDescuentoTransaccionDao.obtenerDetallesDescuentoPorTransaccion(t.getTransaccionId());
@@ -310,8 +320,12 @@ public class CorteCajaController {
                     if (!promociones.isEmpty()) {
                         existenPromociones = true;
                         cantidadPromociones = cantidadPromociones + 1;
+                        montoDetallesCobroTemp = montoDetallesCobro + 
+                                promociones.stream().mapToDouble(DetallePromocionTransaccionEntity::getCostoPromocion).sum() +
+                                montoRecargo;
                     }
 
+                    montoDetallesCobro = montoDetallesCobroTemp;
                 }
 
                 detalleCobros = new DetalleCorte();
