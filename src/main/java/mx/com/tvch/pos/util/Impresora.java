@@ -372,9 +372,15 @@ public class Impresora {
         pm.printTextLinCol(20, 27, String.valueOf(corteCaja.getEntity().getTotalSalidas()));
         
         pm.printTextLinCol(22, 1, "Ingresos de caja:");
-        pm.printTextLinCol(22, 27, String.valueOf(corteCaja.getEntity().getCantidadIngresos()));
-        pm.printTextLinCol(23, 1, "Monto de los ingresos:");
-        pm.printTextLinCol(23, 27, String.valueOf(corteCaja.getEntity().getTotalIngresos()));
+        if(corteCaja.getEntity().getCantidadIngresos() != null){
+            pm.printTextLinCol(22, 27, String.valueOf(corteCaja.getEntity().getCantidadIngresos()));
+            pm.printTextLinCol(23, 1, "Monto de los ingresos:");
+            pm.printTextLinCol(23, 27, String.valueOf(corteCaja.getEntity().getTotalIngresos()));
+        }else{
+            pm.printTextLinCol(22, 27, "0");
+            pm.printTextLinCol(23, 1, "Monto de los ingresos:");
+            pm.printTextLinCol(23, 27, "0.0");
+        }
         
         pm.printTextLinCol(25, 1, "Efectivo calculado:");
         pm.printTextLinCol(25, 27, String.valueOf(corteCaja.getEntity().getTotalSolicitado()));

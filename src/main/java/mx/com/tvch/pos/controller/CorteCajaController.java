@@ -146,7 +146,7 @@ public class CorteCajaController {
                 dMontoFaltante.setTipoDetalle(Constantes.TIPO_DETALLE_CORTE_FALTANTES);
                 list.add(dMontoFaltante);
             } else if (dMontoIngresado.getMonto() > dMontoSolicitado.getMonto()) {
-                //si falta dinero generar detalle de sobrantes
+                //si sobra dinero generar detalle de sobrantes
                 double montoSobrante = dMontoIngresado.getMonto() - dMontoSolicitado.getMonto();
                 dMontoSobrante = new DetalleCorte();
                 dMontoSobrante.setCantidad(1);
@@ -185,8 +185,8 @@ public class CorteCajaController {
                 entity.setCantidadIngresos(dIngresos.getCantidad());
                 entity.setTotalIngresos(dIngresos.getMonto());
             }else{
-                entity.setCantidadSalidas(0);
-                entity.setTotalSalidas(0.0);
+                entity.setCantidadIngresos(0);
+                entity.setTotalIngresos(0.0);
             }
             if(dDetallePromociones != null){
                 entity.setPromocionesAplicadas(dDetallePromociones.getCantidad());
@@ -219,7 +219,7 @@ public class CorteCajaController {
                 DetalleDiferenciaCorteEntity diferenciaSObranteEntity = new DetalleDiferenciaCorteEntity();
                 diferenciaSObranteEntity.setDiferenciaId(util.generarIdLocal());
                 diferenciaSObranteEntity.setCorteCajaId(idCorteCaja);
-                diferenciaSObranteEntity.setTipoDiferenciaId(Constantes.TIPO_DIFERENCIA_CORTE_FALTANTE);
+                diferenciaSObranteEntity.setTipoDiferenciaId(Constantes.TIPO_DIFERENCIA_CORTE_SOBRANTE);
                 diferenciaSObranteEntity.setMonto(dMontoSobrante.getMonto());
                 detalleDiferenciaCorteCajaDao.registrarDetalleDiferenciaCorte(diferenciaSObranteEntity);
                 corteCaja.setSobranteEntity(diferenciaSObranteEntity);
