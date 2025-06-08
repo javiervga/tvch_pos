@@ -414,8 +414,8 @@ public class Impresora {
             Long transaccionId, 
             List<DetallePagoServicio> detallesPago, 
             ContratoxSuscriptorEntity suscriptor, 
-            String nombreSucursal,
-            Integer numeroMesesPagados) throws Exception {
+            String nombreSucursal/*,
+            Integer numeroMesesPagados*/) throws Exception {
 
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptor.getNombre()).append(" ").append(suscriptor.getApellidoPaterno()).append(" ").append(suscriptor.getApellidoMaterno());
@@ -486,11 +486,11 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, String.valueOf(transaccionId));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Tipo Pago:");
-        if(numeroMesesPagados == 1)
+        if(suscriptor.getMesesPorPagar() == 1)
             pm.printTextLinCol(linea, 14, "Pago de Mensualidad");
         else{
             StringBuilder descripcionPago = new StringBuilder();
-            descripcionPago.append("Pago de ").append(numeroMesesPagados).append(" mensualidades");
+            descripcionPago.append("Pago de ").append(suscriptor.getMesesPorPagar()).append(" mensualidades");
             pm.printTextLinCol(linea, 14, descripcionPago.toString());
         }
         linea = linea + 2;

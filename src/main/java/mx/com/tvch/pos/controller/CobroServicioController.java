@@ -132,9 +132,10 @@ public class CobroServicioController {
      * @return
      * @throws Exception 
      */
-    public Long cobrarServicio(ContratoxSuscriptorEntity suscriptor, List<DetallePagoServicio> detallesPago, Integer numeroMeses) throws Exception {
+    public Long cobrarServicio(ContratoxSuscriptorEntity suscriptor, List<DetallePagoServicio> detallesPago/*, Integer numeroMeses*/) throws Exception {
 
         Long transaccionId = null;
+        Integer numeroMeses = suscriptor.getMesesPorPagar();
 
         try {
             Double importePagar = Double.valueOf(obtenerImporteActualizado(detallesPago));
@@ -208,7 +209,7 @@ public class CobroServicioController {
                 detalleRecargoTransaccionEntity.setServicioId(suscriptor.getServicioId());
                 detalleRecargoTransaccionEntity.setTipoCobroId(Constantes.TIPO_COBRO_RECARGO_MENSUALIDAD);
                 detalleRecargoTransaccionEntity.setTransaccionId(transaccionId);
-                detalleRecargoTransaccionEntity.setNumeroMeses(null);
+                detalleRecargoTransaccionEntity.setNumeroMeses(numeroMeses);
                 Long detalleRecargoId = detalleCobroTransaccionDao.registrarDetalleTransaccion(detalleRecargoTransaccionEntity);
             }
 

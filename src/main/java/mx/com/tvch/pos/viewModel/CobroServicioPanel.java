@@ -92,7 +92,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         cargarComboMeses();
     }
 
-    private void cobrarServicio() {
+    /*private void cobrarServicio() {
 
         if (suscriptorSeleccionado != null && !listaDetallesPago.isEmpty()) {
             try {
@@ -118,7 +118,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             }
         }
 
-    }
+    }*/
 
     private void crearEventos() {
         
@@ -171,11 +171,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                         
                         if(!seCanceloPago){
                             
-                            Integer numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
-                            transaccionId = controller.cobrarServicio(suscriptorSeleccionado, listaDetallesPago, numeroMeses);
+                            //Integer numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
+                            transaccionId = controller.cobrarServicio(suscriptorSeleccionado, listaDetallesPago/*, numeroMeses*/);
                             
                             try {
-                                impresora.imprimirTicketServicio(transaccionId, listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal(), numeroMeses);
+                                impresora.imprimirTicketServicio(transaccionId, listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal()/*, numeroMeses*/);
                             } catch (Exception ex) {
                                 StringWriter sw = new StringWriter();
                                 PrintWriter pw = new PrintWriter(sw);
@@ -401,9 +401,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                         Long contratoId = (Long) tablaSuscriptores.getModel().getValueAt(selectedRow, 0);
                         System.out.println("contrato seleccionado: " + contratoId);
                         if (!suscriptoresConsultaList.isEmpty()) {
-                            if (suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
+                            if (suscriptoresConsultaList.stream()
+                                    .filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
                                 comboNumeroMeses.setSelectedIndex(0);
-                                ContratoxSuscriptorEntity entity = suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
+                                ContratoxSuscriptorEntity entity = suscriptoresConsultaList
+                                        .stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
                                 cargarDatosSuscriptor(entity, true);
                             }
                         }
@@ -423,9 +425,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                     Long contratoId = (Long) tablaSuscriptores.getModel().getValueAt(row, 0);
                     System.out.println("contrato seleccionado: " + contratoId);
                     if (!suscriptoresConsultaList.isEmpty()) {
-                        if (suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
+                        if (suscriptoresConsultaList.stream()
+                                .filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
                             comboNumeroMeses.setSelectedIndex(0);
-                            ContratoxSuscriptorEntity entity = suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
+                            ContratoxSuscriptorEntity entity = suscriptoresConsultaList
+                                    .stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
                             cargarDatosSuscriptor(entity, true);
                         }
                     }
@@ -521,11 +525,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
 
     }
 
-    private void cargarDatosSuscriptor(ContratoxSuscriptorEntity contratosuscriptor, boolean seRefrescanPromociones) {
+    private void cargarDatosSuscriptor(
+            ContratoxSuscriptorEntity contratosuscriptor, boolean seRefrescanPromociones) {
 
         System.out.println("Seelccionado: " + contratosuscriptor.getContratoId());
         comboNumeroMeses.setEnabled(true);
-        
         // primero borrar los datos de suscriptores que se hayan seleccionado antes
         limpiarDatosSuscriptor();
         suscriptorSeleccionado = contratosuscriptor;
@@ -542,6 +546,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
             montoTotalMeses = suscriptorSeleccionado.getCostoServicio()*numeroMeses;
         }
+        suscriptorSeleccionado.setMesesPorPagar(numeroMeses);
         
         StringBuilder descripcionMes = new StringBuilder();
         if(numeroMeses == 1)
@@ -562,9 +567,6 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             java.util.logging.Logger.getLogger(CobroServicioPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        
-
-        
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptorSeleccionado.getNombre());
         if (suscriptorSeleccionado.getApellidoPaterno() != null) {
