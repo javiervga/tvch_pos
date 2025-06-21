@@ -92,7 +92,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         cargarComboMeses();
     }
 
-    private void cobrarServicio() {
+    /*private void cobrarServicio() {
 
         if (suscriptorSeleccionado != null && !listaDetallesPago.isEmpty()) {
             try {
@@ -118,7 +118,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             }
         }
 
-    }
+    }*/
 
     private void crearEventos() {
         
@@ -171,11 +171,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                         
                         if(!seCanceloPago){
                             
-                            Integer numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
-                            transaccionId = controller.cobrarServicio(suscriptorSeleccionado, listaDetallesPago, numeroMeses);
+                            //Integer numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
+                            transaccionId = controller.cobrarServicio(suscriptorSeleccionado, listaDetallesPago/*, numeroMeses*/);
                             
                             try {
-                                impresora.imprimirTicketServicio(transaccionId, listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal(), numeroMeses);
+                                impresora.imprimirTicketServicio(transaccionId, listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal()/*, numeroMeses*/);
                             } catch (Exception ex) {
                                 StringWriter sw = new StringWriter();
                                 PrintWriter pw = new PrintWriter(sw);
@@ -192,25 +192,30 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                                     switch (response.getCode()) {
                                         case Constantes.CODIGO_HTTP_OK:
                                             if(seDebeGenerarOrden)
-                                                JOptionPane.showMessageDialog(cobroPanel, "Su orden de reconexión se generó correctamente, por favor verifique", "", JOptionPane.INFORMATION_MESSAGE);
+                                                JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus RECONEXION, \n "
+                                                        + "Su orden de reconexión se generó correctamente, por favor verifique en su portal web", "", JOptionPane.INFORMATION_MESSAGE);
                                             else
-                                                JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus ACTIVmdelgado, por favor verifique", "", JOptionPane.INFORMATION_MESSAGE);
+                                                JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus ACTIVO, por favor verifique", "", JOptionPane.INFORMATION_MESSAGE);
                                             break;
                                         case Constantes.CODIGO_HTTP_OK_WARNING:
                                             JOptionPane.showMessageDialog(cobroPanel, response.getMessage(), "", JOptionPane.WARNING_MESSAGE);
                                             break;
                                         default:
                                             if(seDebeGenerarOrden){
-                                                JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error al actualizar su contrato y generar su orden en el servidor, por favor realice sus cambios directamente en el sistema web.", null, JOptionPane.WARNING_MESSAGE);
+                                                JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación con el servidor al actualizar su contrato y generar su orden en línea,\n"
+                                                        + "No fue posible validar que se haya generado la orden de reconexión solicitada, por favor revise, de ser necesario favor de generarla manualmente en el portal web", null, JOptionPane.WARNING_MESSAGE);
                                             }else{
-                                                JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error al actualizar su contrato en el servidor, por favor actualice directamente en sistema web", null, JOptionPane.WARNING_MESSAGE);
+                                                JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación al actualizar su contrato en el servidor en línea, "
+                                                        + "Su pago se sincronizará posteriormente y el contrato pasará a estatus RECONEXION, de ser necesario actualice a Activo en el portal web", null, JOptionPane.WARNING_MESSAGE);
                                             }   break;
                                     }
                                 }catch(Exception ex){
                                     if(seDebeGenerarOrden){
-                                        JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error al actualizar su contrato y generar su orden en el servidor, por favor realice sus cambios directamente en el sistema web.", null, JOptionPane.WARNING_MESSAGE);
+                                        JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación con el servidor al actualizar su contrato y generar su orden en línea,\n"
+                                            + "No fue posible validar que se haya generado la orden de reconexión solicitada, por favor revise, de ser necesario favor de generarla manualmente en el portal web", null, JOptionPane.WARNING_MESSAGE);
                                     }else{
-                                        JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error al actualizar su contrato en el servidor, por favor actualice directamente en sistema web", null, JOptionPane.WARNING_MESSAGE);
+                                        JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación al actualizar su contrato en el servidor en línea, "
+                                            + "Su pago se sincronizará posteriormente y el contrato pasará a estatus RECONEXION, de ser necesario actualice a Activo en el portal web", null, JOptionPane.WARNING_MESSAGE);
                                     }
                                 }
                             }
@@ -396,9 +401,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                         Long contratoId = (Long) tablaSuscriptores.getModel().getValueAt(selectedRow, 0);
                         System.out.println("contrato seleccionado: " + contratoId);
                         if (!suscriptoresConsultaList.isEmpty()) {
-                            if (suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
+                            if (suscriptoresConsultaList.stream()
+                                    .filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
                                 comboNumeroMeses.setSelectedIndex(0);
-                                ContratoxSuscriptorEntity entity = suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
+                                ContratoxSuscriptorEntity entity = suscriptoresConsultaList
+                                        .stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
                                 cargarDatosSuscriptor(entity, true);
                             }
                         }
@@ -418,9 +425,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                     Long contratoId = (Long) tablaSuscriptores.getModel().getValueAt(row, 0);
                     System.out.println("contrato seleccionado: " + contratoId);
                     if (!suscriptoresConsultaList.isEmpty()) {
-                        if (suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
+                        if (suscriptoresConsultaList.stream()
+                                .filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
                             comboNumeroMeses.setSelectedIndex(0);
-                            ContratoxSuscriptorEntity entity = suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
+                            ContratoxSuscriptorEntity entity = suscriptoresConsultaList
+                                    .stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
                             cargarDatosSuscriptor(entity, true);
                         }
                     }
@@ -516,11 +525,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
 
     }
 
-    private void cargarDatosSuscriptor(ContratoxSuscriptorEntity contratosuscriptor, boolean seRefrescanPromociones) {
+    private void cargarDatosSuscriptor(
+            ContratoxSuscriptorEntity contratosuscriptor, boolean seRefrescanPromociones) {
 
         System.out.println("Seelccionado: " + contratosuscriptor.getContratoId());
         comboNumeroMeses.setEnabled(true);
-        
         // primero borrar los datos de suscriptores que se hayan seleccionado antes
         limpiarDatosSuscriptor();
         suscriptorSeleccionado = contratosuscriptor;
@@ -537,6 +546,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
             montoTotalMeses = suscriptorSeleccionado.getCostoServicio()*numeroMeses;
         }
+        suscriptorSeleccionado.setMesesPorPagar(numeroMeses);
         
         StringBuilder descripcionMes = new StringBuilder();
         if(numeroMeses == 1)
@@ -557,9 +567,6 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             java.util.logging.Logger.getLogger(CobroServicioPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        
-
-        
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptorSeleccionado.getNombre());
         if (suscriptorSeleccionado.getApellidoPaterno() != null) {

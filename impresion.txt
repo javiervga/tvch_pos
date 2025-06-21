@@ -5,41 +5,45 @@
              Comprobante de Pago               
                                                
              TV Cable Hidalguense              
-       Tulancingo  R.F.C. TCH151120HY6         
-         CAR. TULANCINGO-ACATLAN #44           
-                COL. METEPEC                   
-             Sucursal Providencia              
+       Atotonilco  R.F.C. TCH151120HY6         
+           AV. ALLENDE 1 COL. CENTRO,          
+         ATOTONILCO EL GRANDE, HIDALGO         
+             Sucursal ATOTONILCO               
                                                
-Fecha:       03/03/2025 02:56:08               
+Fecha:       11/05/2025 20:11:43               
                                                
-Caja:        1                                 
+Caja:        2                                 
                                                
-Folio:       120250303025608                   
+Folio:       220250511201142                   
                                                
 Tipo Pago:   Pago de Mensualidad               
                                                
-Contrato:    Providencia-4141                  
+Contrato:    ATOTONILCO-21302                  
                                                
-Suscriptor:  JORGE DANIEL  CHAVEZ ARMENTA      
+Suscriptor:  JORGE  SANCHEZ MOEDANO            
                                                
-Domicilio:   BAMBUES  121 SAN CRISTOBAL 1      
+Domicilio:   FLOR DE LIMON SN LAS FLORES       
                                                
-Servicio:    TV + INTERNET 8MB                 
+Servicio:    PAQUETE PLATA - MINERAL 2         
                                                
-Telefono:    7711880075                        
+Telefono:    7711865115                        
                                                
-Costo Mensualidad(es):                 $ 390.0 
+Costo Mensualidad(es):                 $ 500.0 
+Pago tardio:                           $ 50.0  
                                                
-Total a pagar:                         $ 390.0 
+Total a pagar:                         $ 550.0 
                                                
-Proximo pago antes de:  10/04/25               
+Proximo pago antes de:  10/06/25               
                                                
  RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO
    CANCELACION DEL 25 AL 30 DEL MES PAGADO     
   HORARIO DE OFICINA LUNES A VIERNES 9AM A 6PM,
               SABADO DE 9AM A 2PM              
-         Telefono Oficina:  7713212773         
-    Soporte Tecnico WhatsApp: 7717769686       
+         Telefono Oficina:  7713614498         
+    Soporte Tecnico WhatsApp: null             
+                                               
+                                               
+                                               
                                                
                                                
                                                

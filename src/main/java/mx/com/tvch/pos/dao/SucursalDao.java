@@ -55,6 +55,14 @@ public class SucursalDao {
                 entity.setDiaCorte(rs.getInt("dia_corte"));
                 entity.setTelefono(rs.getString("telefono"));
                 entity.setUsaWhats(rs.getInt("usa_whats"));
+                entity.setTelefonoSoporte(rs.getString("telefono_soporte"));
+                entity.setTicketLineaCiudadRfc(rs.getString("ticket_linea_ciudad_rfc"));
+                entity.setTicketSangriaCiudadRfc(rs.getInt("ticket_sangria_ciudad_rfc"));
+                entity.setTicketLineaCalle(rs.getString("ticket_linea_calle"));
+                entity.setTicketSangriaCalle(rs.getInt("ticket_sangria_calle"));
+                entity.setTicketLineaColonia(rs.getString("ticket_linea_colonia"));
+                entity.setTicketSangriaColonia(rs.getInt("ticket_sangria_colonia"));
+                entity.setTicketSangriaSucursal(rs.getInt("ticket_sangria_sucursal"));
                 break;
             }
 

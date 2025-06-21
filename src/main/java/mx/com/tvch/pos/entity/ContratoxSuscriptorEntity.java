@@ -53,6 +53,8 @@ public class ContratoxSuscriptorEntity {
     private Double costoServicio;
     
     private Integer mesesGratis;
+    
+    private Integer mesesPorPagar;
 
     public Long getContratoId() {
         return contratoId;
@@ -221,5 +223,12 @@ public class ContratoxSuscriptorEntity {
     public void setMesesGratis(Integer mesesGratis) {
         this.mesesGratis = mesesGratis;
     }
-   
+
+    public Integer getMesesPorPagar() {
+        return mesesPorPagar;
+    }
+
+    public void setMesesPorPagar(Integer mesesPorPagar) {
+        this.mesesPorPagar = mesesPorPagar;
+    }
 }

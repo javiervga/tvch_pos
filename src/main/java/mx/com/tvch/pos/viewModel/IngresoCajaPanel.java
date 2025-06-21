@@ -218,7 +218,7 @@ public class IngresoCajaPanel extends javax.swing.JPanel {
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel6.setText("Tipo de salida:");
+        jLabel6.setText("Tipo de ingreso:");
 
         comboTipoIngreso.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 

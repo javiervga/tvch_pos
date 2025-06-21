@@ -169,7 +169,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                     
                     }
  
-                    if(montoIngresado != null && montoIngresado > 0){
+                    if(montoIngresado != null && montoIngresado >= 0){
 
                         listaDetallesPago
                                 .stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_CANCELACION)
@@ -462,6 +462,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
 
         campoBusqueda.setText("");
         etiquetaImporte.setText("0.00");
+        limpiarDatosSuscriptor();
     }
 
     public void cargarDatosSesion() {

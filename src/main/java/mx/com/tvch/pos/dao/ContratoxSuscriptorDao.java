@@ -201,6 +201,7 @@ public class ContratoxSuscriptorDao {
 "            ON c.id_estatus = ec.id_estatus\n" +
 "         WHERE c.id_contrato = ");
                 builder.append(contratoId);
+                builder.append(" and sc.estatus = 1 and d.estatus = 1");
                 //builder.append(" AND sus.id_estatus = 2");
                 break;
             case Constantes.TIPO_BUSQUEDA_CONTRATO_ANTERIOR:
@@ -224,6 +225,7 @@ public class ContratoxSuscriptorDao {
 "            ON c.id_estatus = ec.id_estatus\n" +
 "         WHERE c.id_contrato_anterior = ");
                 builder.append(contratoId);
+                builder.append(" and sc.estatus = 1 and d.estatus = 1");
                 //builder.append(" AND sus.id_estatus = 2");
                 break;
             case Constantes.TIPO_BUSQUEDA_NOMBRE:
@@ -248,6 +250,7 @@ public class ContratoxSuscriptorDao {
 "         WHERE sus.nombre like '%");
                 builder.append(cadenaBusqueda);
                 builder.append("%'");
+                builder.append(" and sc.estatus = 1 and d.estatus = 1");
                 //builder.append(" AND sus.id_estatus = 2");
                 break;
             case Constantes.TIPO_BUSQUEDA_APELLIDO_PATERNO:
@@ -272,6 +275,7 @@ public class ContratoxSuscriptorDao {
 "         WHERE sus.apellido_paterno like '%");
                 builder.append(cadenaBusqueda);
                 builder.append("%'");
+                builder.append(" and sc.estatus = 1 and d.estatus = 1");
                 break;
             case Constantes.TIPO_BUSQUEDA_APELLIDO_MATERNO:
                 builder.append("SELECT c.id_contrato, c.id_contrato_anterior, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
@@ -295,6 +299,7 @@ public class ContratoxSuscriptorDao {
 "         WHERE sus.apellido_materno like '%");
                 builder.append(cadenaBusqueda);
                 builder.append("%'");
+                builder.append(" and sc.estatus = 1 and d.estatus = 1");
                 break;
             case Constantes.TIPO_BUSQUEDA_DOMICILIO:
                 builder.append("SELECT c.id_contrato, c.id_contrato_anterior, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
@@ -320,6 +325,7 @@ public class ContratoxSuscriptorDao {
                 builder.append("%'  OR d.colonia like '%");
                 builder.append(cadenaBusqueda);
                 builder.append("%'");
+                builder.append(" and sc.estatus = 1 and d.estatus = 1");
                 break;
             default:
                 break;
