@@ -98,10 +98,7 @@ public class Impresora {
             domicilio.append(entity.getColonia());
         }
 
-        String contrato = String.valueOf(entity.getContratoId());
-        if (entity.getContratoAnteriorId() != null && entity.getContratoAnteriorId() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getContratoAnteriorId()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getFolioContrato()));
 
         DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_CANCELACION).findAny().get();
         Double importeTotal = detalleCobro.getMonto();
@@ -223,10 +220,7 @@ public class Impresora {
             domicilio.append(suscriptor.getColonia());
         }
 
-        String contrato = String.valueOf(suscriptor.getContratoId());
-        if (suscriptor.getContratoAnteriorId() != null && suscriptor.getContratoAnteriorId() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getContratoAnteriorId()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getFolioContrato()));
 
         DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_CANCELACION).findAny().get();
         Double importeTotal = detalleCobro.getMonto();
@@ -431,10 +425,7 @@ public class Impresora {
             domicilio.append(suscriptor.getColonia());
         }
 
-        String contrato = String.valueOf(suscriptor.getContratoId());
-        if (suscriptor.getContratoAnteriorId() != null && suscriptor.getContratoAnteriorId() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getContratoAnteriorId()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getFolioContrato()));
 
         DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_SERVICIO).findAny().get();
         Double importeTotal = detalleCobro.getMonto();
@@ -601,10 +592,8 @@ public class Impresora {
             domicilio.append(entity.getColonia());
         }
 
-        String contrato = String.valueOf(entity.getContratoId());
-        if (entity.getContratoAnteriorId() != null && entity.getContratoAnteriorId() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getContratoAnteriorId()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getFolioContrato()));
+        
 
         DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_SERVICIO).findAny().get();
         Double importeTotal = detalleCobro.getMonto();
@@ -756,10 +745,7 @@ public class Impresora {
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptor.getNombre()).append(" ").append(suscriptor.getApellidoPaterno()).append(" ").append(suscriptor.getApellidoMaterno());
 
-        String contrato = String.valueOf(orden.getContratoId());
-        if (suscriptor.getContratoAnterior() != null && suscriptor.getContratoAnterior() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getContratoAnterior()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getFolioContrato()));
 
         PrinterMatrix pm = new PrinterMatrix();
 
@@ -900,10 +886,8 @@ public class Impresora {
             domicilio.append(entity.getColonia());
         }
 
-        String contrato = String.valueOf(entity.getContratoId());
-        if (entity.getContratoAnteriorId() != null && entity.getContratoAnteriorId() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getContratoAnteriorId()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getFolioContrato()));
+        
 
         PrinterMatrix pm = new PrinterMatrix();
 
@@ -1028,11 +1012,8 @@ public class Impresora {
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptor.getNombre()).append(" ").append(suscriptor.getApellidoPaterno()).append(" ").append(suscriptor.getApellidoMaterno());
 
-        String contrato = String.valueOf(orden.getContratoId());
-        if (suscriptor.getContratoAnterior() != null && suscriptor.getContratoAnterior() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getContratoAnterior()));
-        }
-
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getFolioContrato()));
+      
         PrinterMatrix pm = new PrinterMatrix();
 
         int cantidadLineas = 51;
@@ -1175,10 +1156,8 @@ public class Impresora {
             domicilio.append(entity.getColonia());
         }
         
-        String contrato = String.valueOf(entity.getContratoId());
-        if (entity.getContratoAnteriorId() != null && entity.getContratoAnteriorId() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getContratoAnteriorId()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getFolioContrato()));
+        
 
         PrinterMatrix pm = new PrinterMatrix();
 
@@ -1307,10 +1286,7 @@ public class Impresora {
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptor.getNombre()).append(" ").append(suscriptor.getApellidoPaterno()).append(" ").append(suscriptor.getApellidoMaterno());
 
-        String contrato = String.valueOf(orden.getContratoId());
-        if (suscriptor.getContratoAnterior() != null && suscriptor.getContratoAnterior() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getContratoAnterior()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getFolioContrato()));
 
         PrinterMatrix pm = new PrinterMatrix();
 
@@ -1447,10 +1423,8 @@ public class Impresora {
         if(entity.getColonia() != null)
             domicilio.append(" ").append(entity.getColonia());
         
-        String contrato = String.valueOf(entity.getContratoId());
-        if (entity.getContratoAnteriorId() != null && entity.getContratoAnteriorId() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getContratoAnteriorId()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getFolioContrato()));
+        
 
         PrinterMatrix pm = new PrinterMatrix();
 

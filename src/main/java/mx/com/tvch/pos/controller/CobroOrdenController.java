@@ -371,7 +371,7 @@ public class CobroOrdenController {
         switch (tipoOrden.getTipoOrdenId()) {
             case Constantes.TIPO_ORDEN_INSTALACION:
                 ListOrdenesInstalacionPosRequest listOrdenesInstalacionRequest = new ListOrdenesInstalacionPosRequest();
-                listOrdenesInstalacionRequest.setContratoId(suscriptor.getContrato());
+                listOrdenesInstalacionRequest.setContratoId(suscriptor.getContratoId());
                 //ordenesRequest.setFechaInicio(util.convertirDateTime2String(fechaInicio, "dd/MM/yyyy"));
                 //ordenesRequest.setFechaFin(util.convertirDateTime2String(fechaFin, "dd/MM/yyyy"));
                 Request<ListOrdenesInstalacionPosRequest> ordenesInstalacionRequest = new Request<>();
@@ -390,7 +390,7 @@ public class CobroOrdenController {
 
             case Constantes.TIPO_ORDEN_SERVICIO:
                 ListOrdenesServicioPosRequest listOrdenesServicioRequest = new ListOrdenesServicioPosRequest();
-                listOrdenesServicioRequest.setContratoId(suscriptor.getContrato());
+                listOrdenesServicioRequest.setContratoId(suscriptor.getContratoId());
                 Request<ListOrdenesServicioPosRequest> ordenesServicioRequest = new Request<>();
                 ordenesServicioRequest.setData(listOrdenesServicioRequest);
                 Response<ListOrdenesServicioResponse> responseOrdenesServicio = client.consultarOrdenesServicio(ordenesServicioRequest);
@@ -407,7 +407,7 @@ public class CobroOrdenController {
                 
             case Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO:
                 ListOrdenesCambioDomicilioPosRequest listOrdenesCambioDomicilioRequest = new ListOrdenesCambioDomicilioPosRequest();
-                listOrdenesCambioDomicilioRequest.setContratoId(suscriptor.getContrato());
+                listOrdenesCambioDomicilioRequest.setContratoId(suscriptor.getContratoId());
                 Request<ListOrdenesCambioDomicilioPosRequest> ordenesCambioDomicilioRequest = new Request<>();
                 ordenesCambioDomicilioRequest.setData(listOrdenesCambioDomicilioRequest);
                 Response<ListOrdenesCambioDomicilioResponse> responseOrdenesCambioDomicilio = client.consultarOrdenesCambioDomicilio(ordenesCambioDomicilioRequest);
@@ -456,25 +456,6 @@ public class CobroOrdenController {
             ListSuscriptoresRequest suscriptoresRequest = new ListSuscriptoresRequest();
             suscriptoresRequest.setSucursalId(sesion.getSucursalId());
             suscriptoresRequest.setEstatusSuscriptorId(estatusSuscriptor.getEstatusId());
-
-            /*if (tipoBusqueda.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_CONTRATO) {
-                suscriptoresRequest.setValor(cadenaBuscar);
-            } else if (tipoBusqueda.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_CONTRATO_ANTERIOR) {
-                //try {
-                  //  Long contratoAnteriorId = Long.parseLong(cadenaBuscar);
-                    suscriptoresRequest.setValor(cadenaBuscar);
-                //} catch (NumberFormatException ex) {
-                  //  throw new Exception("Por favor, ingrese un número de contrato numérico");
-                //}
-            } else if (tipoBusqueda.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_APELLIDO_MATERNO) {
-                suscriptoresRequest.setApellidoMaterno(cadenaBuscar);
-            } else if (tipoBusqueda.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_APELLIDO_PATERNO) {
-                suscriptoresRequest.setApellidoPaterno(cadenaBuscar);
-            } else if (tipoBusqueda.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_DOMICILIO) {
-                suscriptoresRequest.setDomicilio(cadenaBuscar);
-            } else if (tipoBusqueda.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_NOMBRE) {
-                suscriptoresRequest.setNombre(cadenaBuscar);
-            }*/
             
             suscriptoresRequest.setTipoBusqueda(tipoBusqueda.getTipoCobroId());
             suscriptoresRequest.setValor(cadenaBuscar);

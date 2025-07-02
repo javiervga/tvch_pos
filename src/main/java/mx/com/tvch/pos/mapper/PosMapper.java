@@ -66,8 +66,8 @@ public class PosMapper {
         
         double contratoId = (double) map.get("contratoId");
         response.setContratoId((long) contratoId);
-        double contratoAnteriorId = (double) map.get("contratoAnteriorId");
-        response.setContratoAnteriorId((long) contratoAnteriorId);
+        double folioContrato = (double) map.get("folioContrato");
+        response.setFolioContrato((long) folioContrato);
         response.setEstatus((String) map.get("estatus"));;
         response.setFechaRegistro((String) map.get("fechaRegistro"));
         response.setUsuario((String) map.get("usuario"));
@@ -313,6 +313,8 @@ public class PosMapper {
         
         double contratoId = (double) map.get("contratoId");
         ordenInstalacion.setContratoId((long) contratoId);
+        double folioContrato = (double) map.get("folioContrato");
+        ordenInstalacion.setFolioContrato((long) folioContrato);
         ordenInstalacion.setCosto((Double) map.get("costo"));
         ordenInstalacion.setEstatus((String) map.get("estatus"));
         double estatusId = (double) map.get("estatusId");
@@ -367,6 +369,8 @@ public class PosMapper {
         
         double contratoId = (double) map.get("contratoId");
         ordenServicio.setContratoId((long) contratoId);
+        double folioContrato = (double) map.get("folioContrato");
+        ordenServicio.setFolioContrato((long) folioContrato);
         ordenServicio.setCosto((Double) map.get("costo"));
         ordenServicio.setEstatus((String) map.get("estatus"));
         double estatusId = (double) map.get("estatusId");
@@ -426,6 +430,8 @@ public class PosMapper {
         
         double contratoId = (double) map.get("contratoId");
         ordenCambioDomicilio.setContratoId((long) contratoId);
+        double folioContrato = (double) map.get("folioContrato");
+        ordenCambioDomicilio.setFolioContrato((long) folioContrato);
         ordenCambioDomicilio.setCosto((Double) map.get("costo"));
         ordenCambioDomicilio.setEstatusOrden((String) map.get("estatusOrden"));
         double estatusOrdenId = (double) map.get("estatusOrdenId");
@@ -482,13 +488,13 @@ public class PosMapper {
         
         suscriptor.setApellidoMaterno((String) map.get("apellidoMaterno"));
         suscriptor.setApellidoPaterno((String) map.get("apellidoPaterno"));
-        if(map.get("contrato") != null){
-            double contrato = (double) map.get("contrato");
-            suscriptor.setContrato((long) contrato);
+        if(map.get("contratoId") != null){
+            double contratoId = (double) map.get("contratoId");
+            suscriptor.setContratoId((long) contratoId);
         }
-        if(map.get("contratoAnterior") != null){
-            double contratoAnterior = (double) map.get("contratoAnterior");
-            suscriptor.setContratoAnterior((long) contratoAnterior);
+        if(map.get("folioContrato") != null){
+            double folioContrato = (double) map.get("folioContrato");
+            suscriptor.setFolioContrato((long) folioContrato);
         }
         suscriptor.setDomicilio((String) map.get("domicilio"));
         if(map.get("estatusContrato") != null){
@@ -548,7 +554,7 @@ public class PosMapper {
     public List<Orden> ordenInstalacionList2Ordenes(List<OrdenInstalacion> list, TipoOrden tipoOrden){
         List<Orden> ordenes = new ArrayList<>();
         list.forEach(o -> ordenes.add(
-                new Orden(o.getOrdenInstalacionId(), o.getContratoId(), tipoOrden.getTipoOrdenId(), 
+                new Orden(o.getOrdenInstalacionId(), o.getContratoId(), o.getFolioContrato(), tipoOrden.getTipoOrdenId(), 
                         tipoOrden.getDescripcion(), o.getCosto(), o.getFechaRegistro(), o.getCosto())));
         return ordenes;
     }
@@ -562,7 +568,7 @@ public class PosMapper {
     public List<Orden> ordenCambioDomiclioList2Ordenes(List<OrdenCambioDomicilio> list, TipoOrden tipoOrden){
         List<Orden> ordenes = new ArrayList<>();
         list.forEach(o -> ordenes.add(
-                new Orden(o.getOrdenCambioDomicilioId(), o.getContratoId(), tipoOrden.getTipoOrdenId(), 
+                new Orden(o.getOrdenCambioDomicilioId(), o.getContratoId(), o.getFolioContrato(), tipoOrden.getTipoOrdenId(), 
                         tipoOrden.getDescripcion(), o.getCosto(), o.getFechaRegistro(), o.getCosto())));
         return ordenes;
     }
@@ -576,7 +582,7 @@ public class PosMapper {
     public List<Orden> ordenServicioList2Ordenes(List<OrdenServicio> list, TipoOrden tipoOrden){
         List<Orden> ordenes = new ArrayList<>();
         for( OrdenServicio o : list){
-            Orden orden = new Orden(o.getOrdenServicioId(), o.getContratoId(), tipoOrden.getTipoOrdenId(), 
+            Orden orden = new Orden(o.getOrdenServicioId(), o.getContratoId(), o.getFolioContrato(), tipoOrden.getTipoOrdenId(), 
                         tipoOrden.getDescripcion(), o.getCosto(), o.getFechaRegistro(), o.getCosto());
             orden.setConceptoOrdenServicio(o.getTipoOrdenServicio());
             ordenes.add(orden);

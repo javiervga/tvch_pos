@@ -228,7 +228,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         campoTransaccion.setEditable(false);
         campoAPerturaCaja.setEditable(false);
         campoContrato.setEditable(false);
-        campoContratoAnterior.setEditable(false);
+        campoFolioContrato.setEditable(false);
         campoFecha.setEditable(false);
         campoMonto.setEditable(false);
         campoServicio.setEditable(false);
@@ -256,7 +256,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                     e.getTransaccionId(),
                     suscriptor,
                     e.getContratoId(),
-                    e.getContratoAnteriorId() != null ? String.valueOf(e.getContratoAnteriorId()) : "",
+                    e.getFolioContrato()!= null ? String.valueOf(e.getFolioContrato()) : "",
                     e.getFechaTransaccion(),
                     e.getMonto(),
                     e.getDescripcionTipoCobro()
@@ -285,8 +285,8 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         campoTransaccion.setText(String.valueOf(entity.getTransaccionId()));
         campoAPerturaCaja.setText(String.valueOf(entity.getAperturaCajaId()));
         campoContrato.setText(String.valueOf(entity.getContratoId()));
-        if (entity.getContratoAnteriorId() != null) {
-            campoContratoAnterior.setText(String.valueOf(entity.getContratoAnteriorId()));
+        if (entity.getFolioContrato()!= null) {
+            campoFolioContrato.setText(String.valueOf(entity.getFolioContrato()));
         }
         campoFecha.setText(entity.getFechaTransaccion());
         campoMonto.setText(String.valueOf(entity.getMonto()));
@@ -300,7 +300,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         campoTransaccion.setText("");
         campoAPerturaCaja.setText("");
         campoContrato.setText("");
-        campoContratoAnterior.setText("");
+        campoFolioContrato.setText("");
         campoFecha.setText("");
         campoMonto.setText("");
         campoServicio.setText("");
@@ -352,7 +352,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         campoContrato = new javax.swing.JTextField();
-        campoContratoAnterior = new javax.swing.JTextField();
+        campoFolioContrato = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         campoFecha = new javax.swing.JTextField();
@@ -511,7 +511,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Folio", "Suscriptor", "Contrato", "Contrato Anterior", "Fecha", "Monto", "Tipo Operacion"
+                "Folio", "Suscriptor", "ID Sistema", "Número de Contrato", "Fecha", "Monto", "Tipo Operacion"
             }
         ) {
             Class[] types = new Class [] {
@@ -602,7 +602,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
 
         campoContrato.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
-        campoContratoAnterior.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        campoFolioContrato.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel8.setText("Fecha:");
@@ -649,7 +649,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(panelDatosTransaccionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(campoContrato, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE)
-                    .addComponent(campoContratoAnterior))
+                    .addComponent(campoFolioContrato))
                 .addGap(18, 18, 18)
                 .addGroup(panelDatosTransaccionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8)
@@ -689,7 +689,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                     .addComponent(jLabel3)
                     .addComponent(campoAPerturaCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7)
-                    .addComponent(campoContratoAnterior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel9)
                     .addComponent(campoMonto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14)
@@ -730,8 +730,8 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
     private javax.swing.JButton botonRegresar;
     private javax.swing.JTextField campoAPerturaCaja;
     private javax.swing.JTextField campoContrato;
-    private javax.swing.JTextField campoContratoAnterior;
     private javax.swing.JTextField campoFecha;
+    private javax.swing.JTextField campoFolioContrato;
     private javax.swing.JTextField campoMonto;
     private javax.swing.JTextField campoServicio;
     private javax.swing.JTextField campoTipoCobro;

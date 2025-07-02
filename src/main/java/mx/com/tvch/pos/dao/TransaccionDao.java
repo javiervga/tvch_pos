@@ -63,7 +63,7 @@ public class TransaccionDao {
 
             StringBuilder query = new StringBuilder();
             
-            query.append("select t.fecha_transaccion, t.id_transaccion, t.id_transaccion_server, tc.id_tipo_cobro, tc.descripcion AS tipoCobro, c.id_contrato, c.id_contrato_anterior, c.fecha_proximo_pago, \n" +
+            query.append("select t.fecha_transaccion, t.id_transaccion, t.id_transaccion_server, tc.id_tipo_cobro, tc.descripcion AS tipoCobro, c.id_contrato, c.folio_contrato, c.fecha_proximo_pago, \n" +
 "		       t.id_apertura_caja, s.nombre, s.apellido_paterno, s.apellido_materno, d.calle, d.numero_calle, d.colonia, ser.nombre as servicio, s.telefono, t.monto \n" +
 "		  from transacciones t \n" +
 "		 inner\n" +
@@ -109,7 +109,7 @@ public class TransaccionDao {
                 entity.setCalle(rs.getString("calle"));
                 entity.setColonia(rs.getString("colonia"));
                 entity.setContratoId(rs.getLong("id_contrato"));
-                entity.setContratoAnteriorId(rs.getLong("id_contrato_anterior"));
+                entity.setFolioContrato(rs.getLong("folio_contrato"));
                 entity.setAperturaCajaId(rs.getLong("id_apertura_caja"));
                 entity.setDescripcionTipoCobro(rs.getString("tipoCobro"));
                 entity.setFechaProximoPago(util.convertirDateTime2String(rs.getDate("fecha_proximo_pago"), Constantes.FORMATO_FECHA_WEB_SERVICE));

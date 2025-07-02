@@ -402,8 +402,8 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                         Long contratoId = (Long) tablaSuscriptores.getModel().getValueAt(selectedRow, 0);
                         System.out.println("contrato seleccionado: " + contratoId);
                         if (!suscriptoresConsultaList.isEmpty()) {
-                            if (suscriptoresConsultaList.stream().filter(s -> s.getContrato().longValue() == contratoId.longValue()).findAny().isPresent()) {
-                                Suscriptor suscriptor = suscriptoresConsultaList.stream().filter(s -> s.getContrato().longValue() == contratoId.longValue()).findFirst().get();
+                            if (suscriptoresConsultaList.stream().filter(s -> s.getContratoId().longValue() == contratoId.longValue()).findAny().isPresent()) {
+                                Suscriptor suscriptor = suscriptoresConsultaList.stream().filter(s -> s.getContratoId().longValue() == contratoId.longValue()).findFirst().get();
                                 cargarDatosSuscriptor(suscriptor);
                             }
                         }
@@ -428,8 +428,8 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                         Long contratoId = (Long) tablaSuscriptores.getModel().getValueAt(row, 0);
                         System.out.println("contrato seleccionado: " + contratoId);
                         if (!suscriptoresConsultaList.isEmpty()) {
-                            if (suscriptoresConsultaList.stream().filter(s -> s.getContrato().longValue() == contratoId.longValue()).findAny().isPresent()) {
-                                Suscriptor suscriptor = suscriptoresConsultaList.stream().filter(s -> s.getContrato().longValue() == contratoId.longValue()).findFirst().get();
+                            if (suscriptoresConsultaList.stream().filter(s -> s.getContratoId().longValue() == contratoId.longValue()).findAny().isPresent()) {
+                                Suscriptor suscriptor = suscriptoresConsultaList.stream().filter(s -> s.getContratoId().longValue() == contratoId.longValue()).findFirst().get();
                                 //validar el estatus del contrato
                                 if (suscriptor.getEstatusContratoId() != Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO
                                         && suscriptor.getEstatusContratoId() != Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO) {
@@ -503,10 +503,8 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
 
         suscriptorSeleccionado = suscriptor;
 
-        campoContrato.setText(String.valueOf(suscriptor.getContrato()));
-        if (suscriptor.getContratoAnterior() != null) {
-            campoContratoAnterior.setText(String.valueOf(suscriptor.getContratoAnterior()));
-        }
+        campoContrato.setText(String.valueOf(suscriptor.getContratoId()));
+        campoFolioContrato.setText(String.valueOf(suscriptor.getFolioContrato()));
         campoDomicilio.setText(String.valueOf(suscriptor.getDomicilio()));
         campoEstatusContrato.setText(String.valueOf(suscriptor.getEstatusContrato()));
         campoServicio.setText(String.valueOf(suscriptor.getServicio()));
@@ -539,8 +537,8 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
             model.getDataVector().clear();
             model.fireTableDataChanged();
             for (Suscriptor c : list) {
-                model.addRow(new Object[]{c.getContrato() == null ? "N/A" : c.getContrato(),
-                    c.getContratoAnterior() == null ? "N/A" : c.getContratoAnterior(),
+                model.addRow(new Object[]{c.getContratoId() == null ? "N/A" : c.getContratoId(),
+                    c.getFolioContrato() == null ? "N/A" : c.getFolioContrato(),
                     c.getNombre().concat(" ").concat(c.getApellidoPaterno()).concat(" ").concat(c.getApellidoMaterno()),
                     c.getServicio() == null ? "N/A" : c.getServicio(),
                     c.getDomicilio() == null ? "Domicilio no registrado" : c.getDomicilio(),
@@ -567,7 +565,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
             for (Orden o : list) {
                 model.addRow(new Object[]{
                     o.getId(),
-                    o.getContratoId(),
+                    o.getFolioContrato(),
                     o.getTipoOrden(),
                     o.getFechaRegistro(),
                     o.getCosto()});
@@ -593,7 +591,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
             for (Orden o : list) {
                 model.addRow(new Object[]{
                     o.getId(),
-                    o.getContratoId(),
+                    o.getFolioContrato(),
                     o.getTipoOrden(),
                     o.getFechaRegistro(),
                     o.getCosto()});
@@ -619,7 +617,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
             for (Orden o : list) {
                 model.addRow(new Object[]{
                     o.getId(),
-                    o.getContratoId(),
+                    o.getFolioContrato(),
                     o.getConceptoOrdenServicio(),
                     o.getFechaRegistro(),
                     o.getCosto()});
@@ -724,8 +722,8 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
     private void cargarComboTiposBusqueda() {
 
         List<TipoBusquedaCobro> list = new ArrayList<>();
-        list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_CONTRATO, "Por Contrato"));
-        list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_CONTRATO_ANTERIOR, "Por Contrato Anterior"));
+        //list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_CONTRATO, "Por Contrato"));
+        list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_FOLIO_CONTRATO, "Por Contrato"));
         list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_NOMBRE, "Por Nombre"));
         list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_APELLIDO_PATERNO, "Por Apellido Paterno"));
         list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_APELLIDO_MATERNO, "Por Apellido Materno"));
@@ -752,7 +750,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         //seccion suscriptores y contrato
         campoSuscriptor.setEditable(false);
         campoContrato.setEditable(false);
-        campoContratoAnterior.setEditable(false);
+        campoFolioContrato.setEditable(false);
         campoEstatusContrato.setEditable(false);
         campoServicio.setEditable(false);
         campoDomicilio.setEditable(false);
@@ -760,7 +758,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         campoSuscriptor.setEditable(false);
         campoFechaPago.setEditable(false);
         campoContrato.setEditable(false);
-        campoContratoAnterior.setEditable(false);
+        campoFolioContrato.setEditable(false);
         campoEstatusContrato.setEditable(false);
         campoServicio.setEditable(false);
         campoDomicilio.setEditable(false);
@@ -769,11 +767,11 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         //scrollPane.setViewportView(tablaSuscriptores);
         //scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         //tablaSuscriptores.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        tablaSuscriptores.getColumnModel().getColumn(0).setPreferredWidth(90);
-        tablaSuscriptores.getColumnModel().getColumn(1).setPreferredWidth(140);
-        tablaSuscriptores.getColumnModel().getColumn(2).setPreferredWidth(270);
+        tablaSuscriptores.getColumnModel().getColumn(0).setPreferredWidth(50);
+        tablaSuscriptores.getColumnModel().getColumn(1).setPreferredWidth(130);
+        tablaSuscriptores.getColumnModel().getColumn(2).setPreferredWidth(310);
         tablaSuscriptores.getColumnModel().getColumn(3).setPreferredWidth(190);
-        tablaSuscriptores.getColumnModel().getColumn(4).setPreferredWidth(380);
+        tablaSuscriptores.getColumnModel().getColumn(4).setPreferredWidth(390);
         tablaSuscriptores.getColumnModel().getColumn(5).setPreferredWidth(130);
         
         tablaOrdenes.getColumnModel().getColumn(0).setPreferredWidth(90);
@@ -830,7 +828,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         suscriptorSeleccionado = null;
         campoSuscriptor.setText("");
         campoContrato.setText("");
-        campoContratoAnterior.setText("");
+        campoFolioContrato.setText("");
         campoEstatusContrato.setText("");
         campoServicio.setText("");
         campoDomicilio.setText("");
@@ -895,6 +893,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         etiquetaSucursal = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         etiquetaUsuario = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
         panelBusqueda = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaSuscriptores = new javax.swing.JTable();
@@ -914,7 +913,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         jLabel8 = new javax.swing.JLabel();
         campoContrato = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
-        campoContratoAnterior = new javax.swing.JTextField();
+        campoFolioContrato = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         campoServicio = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
@@ -984,6 +983,9 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         etiquetaUsuario.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         etiquetaUsuario.setText("User");
 
+        jLabel18.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel18.setText("Cobro de Ordenes en Línea");
+
         javax.swing.GroupLayout panelCabeceroLayout = new javax.swing.GroupLayout(panelCabecero);
         panelCabecero.setLayout(panelCabeceroLayout);
         panelCabeceroLayout.setHorizontalGroup(
@@ -993,30 +995,31 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                 .addComponent(jLabel10)
                 .addGap(18, 18, 18)
                 .addComponent(etiquetaNumeroCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(426, 426, 426)
+                .addGap(202, 202, 202)
                 .addComponent(jLabel12)
                 .addGap(18, 18, 18)
                 .addComponent(etiquetaSucursal)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 461, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 254, Short.MAX_VALUE)
+                .addComponent(jLabel18)
+                .addGap(244, 244, 244)
                 .addComponent(jLabel11)
                 .addGap(18, 18, 18)
                 .addComponent(etiquetaUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(94, 94, 94))
+                .addGap(65, 65, 65))
         );
         panelCabeceroLayout.setVerticalGroup(
             panelCabeceroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelCabeceroLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panelCabeceroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelCabeceroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(etiquetaNumeroCaja)
+                    .addComponent(jLabel12)
+                    .addComponent(etiquetaSucursal)
                     .addGroup(panelCabeceroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel11)
-                        .addComponent(etiquetaUsuario))
-                    .addGroup(panelCabeceroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel12)
-                        .addComponent(etiquetaSucursal))
-                    .addGroup(panelCabeceroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel10)
-                        .addComponent(etiquetaNumeroCaja)))
+                        .addComponent(etiquetaUsuario)
+                        .addComponent(jLabel18)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1036,7 +1039,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "Número de Contrato", "Número de Contrato Anterior", "Nombre Suscriptor", "Servicio Contratado", "Domicilio Contrato", "Estatus Contrato"
+                "ID Sistema", "Número de Contrato", "Nombre Suscriptor", "Servicio Contratado", "Domicilio Contrato", "Estatus Contrato"
             }
         ) {
             Class[] types = new Class [] {
@@ -1111,7 +1114,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
             panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelBusquedaLayout.createSequentialGroup()
                 .addGap(22, 22, 22)
-                .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1451, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(panelBusquedaLayout.createSequentialGroup()
                         .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1133,17 +1136,14 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                                         .addComponent(comboEstatusSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(51, 51, 51)
                                         .addComponent(botonBusquedaSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                        .addGap(576, 576, 576)
-                        .addComponent(etiquetaLogo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(etiquetaLogo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(373, 373, 373))
         );
         panelBusquedaLayout.setVerticalGroup(
             panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelBusquedaLayout.createSequentialGroup()
                 .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelBusquedaLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(etiquetaLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(3, 3, 3))
                     .addGroup(panelBusquedaLayout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1156,7 +1156,9 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(campoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(campoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(etiquetaLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(17, 17, 17))
         );
@@ -1175,10 +1177,10 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         campoSuscriptor.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel8.setText("Número de contrato:");
+        jLabel8.setText("ID Sistema:");
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel9.setText("Contrato Sistema Anterior:");
+        jLabel9.setText("Número de Contrato:");
 
         jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel14.setText("Servicio contratado:");
@@ -1210,46 +1212,49 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
             panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelInfoContratoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelInfoContratoLayout.createSequentialGroup()
+                        .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(panelInfoContratoLayout.createSequentialGroup()
                         .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelInfoContratoLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(campoSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelInfoContratoLayout.createSequentialGroup()
                                 .addGap(11, 11, 11)
-                                .addComponent(campoServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
+                                .addComponent(campoServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panelInfoContratoLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(campoSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelInfoContratoLayout.createSequentialGroup()
                         .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(campoDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, 536, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(campoDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, 598, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel16)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(campoTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelInfoContratoLayout.createSequentialGroup()
+                        .addGap(12, 12, 12)
                         .addComponent(jLabel8)
                         .addGap(18, 18, 18)
-                        .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel9)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(campoContratoAnterior, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel13)
                         .addGap(18, 18, 18)
-                        .addComponent(campoEstatusContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(campoEstatusContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel19)
                         .addGap(18, 18, 18)
                         .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(68, 68, 68))
         );
         panelInfoContratoLayout.setVerticalGroup(
             panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1258,27 +1263,32 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelInfoContratoLayout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8)
+                            .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9)
+                            .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel13)
+                            .addComponent(campoEstatusContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel19)
+                            .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(campoTelefono)
+                            .addComponent(campoDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel15)
+                            .addComponent(jLabel16)))
+                    .addGroup(panelInfoContratoLayout.createSequentialGroup()
                         .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7)
                             .addComponent(campoSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(8, 8, 8)
                         .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel14)
-                            .addComponent(campoServicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel15)
-                            .addComponent(campoDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel16)
-                            .addComponent(campoTelefono)))
-                    .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel8)
-                        .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel9)
-                        .addComponent(campoContratoAnterior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(campoEstatusContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel19)
-                        .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel13)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(campoServicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
 
         panelInferior.setMaximumSize(new java.awt.Dimension(1500, 350));
@@ -1369,7 +1379,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                 .addComponent(BotonAplicarPromocion)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(BotonEliminarPromocion)
-                .addContainerGap(94, Short.MAX_VALUE))
+                .addContainerGap(56, Short.MAX_VALUE))
             .addGroup(panelPromocionesLayout.createSequentialGroup()
                 .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -1385,7 +1395,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                     .addComponent(comboPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(BotonAplicarPromocion)
                     .addComponent(BotonEliminarPromocion))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         jLabel23.setFont(new java.awt.Font("Segoe UI", 0, 80)); // NOI18N
@@ -1436,7 +1446,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelImporteLayout.createSequentialGroup()
                                 .addGap(32, 32, 32)
                                 .addComponent(etiquetaPromoActiva, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(76, Short.MAX_VALUE))
+                .addContainerGap(167, Short.MAX_VALUE))
         );
         panelImporteLayout.setVerticalGroup(
             panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1449,10 +1459,10 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                 .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(etiquetaPromoActiva, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(etiquetaCortesia))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(botonCobrar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botonRegresar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(botonRegresar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(21, 21, 21))
         );
 
@@ -1514,7 +1524,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         etiquetaDescuentoAplicado.setText("Descuento aplicado:");
 
         etiquetaImporteDescuento.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        etiquetaImporteDescuento.setText("Importe:");
+        etiquetaImporteDescuento.setText("Importe del Descuento:");
 
         jLabel20.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel20.setText("Motivo del Descuento:");
@@ -1523,8 +1533,10 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
 
         campoImporteDescuento.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
+        campoDescuentoAplicado.setEditable(false);
         campoDescuentoAplicado.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         campoDescuentoAplicado.setText("0.00");
+        campoDescuentoAplicado.setEnabled(false);
 
         javax.swing.GroupLayout panelInferiorLayout = new javax.swing.GroupLayout(panelInferior);
         panelInferior.setLayout(panelInferiorLayout);
@@ -1535,8 +1547,8 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                 .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelInferiorLayout.createSequentialGroup()
                         .addComponent(panelInfoOrdenes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, 937, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, 899, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelInferiorLayout.createSequentialGroup()
                         .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelInferiorLayout.createSequentialGroup()
@@ -1561,24 +1573,26 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                                         .addGap(18, 18, 18)
                                         .addComponent(etiquetaImporteDescuento)
                                         .addGap(18, 18, 18)
-                                        .addComponent(campoImporteDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addComponent(campoImporteDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addGroup(panelInferiorLayout.createSequentialGroup()
                                 .addComponent(jScrollPane2)
-                                .addGap(18, 18, 18)))
+                                .addGap(27, 27, 27)))
                         .addComponent(panelImporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(375, 375, 375))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelInferiorLayout.setVerticalGroup(
             panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelInferiorLayout.createSequentialGroup()
-                .addGap(2, 2, 2)
-                .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(panelInfoOrdenes, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
-                    .addComponent(panelPromociones, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE))
                 .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelInferiorLayout.createSequentialGroup()
-                        .addGap(12, 12, 12)
+                        .addGap(2, 2, 2)
+                        .addComponent(panelInfoOrdenes, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelInferiorLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelInferiorLayout.createSequentialGroup()
+                        .addGap(8, 8, 8)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1596,9 +1610,11 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                             .addComponent(etiquetaDescuentoAplicado, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(BotonEliminarDescuento)
                             .addComponent(campoDescuentoAplicado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(panelImporte, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(2, 2, 2))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelInferiorLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panelImporte, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -1647,11 +1663,11 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
     private javax.swing.JButton botonRegresar;
     private javax.swing.JTextField campoBusqueda;
     private javax.swing.JTextField campoContrato;
-    private javax.swing.JTextField campoContratoAnterior;
     private javax.swing.JTextField campoDescuentoAplicado;
     private javax.swing.JTextField campoDomicilio;
     private javax.swing.JTextField campoEstatusContrato;
     private javax.swing.JTextField campoFechaPago;
+    private javax.swing.JTextField campoFolioContrato;
     private javax.swing.JTextField campoImporteDescuento;
     private javax.swing.JTextField campoMotivoDescuento;
     private javax.swing.JTextField campoServicio;
@@ -1681,6 +1697,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;

@@ -64,12 +64,12 @@ public class Constantes {
     public static final int TIPO_DETALLE_COBRO_DESCUENTO = 4;
     public static final int TIPO_DETALLE_COBRO_CANCELACION = 6;
     
-    public static final int TIPO_BUSQUEDA_CONTRATO = 1;
-    public static final int TIPO_BUSQUEDA_CONTRATO_ANTERIOR = 2;
-    public static final int TIPO_BUSQUEDA_NOMBRE = 3;
-    public static final int TIPO_BUSQUEDA_APELLIDO_PATERNO = 4;
-    public static final int TIPO_BUSQUEDA_APELLIDO_MATERNO = 5;
-    public static final int TIPO_BUSQUEDA_DOMICILIO = 6;
+    //public static final int TIPO_BUSQUEDA_CONTRATO = 1;
+    public static final int TIPO_BUSQUEDA_FOLIO_CONTRATO = 1;
+    public static final int TIPO_BUSQUEDA_NOMBRE = 2;
+    public static final int TIPO_BUSQUEDA_APELLIDO_PATERNO = 3;
+    public static final int TIPO_BUSQUEDA_APELLIDO_MATERNO = 4;
+    public static final int TIPO_BUSQUEDA_DOMICILIO = 5;
     
     public static final int TIPO_ORDEN_INSTALACION = 1;
     public static final int TIPO_ORDEN_SERVICIO = 2;

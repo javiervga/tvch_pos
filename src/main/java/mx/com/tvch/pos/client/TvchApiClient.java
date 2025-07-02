@@ -627,12 +627,12 @@ public class TvchApiClient {
             }
         }
         
-        if(responseBody != null){
+        /*if(responseBody != null){
             //String responseBody = EntityUtils.toString(httpResponse.getEntity());
             logger.warn("Fallo en respuesta de consulta de suscriptores: \n"+responseBody);
         }else{
             logger.warn("Fallo en respuesta de consulta de suscriptores: \nCódigo"+httpResponse.getStatusLine());
-        }
+        }*/
         response.setCode(httpResponse.getStatusLine().getStatusCode());
 
         return response;

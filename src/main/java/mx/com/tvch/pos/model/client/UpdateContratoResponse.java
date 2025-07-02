@@ -12,7 +12,7 @@ public class UpdateContratoResponse {
 
     private Long contratoId;
 
-    private Long contratoAnteriorId;
+    private Long folioContrato;
 
     private String estatus;
 
@@ -34,12 +34,12 @@ public class UpdateContratoResponse {
         this.contratoId = contratoId;
     }
 
-    public Long getContratoAnteriorId() {
-        return contratoAnteriorId;
+    public Long getFolioContrato() {
+        return folioContrato;
     }
 
-    public void setContratoAnteriorId(Long contratoAnteriorId) {
-        this.contratoAnteriorId = contratoAnteriorId;
+    public void setFolioContrato(Long folioContrato) {
+        this.folioContrato = folioContrato;
     }
 
     public String getEstatus() {
