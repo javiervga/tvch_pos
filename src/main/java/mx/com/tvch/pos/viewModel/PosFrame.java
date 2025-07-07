@@ -27,6 +27,7 @@ public class PosFrame extends javax.swing.JFrame {
     private final LoadingPanel loadingPanel;
     private final AperturaCajaPanel aperturaCajaPanel;
     private final SalidaCajaPanel salidaCajaPanel;
+    private final SalidaExtraordinariaPanel salidaExtraordinariaPanel;
     private final IngresoCajaPanel ingresoCajaPanel;
     private final CobroServicioPanel cobroServicioPanel;
     private final CobroOrdenPanel cobroOrdenPanel;
@@ -48,6 +49,7 @@ public class PosFrame extends javax.swing.JFrame {
         menuPanel = MenuPanel.getMenuPanel(this);
         aperturaCajaPanel = AperturaCajaPanel.getAperturaCajaPanel(this);
         salidaCajaPanel = SalidaCajaPanel.getSalidaCajaPanel(this);
+        salidaExtraordinariaPanel = SalidaExtraordinariaPanel.getSalidaCajaPanel(this);
         ingresoCajaPanel = IngresoCajaPanel.getIngresoCajaPanel(this);
         cobroServicioPanel = CobroServicioPanel.getCobroPanel(this);
         cobroOrdenPanel = CobroOrdenPanel.getCobroOrdenPanel(this);
@@ -124,6 +126,10 @@ public class PosFrame extends javax.swing.JFrame {
             case SALIDA:
                 this.add(salidaCajaPanel);
                 salidaCajaPanel.cargarDatosSesion();
+                break;
+            case SALIDA_EXTRAORDINARIA:
+                this.add(salidaExtraordinariaPanel);
+                salidaExtraordinariaPanel.cargarDatosSesion();
                 break;
             case INGRESO:
                 this.add(ingresoCajaPanel);

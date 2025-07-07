@@ -216,6 +216,16 @@ public class MenuPanel extends javax.swing.JPanel {
         };
         botonRegistrarSalida.addActionListener(botonRegistrarSalidaListener);
         
+        ActionListener botonRegistrarSalidaExtraordinariaListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                posFrame.cambiarPantalla(menuPanel, VentanaEnum.SALIDA_EXTRAORDINARIA);
+
+            }
+        };
+        botonSalidaExtraordinaria.addActionListener(botonRegistrarSalidaExtraordinariaListener);
+        
     }
     
     public void cargarDatosSesion(){
@@ -245,6 +255,7 @@ public class MenuPanel extends javax.swing.JPanel {
         botonRegistrarSalida = new javax.swing.JButton();
         botonRegistrarIngreso = new javax.swing.JButton();
         botonCancelarContrato = new javax.swing.JButton();
+        botonSalidaExtraordinaria = new javax.swing.JButton();
         panelCentral = new javax.swing.JPanel();
         botonReimpresion = new javax.swing.JButton();
         etiquetaLogo = new javax.swing.JLabel();
@@ -312,18 +323,32 @@ public class MenuPanel extends javax.swing.JPanel {
         botonCancelarContrato.setText("Cancelar Contrato");
         botonCancelarContrato.setPreferredSize(new java.awt.Dimension(75, 25));
 
+        botonSalidaExtraordinaria.setBackground(new java.awt.Color(163, 73, 164));
+        botonSalidaExtraordinaria.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        botonSalidaExtraordinaria.setForeground(new java.awt.Color(255, 255, 255));
+        botonSalidaExtraordinaria.setText("Salida ExtraOrdinaria");
+        botonSalidaExtraordinaria.setActionCommand("Registrar Salida \\n ExraOrdinaria");
+        botonSalidaExtraordinaria.setPreferredSize(new java.awt.Dimension(75, 25));
+        botonSalidaExtraordinaria.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonSalidaExtraordinariaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelSuperiorLayout = new javax.swing.GroupLayout(panelSuperior);
         panelSuperior.setLayout(panelSuperiorLayout);
         panelSuperiorLayout.setHorizontalGroup(
             panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSuperiorLayout.createSequentialGroup()
-                .addGap(207, 207, 207)
-                .addComponent(botonRegistrarSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(141, 141, 141)
-                .addComponent(botonRegistrarIngreso, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(127, 127, 127)
-                .addComponent(botonCancelarContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(311, Short.MAX_VALUE))
+                .addContainerGap(83, Short.MAX_VALUE)
+                .addComponent(botonRegistrarSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(68, 68, 68)
+                .addComponent(botonSalidaExtraordinaria, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(60, 60, 60)
+                .addComponent(botonRegistrarIngreso, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(56, 56, 56)
+                .addComponent(botonCancelarContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(73, 73, 73))
         );
         panelSuperiorLayout.setVerticalGroup(
             panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -332,7 +357,8 @@ public class MenuPanel extends javax.swing.JPanel {
                 .addGroup(panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(botonRegistrarSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(botonRegistrarIngreso, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botonCancelarContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(botonCancelarContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botonSalidaExtraordinaria, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -366,8 +392,8 @@ public class MenuPanel extends javax.swing.JPanel {
             panelCentralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelCentralLayout.createSequentialGroup()
                 .addContainerGap(98, Short.MAX_VALUE)
-                .addComponent(botonCobrarServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(54, 54, 54)
+                .addComponent(botonCobrarServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(67, 67, 67)
                 .addComponent(etiquetaLogo)
                 .addGap(62, 62, 62)
                 .addComponent(botonReimpresion, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -537,6 +563,10 @@ public class MenuPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_botonRegistrarIngresoActionPerformed
 
+    private void botonSalidaExtraordinariaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonSalidaExtraordinariaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_botonSalidaExtraordinariaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonAbrirCaja;
@@ -548,6 +578,7 @@ public class MenuPanel extends javax.swing.JPanel {
     private javax.swing.JButton botonRegistrarIngreso;
     private javax.swing.JButton botonRegistrarSalida;
     private javax.swing.JButton botonReimpresion;
+    private javax.swing.JButton botonSalidaExtraordinaria;
     private javax.swing.JButton botonSalir;
     private javax.swing.JLabel etiquetaLogo;
     private javax.swing.JLabel etiquetaNumeroCaja;

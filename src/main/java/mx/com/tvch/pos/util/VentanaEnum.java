@@ -19,6 +19,7 @@ public enum VentanaEnum {
     BUSQUEDA,
     REIMPRESION,
     SALIDA,
+    SALIDA_EXTRAORDINARIA,
     INGRESO,
     CANCELACION_CONTRATO,
     LOADING

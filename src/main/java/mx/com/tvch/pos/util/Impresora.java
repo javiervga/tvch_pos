@@ -27,6 +27,7 @@ import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
 import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import mx.com.tvch.pos.entity.DetalleDescuentoTransaccionEntity;
 import mx.com.tvch.pos.entity.DetallePromocionTransaccionEntity;
+import mx.com.tvch.pos.entity.SalidaExtraordinariaEntity;
 import mx.com.tvch.pos.entity.TransaccionTicketEntity;
 import mx.com.tvch.pos.model.CorteCaja;
 import mx.com.tvch.pos.model.DetalleCorte;
@@ -315,6 +316,39 @@ public class Impresora {
 
     }
     
+    public void imprimirTicketSalidaExtraordinaria(SalidaExtraordinariaEntity entity) throws Exception {
+        
+        PrinterMatrix pm = new PrinterMatrix();
+        
+        pm.setOutSize(25, 47);
+        pm.printCharAtCol(1, 1, 47, "=");
+        pm.printTextWrap(1, 1, 13, 47, "Egreso Extraordinario");
+        
+        pm.printTextLinCol(4, 1, "Sucursal:");
+        pm.printTextLinCol(4, 27, sesion.getSucursal());
+        pm.printTextLinCol(5, 1, "Folio Salida:");
+        pm.printTextLinCol(5, 27, String.valueOf(entity.getSalidaExtraordinariaId()));
+        pm.printTextLinCol(6, 1, "Folio Server:");
+        if (entity.getSalidaExtraordinariaServerId() != null) {
+            pm.printTextLinCol(6, 27, entity.getSalidaExtraordinariaServerId().toString());
+        } else {
+            pm.printTextLinCol(6, 27, "");
+        }
+        pm.printTextLinCol(7, 1, "Num. Caja:");
+        pm.printTextLinCol(7, 27, String.valueOf(entity.getCajaId()));
+        pm.printTextLinCol(8, 1, "Cajero:");
+        pm.printTextLinCol(8, 27, entity.getUsuario());
+        
+        pm.printTextLinCol(10, 1, "Fecha:");
+        pm.printTextLinCol(10, 27, utilerias.convertirDateTime2String(entity.getFechaSalida(), Constantes.FORMATO_FECHA_TICKET));
+        pm.printTextLinCol(11, 1, "Hora:");
+        pm.printTextLinCol(11, 27, utilerias.convertirDateTime2String(entity.getFechaSalida(), Constantes.FORMATO_HORA_TICKET));
+        
+        String nombreArchivo = ("impresion.txt");
+        pm.toFile(nombreArchivo);
+
+        imprimirArchivo(nombreArchivo);
+    }
     
     public void imprimirTicketCorteCaja(List<DetalleCorte> list, CorteCaja corteCaja) throws Exception{
 
