@@ -459,6 +459,7 @@ public class CobroProvisionalPanel extends javax.swing.JPanel {
         campoMonto.setText("0.0");
         comboTiposOrdenServicio.setEnabled(false);
         campoObservaciones.setText("");
+        campoBusqueda.setText("");
     }
 
     public void cargarDatosSesion() {
