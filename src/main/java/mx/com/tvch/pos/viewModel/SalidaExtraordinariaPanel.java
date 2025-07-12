@@ -238,6 +238,7 @@ public final class SalidaExtraordinariaPanel extends javax.swing.JPanel {
 
         areaObservaciones.setColumns(20);
         areaObservaciones.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        areaObservaciones.setLineWrap(true);
         areaObservaciones.setRows(5);
         jScrollPane1.setViewportView(areaObservaciones);
 

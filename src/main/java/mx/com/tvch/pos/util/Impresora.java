@@ -23,6 +23,7 @@ import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.entity.AperturaCajaEntity;
+import mx.com.tvch.pos.entity.CobroProvisionalEntity;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
 import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import mx.com.tvch.pos.entity.DetalleDescuentoTransaccionEntity;
@@ -72,6 +73,107 @@ public class Impresora {
             java.util.logging.Logger.getLogger(Impresora.class.getName()).log(Level.SEVERE, null, ex);
         }
     }*/
+    
+    /**
+     * 
+     * @param sesion
+     * @param entity
+     * @throws Exception 
+     */
+    public void imprimirTicketCobroProvisional(Sesion sesion, CobroProvisionalEntity entity) throws Exception{
+        
+        PrinterMatrix pm = new PrinterMatrix();
+
+        int cantidadLineas = 51;
+
+        pm.setOutSize(cantidadLineas, 47);
+        //pm.printCharAtCol(1, 1, 47, "=");
+
+        int linea = 2;
+        pm.printTextLinCol(linea, 1, "\n");
+        linea++;
+        pm.printTextWrap(linea, 1, 13, 47, "Comprobante de Pago");
+        linea = linea + 2;
+        pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
+        linea++;
+        pm.printTextWrap(linea, 
+                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+                47, sesion.getTicketLineaCiudadRfc());
+        linea++;
+        pm.printTextWrap(linea, 
+                1, sesion.getTicketSangriaCalle().intValue() , 
+                47, sesion.getTicketLineaCalle());
+        linea++;
+        pm.printTextWrap(linea, 
+                1, sesion.getTicketSangriaColonia() , 
+                47, sesion.getTicketLineaColonia());
+        linea++;
+        pm.printTextWrap(linea, 
+                1, sesion.getTicketSangriaSucursal() , 
+                47, "Sucursal ".concat(sesion.getSucursal()));
+        linea = linea + 3;
+
+        pm.printTextLinCol(linea, 1, "Fecha:");
+        pm.printTextLinCol(linea, 14, utilerias.convertirDateTime2String(entity.getFecha(), Constantes.FORMATO_FECHA_TICKET));
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Caja:");
+        pm.printTextLinCol(linea, 14, entity.getCajaId().toString());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Folio:");
+        pm.printTextLinCol(linea, 14, entity.getCobroId().toString());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Tipo Orden:");
+        pm.printTextLinCol(linea, 14, entity.getTipoOrden());
+        if(entity.getTipoOrdenServicio() != null){
+            linea = linea + 2;
+            pm.printTextLinCol(linea, 1, "Tipo Orden:");
+            pm.printTextLinCol(linea, 14, entity.getTipoOrden());
+        }
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Contrato:");
+        pm.printTextLinCol(linea, 14, entity.getFolioContrato().toString());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Suscriptor:");
+        pm.printTextLinCol(linea, 14, entity.getSuscriptor());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Domicilio:");
+        pm.printTextLinCol(linea, 14, entity.getDomicilio());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Servicio:");
+        pm.printTextLinCol(linea, 14, entity.getServicio());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Telefono:");
+        pm.printTextLinCol(linea, 14, entity.getTelefono());
+
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Total a pagar:");
+        pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(entity.getMonto())));
+        linea++;
+        pm.printTextWrap(linea, 1, 1, 47, "RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO");
+        linea++;
+        pm.printTextWrap(linea, 1, 3, 47, "CANCELACION DEL 25 AL 30 DEL MES PAGADO");
+        linea++;
+        pm.printTextWrap(linea, 1, 2, 47, "HORARIO DE OFICINA LUNES A VIERNES 9AM A 6PM,");
+        linea++;
+        pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
+        linea = linea + 2;
+        
+        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+            pm.printTextLinCol(linea, 10, "Telefono Oficina:");
+            pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
+            linea++;
+        }
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+            pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+        }
+
+        String nombreArchivo = ("impresion.txt");
+        pm.toFile(nombreArchivo);
+
+        imprimirArchivo(nombreArchivo);
+        
+    }
     
     /**
      * 
