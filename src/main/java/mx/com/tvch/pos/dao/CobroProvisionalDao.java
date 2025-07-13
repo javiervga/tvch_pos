@@ -11,8 +11,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.entity.CobroProvisionalEntity;
+import mx.com.tvch.pos.entity.TransaccionTicketEntity;
+import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Utilerias;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +41,87 @@ public class CobroProvisionalDao {
     
     public CobroProvisionalDao(){
         utilerias = Utilerias.getUtilerias();
+    }
+    
+    /**
+     * 
+     * @param fechaInicio
+     * @param fechaFin
+     * @return
+     * @throws Exception 
+     */
+    public List<CobroProvisionalEntity> obtenerCobrosProvisionales(String fechaInicio, String fechaFin) throws Exception{
+
+        List<CobroProvisionalEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("select id_cobro, id_cobro_server , id_contrato, folio_contrato, suscriptor, domicilio, servicio, telefono, \n" +
+                        "tipo_orden, tipo_orden_servicio, observaciones, fecha, monto, id_usuario, id_caja, id_estatus \n" +
+"		  from cobro_provisional t " +
+"		 where fecha BETWEEN '");
+            query.append(fechaInicio);
+            query.append("' AND '");
+            query.append(fechaFin);
+            query.append("'");
+            System.out.println("query: ".concat(query.toString()));
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                CobroProvisionalEntity entity = new CobroProvisionalEntity();
+                entity.setCobroId(rs.getLong("id_cobro"));
+                entity.setCobroServerId(rs.getLong("id_cobro_server"));
+                entity.setContratoId(rs.getLong("id_contrato"));
+                entity.setFolioContrato(rs.getLong("folio_contrato"));
+                entity.setSuscriptor(rs.getString("suscriptor"));
+                entity.setDomicilio(rs.getString("domicilio"));
+                entity.setServicio(rs.getString("servicio"));
+                entity.setTelefono(rs.getString("telefono"));
+                entity.setTipoOrden(rs.getString("tipo_orden"));
+                entity.setTipoOrdenServicio(rs.getString("tipo_orden_servicio"));
+                entity.setObservaciones(rs.getString("observaciones"));
+                entity.setFecha(rs.getDate("fecha"));
+                //entity.setFecha(utilerias.convertirDateTime2String(rs.getDate("fecha"), Constantes.FORMATO_FECHA_WEB_SERVICE));
+                entity.setMonto(rs.getDouble("monto"));
+                entity.setUsuarioId(rs.getLong("id_usuario"));
+                entity.setCajaId(rs.getLong("id_caja"));
+                entity.setEstatusId(rs.getInt("id_estatus"));
+                list.add(entity);
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar cobros provisionales para reimpresion de ticket en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return list;
+
+        
     }
     
     /**

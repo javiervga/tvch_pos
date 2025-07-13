@@ -91,6 +91,7 @@ public class Constantes {
     public static final long TIPO_COBRO_ORDEN_CAMBIO_DOMICILIO = 4;
     public static final long TIPO_COBRO_RECARGO_MENSUALIDAD = 5;
     public static final long TIPO_COBRO_CANCELACION_CONTRATO = 6;
+    public static final long TIPO_COBRO_PROVISIONAL = 7;
     
     // Propiedades
     public static final String TVCH_API_URL = "tvch.api.path.url";

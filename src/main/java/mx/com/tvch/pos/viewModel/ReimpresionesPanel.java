@@ -23,6 +23,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.controller.ReimpresionesController;
+import mx.com.tvch.pos.entity.CobroProvisionalEntity;
 import mx.com.tvch.pos.entity.TransaccionTicketEntity;
 import mx.com.tvch.pos.model.TipoCobro;
 import mx.com.tvch.pos.util.Calendario;
@@ -51,7 +52,10 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
     private final ReimpresionesController controller;
     private final Utilerias util;
     private List<TransaccionTicketEntity> listaTransacciones;
+    private List<CobroProvisionalEntity> listCobrosProvisionales;
     private TransaccionTicketEntity transaccionSeleccionada;
+    private CobroProvisionalEntity cobroProvisionalSeleccionado;
+    private boolean estaCobroProvisionalSeleccionado;
 
     Logger logger = LoggerFactory.getLogger(CorteCajaPanel.class);
 
@@ -80,7 +84,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         initComponents();
         crearEventos();
         cargarCOmboTiposCobro();
-        
+
         Calendar calFechaMinima = Calendar.getInstance();
         calFechaMinima.setTime(new Date());
         calFechaMinima.add(Calendar.WEEK_OF_YEAR, -1);
@@ -97,14 +101,21 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
     }
 
     private void crearEventos() {
-        
+
         ActionListener botonImprimirListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(transaccionSeleccionada != null){
+                if (transaccionSeleccionada != null || cobroProvisionalSeleccionado != null) {
                     try {
-                        controller.reimprimirTicket(transaccionSeleccionada);
-                        limpiarPantalla();
+
+                        if (transaccionSeleccionada != null) {
+                            controller.reimprimirTicket(transaccionSeleccionada);
+                            limpiarPantalla();
+                        } else if (cobroProvisionalSeleccionado != null) {
+                            controller.reimprimirTicket(cobroProvisionalSeleccionado);
+                            limpiarPantalla();
+                        }
+
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(panel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
                     }
@@ -118,14 +129,27 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     int selectedRow = tablaTransacciones.getSelectedRow();
                     if (selectedRow >= 0) {
-                        Long transaccionId = (Long) tablaTransacciones.getModel().getValueAt(selectedRow, 0);
-                        System.out.println("transaccion seleccionada: " + transaccionId);
-                        if (!listaTransacciones.isEmpty()) {
-                            if (listaTransacciones.stream().filter(t -> t.getTransaccionId() == transaccionId.longValue()).findAny().isPresent()) {
-                                TransaccionTicketEntity entity = listaTransacciones.stream().filter(t -> t.getTransaccionId() == transaccionId.longValue()).findFirst().get();
-                                cargarDatosTransaccion(entity);
+
+                        if (estaCobroProvisionalSeleccionado) {
+                            Long cobroId = (Long) tablaTransacciones.getModel().getValueAt(selectedRow, 0);
+                            System.out.println("cobro seleccionado: " + cobroId);
+                            if (!listCobrosProvisionales.isEmpty()) {
+                                if (listCobrosProvisionales.stream().filter(c -> c.getCobroId() == cobroId).findAny().isPresent()) {
+                                    CobroProvisionalEntity entity = listCobrosProvisionales.stream().filter(c -> c.getCobroId() == cobroId).findFirst().get();
+                                    cargarDatosCobroProvisional(entity);
+                                }
+                            }
+                        } else/* if(cobroProvisionalSeleccionado != null)*/ {
+                            Long transaccionId = (Long) tablaTransacciones.getModel().getValueAt(selectedRow, 0);
+                            System.out.println("transaccion seleccionada: " + transaccionId);
+                            if (!listaTransacciones.isEmpty()) {
+                                if (listaTransacciones.stream().filter(t -> t.getTransaccionId() == transaccionId.longValue()).findAny().isPresent()) {
+                                    TransaccionTicketEntity entity = listaTransacciones.stream().filter(t -> t.getTransaccionId() == transaccionId.longValue()).findFirst().get();
+                                    cargarDatosTransaccion(entity);
+                                }
                             }
                         }
+
                     }
                 }
             }
@@ -139,19 +163,53 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
                     // your valueChanged overridden method
-                    Long transaccionId = (Long) tablaTransacciones.getModel().getValueAt(row, 0);
-                    System.out.println("transaccion seleccionada: " + transaccionId);
+                    //Long transaccionId = (Long) tablaTransacciones.getModel().getValueAt(row, 0);
+
+                    if (estaCobroProvisionalSeleccionado) {
+                        Long cobroId = (Long) tablaTransacciones.getModel().getValueAt(row, 0);
+                        System.out.println("cobro seleccionado: " + cobroId);
+                        if (!listCobrosProvisionales.isEmpty()) {
+                            if (listCobrosProvisionales.stream().filter(c -> c.getCobroId() == cobroId).findAny().isPresent()) {
+                                CobroProvisionalEntity entity = listCobrosProvisionales.stream().filter(c -> c.getCobroId() == cobroId).findFirst().get();
+                                cargarDatosCobroProvisional(entity);
+                            }
+                        }
+                    } else/* if(cobroProvisionalSeleccionado != null)*/ {
+                        Long transaccionId = (Long) tablaTransacciones.getModel().getValueAt(row, 0);
+                        System.out.println("transaccion seleccionada: " + transaccionId);
+                        if (!listaTransacciones.isEmpty()) {
+                            if (listaTransacciones.stream().filter(t -> t.getTransaccionId() == transaccionId.longValue()).findAny().isPresent()) {
+                                TransaccionTicketEntity entity = listaTransacciones.stream().filter(t -> t.getTransaccionId() == transaccionId.longValue()).findFirst().get();
+                                cargarDatosTransaccion(entity);
+                            }
+                        }
+                    }
+
+                    /*System.out.println("transaccion seleccionada: " + transaccionId);
                     if (!listaTransacciones.isEmpty()) {
                         if (listaTransacciones.stream().filter(t -> t.getTransaccionId() == transaccionId.longValue()).findAny().isPresent()) {
                             TransaccionTicketEntity entity = listaTransacciones.stream().filter(t -> t.getTransaccionId() == transaccionId.longValue()).findFirst().get();
                             cargarDatosTransaccion(entity);
                         }
-                    }
+                    }*/
                     mouseEvent.consume();
                 }
             }
         };
         tablaTransacciones.addMouseListener(dobleClickTablaTransaccionesListener);
+
+        ActionListener comboTiposOperacionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TipoCobro tipoCobro = (TipoCobro) comboTipoOperacion.getModel().getSelectedItem();
+                if (tipoCobro.getTipoCobroId() == Constantes.TIPO_COBRO_PROVISIONAL) {
+                    estaCobroProvisionalSeleccionado = true;
+                } else {
+                    estaCobroProvisionalSeleccionado = false;
+                }
+            }
+        };
+        comboTipoOperacion.addActionListener(comboTiposOperacionListener);
 
         ActionListener botonBusquedaActionListener = new ActionListener() {
             @Override
@@ -169,21 +227,42 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                             String fechaInicio = util.convertirDateTime2String(dateIni, Constantes.FORMATO_FECHA_MYSQL);
                             String fechaFin = util.convertirDateTime2String(dateFin, Constantes.FORMATO_FECHA_MYSQL);
 
-                            List<TransaccionTicketEntity> list = controller.consultarTransacciones(
-                                    tipoCobro.getTipoCobroId(),
-                                    fechaInicio,
-                                    fechaFin);
+                            if (tipoCobro.getTipoCobroId() == Constantes.TIPO_COBRO_PROVISIONAL) {
 
-                            DefaultTableModel model = (DefaultTableModel) tablaTransacciones.getModel();
-                            model.getDataVector().clear();
-                            if (!list.isEmpty()) {
-                                listaTransacciones = list;
-                                cargarTablaTransacciones(model, list);
+                                List<CobroProvisionalEntity> list = controller
+                                        .consultarCobrosProvisionales(fechaInicio, fechaFin);
+
+                                DefaultTableModel model = (DefaultTableModel) tablaTransacciones.getModel();
+                                model.getDataVector().clear();
+
+                                if (!list.isEmpty()) {
+                                    listCobrosProvisionales = list;
+                                    cargarTablaCobrosProvisionales(model, list);
+                                } else {
+                                    JOptionPane.showMessageDialog(panel, "No se encontraron operaciones de cobros.", "", JOptionPane.WARNING_MESSAGE);
+                                }
+
+                                model.fireTableDataChanged();
+
                             } else {
-                                JOptionPane.showMessageDialog(panel, "No se encontraron operaciones.", "", JOptionPane.WARNING_MESSAGE);
-                            }
 
-                            model.fireTableDataChanged();
+                                List<TransaccionTicketEntity> list = controller.consultarTransacciones(
+                                        tipoCobro.getTipoCobroId(),
+                                        fechaInicio,
+                                        fechaFin);
+
+                                DefaultTableModel model = (DefaultTableModel) tablaTransacciones.getModel();
+                                model.getDataVector().clear();
+                                if (!list.isEmpty()) {
+                                    listaTransacciones = list;
+                                    cargarTablaTransacciones(model, list);
+                                } else {
+                                    JOptionPane.showMessageDialog(panel, "No se encontraron operaciones de transacciones.", "", JOptionPane.WARNING_MESSAGE);
+                                }
+
+                                model.fireTableDataChanged();
+
+                            }
 
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(panel, ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
@@ -219,12 +298,10 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         tablaTransacciones.getColumnModel().getColumn(5).setPreferredWidth(80);
         tablaTransacciones.getColumnModel().getColumn(6).setPreferredWidth(280);
 
-        
         /*if(panelCalendarioIni.getComponents().length == 0)
             panelCalendarioIni.add(calendarioIni);
         if(panelCalendarioFin.getComponents().length == 0)
             panelCalendarioFin.add(calendarioFin);*/
-
         campoTransaccion.setEditable(false);
         campoAPerturaCaja.setEditable(false);
         campoContrato.setEditable(false);
@@ -256,10 +333,37 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                     e.getTransaccionId(),
                     suscriptor,
                     e.getContratoId(),
-                    e.getFolioContrato()!= null ? String.valueOf(e.getFolioContrato()) : "",
+                    e.getFolioContrato() != null ? String.valueOf(e.getFolioContrato()) : "",
                     e.getFechaTransaccion(),
                     e.getMonto(),
                     e.getDescripcionTipoCobro()
+                });
+            }
+        }
+
+    }
+
+    private void cargarTablaCobrosProvisionales(DefaultTableModel model, List<CobroProvisionalEntity> list) {
+
+        if (!list.isEmpty()) {
+            model.getDataVector().clear();
+            model.fireTableDataChanged();
+            for (CobroProvisionalEntity e : list) {
+
+                StringBuilder orden = new StringBuilder();
+                orden.append(e.getTipoOrden());
+                if (e.getTipoOrdenServicio() != null) {
+                    orden.append("-").append(e.getTipoOrdenServicio());
+                }
+
+                model.addRow(new Object[]{
+                    e.getCobroId(),
+                    e.getSuscriptor(),
+                    e.getContratoId(),
+                    e.getFolioContrato() != null ? String.valueOf(e.getFolioContrato()) : "",
+                    e.getFecha(),
+                    e.getMonto(),
+                    orden.toString()
                 });
             }
         }
@@ -275,17 +379,18 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         tiposCobro.add(new TipoCobro(4, "ORDEN DE CAMBIO DE DOMICILIO"));
         //tiposCobro.add(new TipoCobro(5, "RECARGO EN MENSUALIDAD DE SERVICIO"));
         tiposCobro.add(new TipoCobro(6, "CANCELACION DE CONTRATO"));
+        tiposCobro.add(new TipoCobro(7, "COBROS PROVISIONALES"));
         tiposCobro.forEach(t -> comboTipoOperacion.addItem(t));
 
     }
 
     private void cargarDatosTransaccion(TransaccionTicketEntity entity) {
-        
+
         transaccionSeleccionada = entity;
         campoTransaccion.setText(String.valueOf(entity.getTransaccionId()));
         campoAPerturaCaja.setText(String.valueOf(entity.getAperturaCajaId()));
         campoContrato.setText(String.valueOf(entity.getContratoId()));
-        if (entity.getFolioContrato()!= null) {
+        if (entity.getFolioContrato() != null) {
             campoFolioContrato.setText(String.valueOf(entity.getFolioContrato()));
         }
         campoFecha.setText(entity.getFechaTransaccion());
@@ -295,8 +400,25 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
 
     }
 
+    private void cargarDatosCobroProvisional(CobroProvisionalEntity entity) {
+
+        cobroProvisionalSeleccionado = entity;
+        campoTransaccion.setText(String.valueOf(entity.getCobroId()));
+        campoAPerturaCaja.setText("N/A");
+        campoContrato.setText(String.valueOf(entity.getContratoId()));
+        if (entity.getFolioContrato() != null) {
+            campoFolioContrato.setText(String.valueOf(entity.getFolioContrato()));
+        }
+        campoFecha.setText(utilerias.convertirDateTime2String(entity.getFecha(), Constantes.FORMATO_FECHA_TICKET));
+        campoMonto.setText(String.valueOf(entity.getMonto()));
+        campoServicio.setText(entity.getServicio());
+        campoTipoCobro.setText("COBRO PROVISIONAL");
+
+    }
+
     private void limpiarDatosTransaccion() {
         transaccionSeleccionada = null;
+        cobroProvisionalSeleccionado = null;
         campoTransaccion.setText("");
         campoAPerturaCaja.setText("");
         campoContrato.setText("");
@@ -434,7 +556,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         panelCalendarioIni.setLayout(panelCalendarioIniLayout);
         panelCalendarioIniLayout.setHorizontalGroup(
             panelCalendarioIniLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 187, Short.MAX_VALUE)
+            .addGap(0, 193, Short.MAX_VALUE)
         );
         panelCalendarioIniLayout.setVerticalGroup(
             panelCalendarioIniLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -456,7 +578,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         panelCalendarioFin.setLayout(panelCalendarioFinLayout);
         panelCalendarioFinLayout.setHorizontalGroup(
             panelCalendarioFinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 175, Short.MAX_VALUE)
+            .addGap(0, 192, Short.MAX_VALUE)
         );
         panelCalendarioFinLayout.setVerticalGroup(
             panelCalendarioFinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -476,13 +598,13 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                 .addComponent(jLabel4)
                 .addGap(18, 18, 18)
                 .addComponent(panelCalendarioIni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel5)
                 .addGap(18, 18, 18)
                 .addComponent(panelCalendarioFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(106, 106, 106)
+                .addGap(89, 89, 89)
                 .addComponent(botonBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(250, Short.MAX_VALUE))
         );
         panelFiltrosLayout.setVerticalGroup(
             panelFiltrosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -595,10 +717,10 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         campoAPerturaCaja.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel6.setText("Contrato:");
+        jLabel6.setText("Id Sistema:");
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel7.setText("Contrato Anterior:");
+        jLabel7.setText("Número de Contrato:");
 
         campoContrato.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 

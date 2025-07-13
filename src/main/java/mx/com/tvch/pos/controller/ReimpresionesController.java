@@ -9,11 +9,13 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import mx.com.tvch.pos.config.Sesion;
+import mx.com.tvch.pos.dao.CobroProvisionalDao;
 import mx.com.tvch.pos.dao.DetalleCobroTransaccionDao;
 import mx.com.tvch.pos.dao.DetalleDescuentoTransaccionDao;
 import mx.com.tvch.pos.dao.DetallePromocionTransaccionDao;
 import mx.com.tvch.pos.dao.TipoOrdenServicioDao;
 import mx.com.tvch.pos.dao.TransaccionDao;
+import mx.com.tvch.pos.entity.CobroProvisionalEntity;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
 import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import mx.com.tvch.pos.entity.DetalleDescuentoTransaccionEntity;
@@ -38,6 +40,7 @@ public class ReimpresionesController {
     private final DetalleDescuentoTransaccionDao detalleDescuentoTransaccionDao;
     private final DetallePromocionTransaccionDao detallePromocionTransaccionDao;
     private final TipoOrdenServicioDao tipoOrdenServicioDao;
+    private final CobroProvisionalDao cobroProvisionalDao;
     private final Impresora impresora;
     private final Sesion sesion;
 
@@ -56,6 +59,7 @@ public class ReimpresionesController {
         detalleDescuentoTransaccionDao = DetalleDescuentoTransaccionDao.getDetalleDescuentoTransaccionDao();
         detallePromocionTransaccionDao = DetallePromocionTransaccionDao.getDetallePromocionTransaccionDao();
         tipoOrdenServicioDao = TipoOrdenServicioDao.getTipoOrdenServicioDao();
+        cobroProvisionalDao = CobroProvisionalDao.getCobroProvisionalDao();
         impresora = Impresora.getImpresora();
         sesion = Sesion.getSesion();
     }
@@ -110,6 +114,17 @@ public class ReimpresionesController {
             logger.error("Fallo al consultar transacciones para reimpresion: \n" + sw.toString());
             throw new Exception(ex.getMessage());
         }
+    }
+    
+    /**
+     *
+     * @param entity
+     * @throws Exception
+     */
+    public void reimprimirTicket(CobroProvisionalEntity entity) throws Exception {
+            
+        impresora.imprimirTicketCobroProvisional(sesion, entity);
+
     }
     
     /**
@@ -240,6 +255,29 @@ public class ReimpresionesController {
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
             logger.error("Fallo al consultar transacciones para reimpresion: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        }
+    }
+    
+    /**
+     * 
+     * @param fechaInicio
+     * @param fechaFin
+     * @return
+     * @throws Exception 
+     */
+    public List<CobroProvisionalEntity> consultarCobrosProvisionales(String fechaInicio, String fechaFin ) throws Exception {
+        
+        try {
+
+            List<CobroProvisionalEntity> list = cobroProvisionalDao.obtenerCobrosProvisionales(fechaInicio, fechaFin);
+            return list;
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Fallo al consultar cobros provisionales para reimpresion: \n" + sw.toString());
             throw new Exception(ex.getMessage());
         }
     }
