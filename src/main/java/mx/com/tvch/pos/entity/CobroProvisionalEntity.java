@@ -42,7 +42,7 @@ public class CobroProvisionalEntity {
 
     private Long cajaId;
 
-    private Integer estatusId;
+    private Integer estatus;
 
     public Long getCobroId() {
         return cobroId;
@@ -164,12 +164,12 @@ public class CobroProvisionalEntity {
         this.cajaId = cajaId;
     }
 
-    public Integer getEstatusId() {
-        return estatusId;
+    public Integer getEstatus() {
+        return estatus;
     }
 
-    public void setEstatusId(Integer estatusId) {
-        this.estatusId = estatusId;
+    public void setEstatus(Integer estatus) {
+        this.estatus = estatus;
     }
 
 }

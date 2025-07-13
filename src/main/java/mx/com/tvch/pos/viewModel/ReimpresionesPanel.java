@@ -292,11 +292,11 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
 
         tablaTransacciones.getColumnModel().getColumn(0).setPreferredWidth(100);
         tablaTransacciones.getColumnModel().getColumn(1).setPreferredWidth(240);
-        tablaTransacciones.getColumnModel().getColumn(2).setPreferredWidth(90);
+        tablaTransacciones.getColumnModel().getColumn(2).setPreferredWidth(60);
         tablaTransacciones.getColumnModel().getColumn(3).setPreferredWidth(100);
         tablaTransacciones.getColumnModel().getColumn(4).setPreferredWidth(120);
-        tablaTransacciones.getColumnModel().getColumn(5).setPreferredWidth(80);
-        tablaTransacciones.getColumnModel().getColumn(6).setPreferredWidth(280);
+        tablaTransacciones.getColumnModel().getColumn(5).setPreferredWidth(60);
+        tablaTransacciones.getColumnModel().getColumn(6).setPreferredWidth(330);
 
         /*if(panelCalendarioIni.getComponents().length == 0)
             panelCalendarioIni.add(calendarioIni);

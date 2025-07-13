@@ -83,7 +83,7 @@ public class CobroProvisionalController {
         entity.setMonto(monto);
         entity.setUsuarioId(sesion.getUsuarioId());
         entity.setCajaId(sesion.getCajaId());
-        entity.setEstatusId(Constantes.ESTATUS_COBRO_PROVISIONAL_NUEVO);
+        entity.setEstatus(Constantes.ESTATUS_COBRO_PROVISIONAL_NUEVO);
         
         Long cobroId = dao.registrarCobroProvisional(entity);
         CobroProvisionalEntity cobro = dao.obtenerCobroProvisional(cobroId);

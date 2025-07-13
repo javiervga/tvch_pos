@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.entity.CobroProvisionalEntity;
-import mx.com.tvch.pos.entity.TransaccionTicketEntity;
-import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Utilerias;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +63,7 @@ public class CobroProvisionalDao {
             StringBuilder query = new StringBuilder();
             
             query.append("select id_cobro, id_cobro_server , id_contrato, folio_contrato, suscriptor, domicilio, servicio, telefono, \n" +
-                        "tipo_orden, tipo_orden_servicio, observaciones, fecha, monto, id_usuario, id_caja, id_estatus \n" +
+                        "tipo_orden, tipo_orden_servicio, observaciones, fecha, monto, id_usuario, id_caja, estatus \n" +
 "		  from cobro_provisional t " +
 "		 where fecha BETWEEN '");
             query.append(fechaInicio);
@@ -92,7 +90,7 @@ public class CobroProvisionalDao {
                 entity.setMonto(rs.getDouble("monto"));
                 entity.setUsuarioId(rs.getLong("id_usuario"));
                 entity.setCajaId(rs.getLong("id_caja"));
-                entity.setEstatusId(rs.getInt("id_estatus"));
+                entity.setEstatus(rs.getInt("estatus"));
                 list.add(entity);
             }
 
@@ -145,7 +143,7 @@ public class CobroProvisionalDao {
             StringBuilder query = new StringBuilder();
             
             query.append("SELECT id_cobro , id_cobro_server , id_contrato, folio_contrato,  suscriptor, domicilio, servicio, telefono, tipo_orden, tipo_orden_servicio, "
-                    + "observaciones, fecha, monto, id_usuario, id_caja, id_estatus FROM cobro_provisional WHERE id_cobro = ");
+                    + "observaciones, fecha, monto, id_usuario, id_caja, estatus FROM cobro_provisional WHERE id_cobro = ");
             query.append(cobroId);
             
             ResultSet rs = stmt.executeQuery(query.toString());
@@ -166,7 +164,7 @@ public class CobroProvisionalDao {
                 entity.setMonto(rs.getDouble("monto"));
                 entity.setUsuarioId(rs.getLong("id_usuario"));
                 entity.setCajaId(rs.getLong("id_caja"));
-                entity.setEstatusId(rs.getInt("id_estatus"));
+                entity.setEstatus(rs.getInt("estatus"));
                 break;
             }
             
@@ -214,7 +212,7 @@ public class CobroProvisionalDao {
             //Long id = utilerias.generarIdLocal();
             
             String query = "insert into cobro_provisional (id_cobro , id_contrato, folio_contrato, suscriptor, domicilio, servicio, telefono, "
-                    + "tipo_orden, tipo_orden_servicio, observaciones, fecha, monto, id_usuario, id_caja, id_estatus  ) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    + "tipo_orden, tipo_orden_servicio, observaciones, fecha, monto, id_usuario, id_caja, estatus  ) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setLong(1, entity.getCobroId());
             ps.setLong(2, entity.getContratoId());
@@ -230,7 +228,7 @@ public class CobroProvisionalDao {
             ps.setDouble(12, entity.getMonto());
             ps.setLong(13, entity.getUsuarioId());
             ps.setLong(14, entity.getCajaId());
-            ps.setLong(15, entity.getEstatusId());
+            ps.setLong(15, entity.getEstatus());
             ps.executeUpdate();
             
             /*ResultSet rs = ps.getGeneratedKeys();

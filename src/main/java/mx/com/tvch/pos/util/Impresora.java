@@ -114,36 +114,36 @@ public class Impresora {
         linea = linea + 3;
 
         pm.printTextLinCol(linea, 1, "Fecha:");
-        pm.printTextLinCol(linea, 14, utilerias.convertirDateTime2String(entity.getFecha(), Constantes.FORMATO_FECHA_TICKET));
+        pm.printTextLinCol(linea, 16, utilerias.convertirDateTime2String(entity.getFecha(), Constantes.FORMATO_FECHA_TICKET));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Caja:");
-        pm.printTextLinCol(linea, 14, entity.getCajaId().toString());
+        pm.printTextLinCol(linea, 16, entity.getCajaId().toString());
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Folio:");
-        pm.printTextLinCol(linea, 14, entity.getCobroId().toString());
+        pm.printTextLinCol(linea, 16, entity.getCobroId().toString());
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Tipo Orden:");
-        pm.printTextLinCol(linea, 14, entity.getTipoOrden());
+        pm.printTextLinCol(linea, 16, entity.getTipoOrden());
         if(entity.getTipoOrdenServicio() != null){
             linea = linea + 2;
-            pm.printTextLinCol(linea, 1, "Tipo Orden:");
-            pm.printTextLinCol(linea, 14, entity.getTipoOrden());
+            pm.printTextLinCol(linea, 1, "Orden Servicio:");
+            pm.printTextLinCol(linea, 16, entity.getTipoOrdenServicio());
         }
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Contrato:");
-        pm.printTextLinCol(linea, 14, entity.getFolioContrato().toString());
+        pm.printTextLinCol(linea, 16, entity.getFolioContrato().toString());
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Suscriptor:");
-        pm.printTextLinCol(linea, 14, entity.getSuscriptor());
+        pm.printTextLinCol(linea, 16, entity.getSuscriptor());
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Domicilio:");
-        pm.printTextLinCol(linea, 14, entity.getDomicilio());
+        pm.printTextLinCol(linea, 16, entity.getDomicilio());
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Servicio:");
-        pm.printTextLinCol(linea, 14, entity.getServicio());
+        pm.printTextLinCol(linea, 16, entity.getServicio());
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Telefono:");
-        pm.printTextLinCol(linea, 14, entity.getTelefono());
+        pm.printTextLinCol(linea, 16, entity.getTelefono());
 
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Total a pagar:");
