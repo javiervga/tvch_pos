@@ -174,7 +174,7 @@ public final class SalidaExtraordinariaPanel extends javax.swing.JPanel {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 40)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(163, 73, 164));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Registro de salida Extraordinaria");
+        jLabel1.setText("Registro de Egreso Extraordinario");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);

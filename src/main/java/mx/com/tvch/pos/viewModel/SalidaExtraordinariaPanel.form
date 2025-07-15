@@ -171,7 +171,7 @@
           <Color blue="a4" green="49" red="a3" type="rgb"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="Registro de salida Extraordinaria"/>
+        <Property name="text" type="java.lang.String" value="Registro de Egreso Extraordinario"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
