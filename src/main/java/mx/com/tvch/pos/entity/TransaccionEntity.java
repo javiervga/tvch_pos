@@ -19,6 +19,10 @@ public class TransaccionEntity {
     private Long contratoId;
 
     private Double monto;
+    
+    private String observaciones;
+    
+    private String periodo;
 
     private String fechaTransaccion;
 
@@ -60,6 +64,22 @@ public class TransaccionEntity {
 
     public void setMonto(Double monto) {
         this.monto = monto;
+    }
+
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
+    public String getPeriodo() {
+        return periodo;
+    }
+
+    public void setPeriodo(String periodo) {
+        this.periodo = periodo;
     }
 
     public String getFechaTransaccion() {

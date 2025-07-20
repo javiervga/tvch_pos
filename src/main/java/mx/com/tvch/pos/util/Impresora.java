@@ -30,6 +30,7 @@ import mx.com.tvch.pos.entity.DetalleDescuentoTransaccionEntity;
 import mx.com.tvch.pos.entity.DetallePromocionTransaccionEntity;
 import mx.com.tvch.pos.entity.SalidaExtraordinariaEntity;
 import mx.com.tvch.pos.entity.TransaccionTicketEntity;
+import mx.com.tvch.pos.model.CobroServicio;
 import mx.com.tvch.pos.model.CorteCaja;
 import mx.com.tvch.pos.model.DetalleCorte;
 import mx.com.tvch.pos.model.DetallePagoServicio;
@@ -534,18 +535,17 @@ public class Impresora {
 
     /**
      *
-     * @param detallesPago
-     * @param orden
+     * @param transaccionId
+     * @param cobro
      * @param nombreSucursal
      * @param suscriptor
      * @throws Exception
      */
     public void imprimirTicketServicio(
             Long transaccionId, 
-            List<DetallePagoServicio> detallesPago, 
+            CobroServicio cobro, 
             ContratoxSuscriptorEntity suscriptor, 
-            String nombreSucursal/*,
-            Integer numeroMesesPagados*/) throws Exception {
+            String nombreSucursal) throws Exception {
 
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptor.getNombre()).append(" ").append(suscriptor.getApellidoPaterno()).append(" ").append(suscriptor.getApellidoMaterno());
@@ -563,21 +563,14 @@ public class Impresora {
 
         String contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getFolioContrato()));
 
-        DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_SERVICIO).findAny().get();
-        Double importeTotal = detalleCobro.getMonto();
-
         PrinterMatrix pm = new PrinterMatrix();
 
         int cantidadLineas = 51;
-
-        if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()
-                || detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()
-                || detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_RECARGO).findAny().isPresent()) {
+        
+        if(cobro.getDescuento() != null || cobro.getPromocion() != null || cobro.isSeCobraRecargo())
             cantidadLineas = cantidadLineas + 4;
-        }
 
         pm.setOutSize(cantidadLineas, 47);
-        //pm.printCharAtCol(1, 1, 47, "=");
 
         int linea = 2;
         pm.printTextLinCol(linea, 1, "\n");
@@ -621,6 +614,9 @@ public class Impresora {
             pm.printTextLinCol(linea, 14, descripcionPago.toString());
         }
         linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Periodo:");
+        pm.printTextLinCol(linea, 14, String.valueOf(cobro.getConcepto().toUpperCase()));
+        linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Contrato:");
         pm.printTextLinCol(linea, 14, contrato);
         linea = linea + 2;
@@ -635,39 +631,37 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Telefono:");
         pm.printTextLinCol(linea, 14, suscriptor.getTelefono());
+        
+        double montoRecargo = 0;
+        if(cobro.isSeCobraRecargo())
+            montoRecargo = cobro.getMontoRecargo();
+            
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Costo Mensualidad(es):");
-        pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(detalleCobro.getMonto())));
-        if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_RECARGO).findAny().isPresent()) {
-            DetallePagoServicio detalleRecargo = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_RECARGO).findFirst().get();
-            importeTotal = importeTotal + detalleRecargo.getMonto();
+        pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoTotal()-montoRecargo)));
+        if (cobro.isSeCobraRecargo()) {
             linea++;
             pm.printTextLinCol(linea, 1, "Pago tardio:");
-            pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(detalleRecargo.getMonto())));
+            pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoRecargo())));
         }
-        if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()) {
-            DetallePagoServicio detallePromocion = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get();
+        if (cobro.getPromocion() != null) {
             linea++;
-            importeTotal = detallePromocion.getMonto();
             pm.printTextLinCol(linea, 1, "Promoción:");
-            pm.printTextLinCol(linea, 38, "- $ ".concat(String.valueOf(detalleCobro.getMonto()
-                    - detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get().getMonto())));
+            pm.printTextLinCol(linea, 38, String.valueOf(cobro.getPromocion().getCostoPromocion()));
         } else {
-            if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()) {
+            if (cobro.getDescuento() != null) {
                 linea++;
-                DetallePagoServicio detalleDescuento = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findFirst().get();
-                importeTotal = importeTotal -detalleDescuento.getMonto();
                 pm.printTextLinCol(linea, 1, "Descuento:");
-                pm.printTextLinCol(linea, 38, "- $ ".concat(String.valueOf(detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().get().getMonto())));
+                pm.printTextLinCol(linea, 38, String.valueOf(cobro.getMontoSugerido() - cobro.getMontoTotal()));
             }
         }
 
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Total a pagar:");
-        pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(importeTotal)));
+        pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoTotal())));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Proximo pago antes de:");
-        pm.printTextLinCol(linea, 25, detalleCobro.getFechaProximoPago());
+        pm.printTextLinCol(linea, 25, cobro.getFechaProximoPagoTicket());
         linea++;
         pm.printTextWrap(linea, 1, 1, 47, "RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO");
         linea++;

@@ -16,16 +16,18 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.controller.CobroServicioController;
@@ -33,15 +35,18 @@ import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
 import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
 import mx.com.tvch.pos.entity.PromocionEntity;
 import mx.com.tvch.pos.entity.TipoDescuentoEntity;
-import mx.com.tvch.pos.model.DetallePagoServicio;
+import mx.com.tvch.pos.model.CobroServicio;
+import mx.com.tvch.pos.model.DescuentoCobro;
+import mx.com.tvch.pos.model.Mes;
+import mx.com.tvch.pos.model.PromocionCobro;
 import mx.com.tvch.pos.model.TipoBusquedaCobro;
 import mx.com.tvch.pos.model.client.Response;
 import mx.com.tvch.pos.model.client.UpdateContratoResponse;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Impresora;
+import mx.com.tvch.pos.util.TvchException;
 import mx.com.tvch.pos.util.Utilerias;
 import mx.com.tvch.pos.util.VentanaEnum;
-import org.apache.log4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -60,7 +65,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
 
     List<ContratoxSuscriptorEntity> suscriptoresConsultaList;
     private ContratoxSuscriptorEntity suscriptorSeleccionado;
-    private List<DetallePagoServicio> listaDetallesPago;
+    //private List<DetallePagoServicio> listaDetallesPago;
+    private CobroServicio cobroCapturado;
+    private PromocionEntity promocionSeleccionada;
+    private Mes mesGuardado;
+    private int anioGuardado;
 
     org.slf4j.Logger logger = LoggerFactory.getLogger(CobroServicioPanel.class);
 
@@ -83,71 +92,142 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         util = Utilerias.getUtilerias();
         impresora = Impresora.getImpresora();
         suscriptoresConsultaList = new ArrayList<>();
-        listaDetallesPago = new ArrayList<>();
-
         cargarComboTiposDescuento();
         crearEventos();
         cargarComboTiposBusqueda();
         cargarComboEstatusSuscriptor();
         cargarComboMeses();
+        cargarComboAnios();
     }
-
-    /*private void cobrarServicio() {
-
-        if (suscriptorSeleccionado != null && !listaDetallesPago.isEmpty()) {
-            try {
-                Integer numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
-                Long transaccionId = controller.cobrarServicio(suscriptorSeleccionado, listaDetallesPago, numeroMeses);
-                try {
-                    impresora.imprimirTicketServicio(transaccionId,listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal(), numeroMeses);
-                } catch (Exception ex) {
-                    StringWriter sw = new StringWriter();
-                    PrintWriter pw = new PrintWriter(sw);
-                    ex.printStackTrace(pw);
-                    logger.error("Fallo al imprimir ticket de transaccion: \n" + sw.toString());
-                    JOptionPane.showMessageDialog(cobroPanel, "El cobro se realizó correctamente pero ocurrió un error al imprimir su ticket. Si desea una rempresión vaya a sección de reimpresiones", "", JOptionPane.WARNING_MESSAGE);
-                }
-                System.out.println("transaccionId: " + transaccionId);
-                limpiarPantalla();
-            } catch (Exception ex) {
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                ex.printStackTrace(pw);
-                logger.error("Fallo al cobrar transaccion: \n" + sw.toString());
-                JOptionPane.showMessageDialog(cobroPanel, "Ocurrió un error al realizar el cobro, por favor reintente. Si el problema persiste consulte a soporte.", "", JOptionPane.WARNING_MESSAGE);
-            }
-        }
-
-    }*/
 
     private void crearEventos() {
         
-        ActionListener comboPromocionesActionListener = new ActionListener() {
+        campoMonto.getDocument().addDocumentListener(new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {
+                warn();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                warn();
+            }
+
+            public void insertUpdate(DocumentEvent e) {
+                warn();
+            }
+
+            public void warn() {
+                etiquetaImporte.setText(campoMonto.getText());
+            }
+        });
+       
+        ActionListener botonRestablecerMontoSugeridoActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(suscriptorSeleccionado != null){
-                    cargarDatosSuscriptor(suscriptorSeleccionado, false);
+                    setCamposPagoDefault();
+                    Mes mesSeleccionado = (Mes) comboMeses.getModel().getSelectedItem();
+                    int anioSeleccionado = (int) comboAnios.getModel().getSelectedItem();
+                    if(comboPromociones.getModel().getSize() > 0)
+                        comboPromociones.setSelectedIndex(0);
+                    cargarDatosSuscriptor(null, mesSeleccionado, anioSeleccionado, suscriptorSeleccionado, true);
                 }
             }
         };
-        comboPromociones.addActionListener(comboPromocionesActionListener);
+        botonReestablecerMonto.addActionListener(botonRestablecerMontoSugeridoActionListener);
         
-        ActionListener comboMesesActionListener = new ActionListener() {
+        ActionListener botonCalcularPagoActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(suscriptorSeleccionado != null){
-                    cargarDatosSuscriptor(suscriptorSeleccionado, false);
+                    //primero guardar el indice del mes seleccionado                    
+                    Mes mesSeleccionado = (Mes) comboMeses.getModel().getSelectedItem();
+                    int anioSeleccionado = (int) comboAnios.getModel().getSelectedItem(); 
+                    if(util.esFechaPagoValida(
+                            suscriptorSeleccionado, mesSeleccionado, anioSeleccionado)){
+                        if(comboPromociones.getModel().getSize() > 0)
+                            comboPromociones.setSelectedIndex(0);
+                        cargarDatosSuscriptor(null, mesSeleccionado, anioSeleccionado, suscriptorSeleccionado, false);
+                    }else{
+                        comboMeses.setSelectedItem(mesGuardado);
+                        comboAnios.setSelectedItem(anioGuardado);
+                        JOptionPane.showMessageDialog(cobroPanel, "La fecha de próximo pago debe ser de al menos un mes posterior al mes en curso. Por favor seleccione una fecha válida", "", JOptionPane.WARNING_MESSAGE);  
+                    }
                 }
             }
         };
-        comboNumeroMeses.addActionListener(comboMesesActionListener);
+        botonCalculaMonto.addActionListener(botonCalcularPagoActionListener);
 
         ActionListener botonCobrarActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                if (suscriptorSeleccionado != null && !listaDetallesPago.isEmpty()) {
+                if (suscriptorSeleccionado != null && cobroCapturado != null) {
+                    
                     try {
+                        
+                        //Primero realizar las validaciones necesarias
+                        
+                        //que existan observaciones
+                        if(campoObservaciones.getText().isEmpty())
+                            throw new TvchException("Por favor, ingrese sus observaciones.");
+                        
+                        //que las observaciones no pasen de los 200 caracteres
+                        if(campoObservaciones.getText().length() > 200){
+                            throw new TvchException("Por favor, ajuste sus observaciones a un máximo de 200 caracteres.");
+                        }
+                        
+                        //que el monto capturado se aun numero valido
+                        Double montoPorCobrar = null;
+                        try{
+                            montoPorCobrar = Double.parseDouble(campoMonto.getText());
+                        }catch(NumberFormatException nfe){
+                            throw new TvchException("Por favor, ingrese un monto a cobrar válido");
+                        }
+                        
+                        //que el monto no sea menor a cero
+                        if(montoPorCobrar < 0)
+                            throw new TvchException("El monto a cobrar no puede ser menor a cero");
+                        
+                        //que haya una promocion capturada, en ese caso se obtienen los datos 
+                        if(promocionSeleccionada != null){
+                            PromocionCobro promocion = new PromocionCobro();
+                            promocion.setMesesGratis(promocionSeleccionada.getMesesGratis());
+                            promocion.setCostoPromocion(promocionSeleccionada.getCostoPromocion());
+                            promocion.setPromocionId(promocionSeleccionada.getPromocionId());
+                            cobroCapturado.setPromocion(promocion);
+                            //cobroCapturado.setMontoTotal(promocionSeleccionada.getCostoPromocion());
+                        }
+                        
+                        //que en caso de que no exista promo y el monto a cobrar sea menor que el sugerido se 
+                        //hayan capturado los datos del descuento 
+                        //aqui mismo se obtienen los datos del descuento
+                        if(montoPorCobrar < cobroCapturado.getMontoSugerido() && promocionSeleccionada == null){
+                            if(campoMotivoDescuento.getText().isEmpty()){
+                                throw new TvchException("El monto capturado para ser cobrado es menor al sugerido por el sistema. \n"
+                                    + "Por favor capture Tipo y Motivo de descuento antes de realizar el cobro");
+                            }else{
+                                if(campoMotivoDescuento.getText().length() > 100){
+                                    throw new TvchException("Por favor, ajuste su motivo de descuento a un m+aximo de 100 caracteres.");
+                                }else{
+                                    double montoDescuento = cobroCapturado.getMontoSugerido() - montoPorCobrar;
+                                    TipoDescuentoEntity tipoDescuento = (TipoDescuentoEntity) comboTipoDescuento.getSelectedItem();
+                                    DescuentoCobro descuento = new DescuentoCobro();
+                                    descuento.setMontoDescuento(montoDescuento);
+                                    descuento.setMotivoDescuento(campoMotivoDescuento.getText());
+                                    descuento.setTipoDescuentoId(tipoDescuento.getIdTipoDescuento());
+                                    cobroCapturado.setDescuento(descuento);
+                                }             
+                            }                          
+                        }
+                        
+                        //despues de las validaciones se obtienen el resto de los campos necesarios para hacer el pago
+                        //cobroCapturado.setMontoTotal(montoPorCobrar);
+                        //if(promocionSeleccionada != null)
+                        //    cobroCapturado.setMontoTotal(promocionSeleccionada.getCostoPromocion());
+                        //else
+                        cobroCapturado.setMontoTotal(montoPorCobrar);
+                        cobroCapturado.setCadenaMonto("$ ".concat(String.valueOf(montoPorCobrar)));
+                        cobroCapturado.setObservaciones(campoObservaciones.getText());
                         
                         Long transaccionId = null;
                         boolean seDebeGenerarOrden = false;
@@ -171,59 +251,80 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                         
                         if(!seCanceloPago){
                             
-                            //Integer numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
-                            transaccionId = controller.cobrarServicio(suscriptorSeleccionado, listaDetallesPago/*, numeroMeses*/);
-                            
-                            try {
-                                impresora.imprimirTicketServicio(transaccionId, listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal()/*, numeroMeses*/);
-                            } catch (Exception ex) {
-                                StringWriter sw = new StringWriter();
-                                PrintWriter pw = new PrintWriter(sw);
-                                ex.printStackTrace(pw);
-                                logger.error("Fallo al imprimir ticket de transaccion: \n" + sw.toString());
-                                JOptionPane.showMessageDialog(cobroPanel, "El cobro se realizó correctamente pero ocurrió un error al imprimir su ticket. Si desea una reimpresión vaya a sección de reimpresiones", "", JOptionPane.WARNING_MESSAGE);
+                            boolean seAceptoPago = false;
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("Se realizará el cobro al contrato: ").append(suscriptorSeleccionado.getFolioContrato());
+                            sb.append(" por un monto de ").append(cobroCapturado.getCadenaMonto());
+                            sb.append("\n¿Los datos son correctos? \n");
+                            int input = JOptionPane.showConfirmDialog(null, sb.toString());
+                            if (input == 0) {
+                                seAceptoPago = true;
                             }
-                            System.out.println("transaccionId: " + transaccionId);
                             
-                            if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
-                                try{
-                                    //actualizar en local el estatus del contrato y en server el estatus y la orden en caso de requerirse
-                                    Response<UpdateContratoResponse> response = controller.actualizarContratoReconexion(suscriptorSeleccionado, seDebeGenerarOrden);
-                                    switch (response.getCode()) {
-                                        case Constantes.CODIGO_HTTP_OK:
-                                            if(seDebeGenerarOrden)
-                                                JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus RECONEXION, \n "
+                            if(seAceptoPago){
+                                
+                                transaccionId = controller.cobrarServicio(suscriptorSeleccionado, cobroCapturado);
+                                System.out.println("transaccionId: " + transaccionId);
+                                
+                                try {
+                                    impresora.imprimirTicketServicio(transaccionId, cobroCapturado, suscriptorSeleccionado, sesion.getSucursal()/*, numeroMeses*/);
+                                } catch (Exception ex) {
+                                    StringWriter sw = new StringWriter();
+                                    PrintWriter pw = new PrintWriter(sw);
+                                    ex.printStackTrace(pw);
+                                    logger.error("Fallo al imprimir ticket de transaccion: \n" + sw.toString());
+                                    JOptionPane.showMessageDialog(cobroPanel, "El cobro se realizó correctamente pero ocurrió un error al imprimir su ticket. Si desea una reimpresión vaya a sección de reimpresiones", "", JOptionPane.WARNING_MESSAGE);
+                                }
+                                
+                                if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
+                                    try{
+                                        //actualizar en local el estatus del contrato y en server el estatus y la orden en caso de requerirse
+                                        Response<UpdateContratoResponse> response = controller.actualizarContratoReconexion(suscriptorSeleccionado, seDebeGenerarOrden);
+                                        switch (response.getCode()) {
+                                            case Constantes.CODIGO_HTTP_OK:
+                                                if(seDebeGenerarOrden)
+                                                    JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus RECONEXION, \n "
                                                         + "Su orden de reconexión se generó correctamente, por favor verifique en su portal web", "", JOptionPane.INFORMATION_MESSAGE);
-                                            else
-                                                JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus ACTIVO, por favor verifique", "", JOptionPane.INFORMATION_MESSAGE);
-                                            break;
-                                        case Constantes.CODIGO_HTTP_OK_WARNING:
-                                            JOptionPane.showMessageDialog(cobroPanel, response.getMessage(), "", JOptionPane.WARNING_MESSAGE);
-                                            break;
-                                        default:
-                                            if(seDebeGenerarOrden){
-                                                JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación con el servidor al actualizar su contrato y generar su orden en línea,\n"
+                                                else
+                                                    JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus ACTIVO, por favor verifique", "", JOptionPane.INFORMATION_MESSAGE);
+                                                break;
+                                            case Constantes.CODIGO_HTTP_OK_WARNING:
+                                                JOptionPane.showMessageDialog(cobroPanel, response.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+                                                break;
+                                            default:
+                                                if(seDebeGenerarOrden){
+                                                    JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación con el servidor al actualizar su contrato y generar su orden en línea,\n"
                                                         + "No fue posible validar que se haya generado la orden de reconexión solicitada, por favor revise, de ser necesario favor de generarla manualmente en el portal web", null, JOptionPane.WARNING_MESSAGE);
-                                            }else{
-                                                JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación al actualizar su contrato en el servidor en línea, "
+                                                }else{
+                                                    JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación al actualizar su contrato en el servidor en línea, "
                                                         + "Su pago se sincronizará posteriormente y el contrato pasará a estatus RECONEXION, de ser necesario actualice a Activo en el portal web", null, JOptionPane.WARNING_MESSAGE);
-                                            }   break;
-                                    }
-                                }catch(Exception ex){
-                                    if(seDebeGenerarOrden){
-                                        JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación con el servidor al actualizar su contrato y generar su orden en línea,\n"
-                                            + "No fue posible validar que se haya generado la orden de reconexión solicitada, por favor revise, de ser necesario favor de generarla manualmente en el portal web", null, JOptionPane.WARNING_MESSAGE);
-                                    }else{
-                                        JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación al actualizar su contrato en el servidor en línea, "
-                                            + "Su pago se sincronizará posteriormente y el contrato pasará a estatus RECONEXION, de ser necesario actualice a Activo en el portal web", null, JOptionPane.WARNING_MESSAGE);
+                                                }   
+                                                break;
+                                        }
+                                    }catch(Exception ex){
+                                        if(seDebeGenerarOrden){
+                                            JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación con el servidor al actualizar su contrato y generar su orden en línea,\n"
+                                                + "No fue posible validar que se haya generado la orden de reconexión solicitada, por favor revise, de ser necesario favor de generarla manualmente en el portal web", null, JOptionPane.WARNING_MESSAGE);
+                                        }else{
+                                            JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación al actualizar su contrato en el servidor en línea, "
+                                                + "Su pago se sincronizará posteriormente y el contrato pasará a estatus RECONEXION, de ser necesario actualice a Activo en el portal web", null, JOptionPane.WARNING_MESSAGE);
+                                        }
                                     }
                                 }
-                            }
                             
-                            limpiarPantalla();
+                                limpiarPantalla();                              
+                                
+                            }
+  
                         }
        
-                    } catch (Exception ex) {
+                    } catch (TvchException ex) {
+                        StringWriter sw = new StringWriter();
+                        PrintWriter pw = new PrintWriter(sw);
+                        ex.printStackTrace(pw);
+                        logger.error("Error controlado al cobrar transaccion: \n" + sw.toString());
+                        JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+                    }catch (Exception ex) {
                         StringWriter sw = new StringWriter();
                         PrintWriter pw = new PrintWriter(sw);
                         ex.printStackTrace(pw);
@@ -239,17 +340,18 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         ActionListener botonEliminarPromocionActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (suscriptorSeleccionado != null) {
-
-                    if (!listaDetallesPago.isEmpty()
-                            && listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()) {
-                        listaDetallesPago = listaDetallesPago.stream().filter(d -> d.getTipoDetalle() != Constantes.TIPO_DETALLE_COBRO_PROMOCION).collect(Collectors.toList());
-                        actualizarTablaDetallesPago();
-                        etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
-                        etiquetaPromocionAplicada.setVisible(false);
-                        suscriptorSeleccionado.setMesesGratis(0);
-                    }
-
+                if (suscriptorSeleccionado != null && promocionSeleccionada != null && cobroCapturado != null) {
+                    setCamposPagoDefault();
+                    Mes mesSeleccionado = (Mes) comboMeses.getModel().getSelectedItem();
+                    int anioSeleccionado = (int) comboAnios.getModel().getSelectedItem();
+                    if(comboPromociones.getModel().getSize() > 0)
+                        comboPromociones.setSelectedIndex(0);
+                    promocionSeleccionada = null;
+                    cargarDatosSuscriptor(null, mesSeleccionado, anioSeleccionado, suscriptorSeleccionado, true);
+                    campoMonto.setEnabled(true);
+                    comboMeses.setEnabled(true);
+                    comboAnios.setEnabled(true);
+                    JOptionPane.showMessageDialog(cobroPanel, "Promoción eliminada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         };
@@ -258,140 +360,28 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         ActionListener botonAplicarPromocionActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (suscriptorSeleccionado != null && comboPromociones.getModel().getSize() > 0) {
-
-                    if (!listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()) {
-
-                        if (!listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()) {
-
-                            PromocionEntity entity = (PromocionEntity) comboPromociones.getModel().getSelectedItem();
-                            Integer numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
-                            
-                            if(entity.getMesesPagados() == numeroMeses){
-                                
-                                String descFechaProximoPago = null;
-                                try {
-                                    descFechaProximoPago = util.obtenerNuevaFechaProximoPago(
-                                        sesion.getDiaCorte(), 
-                                        0, 
-                                        suscriptorSeleccionado.getFechaProximoPago(), 
-                                        Constantes.FORMATO_FECHA_TICKET, 
-                                        numeroMeses+entity.getMesesGratis(),
-                                        suscriptorSeleccionado.getEstatusContratoId());
-                                } catch (Exception ex) {
-                                    java.util.logging.Logger.getLogger(CobroServicioPanel.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-
-                                DetallePagoServicio detallePromocion = new DetallePagoServicio();
-                                StringBuilder promocion = new StringBuilder();
-                                //promocion.append("Promoción - ");
-                                promocion.append(entity.getDescripcion());
-                                if(descFechaProximoPago != null){
-                                    promocion.append(" >> Próximo pago hasta: ");
-                                    promocion.append(descFechaProximoPago);
-                                }
-                                detallePromocion.setTipoDetalle(Constantes.TIPO_DETALLE_COBRO_PROMOCION);
-                                detallePromocion.setConcepto(promocion.toString());
-                                detallePromocion.setMonto(entity.getCostoPromocion()*numeroMeses);
-                                Double costoTotalMenosPromocion = (suscriptorSeleccionado.getCostoServicio()-entity.getCostoPromocion())*numeroMeses;
-                                detallePromocion.setCadenaMonto("- $".concat(String.valueOf(costoTotalMenosPromocion)));
-                                detallePromocion.setPromocionId(entity.getPromocionId());
-                                listaDetallesPago.add(detallePromocion);
-                                actualizarTablaDetallesPago();
-                                etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
-                                etiquetaPromocionAplicada.setVisible(true);
-                                if(entity.getMesesGratis() != null)
-                                    suscriptorSeleccionado.setMesesGratis(entity.getMesesGratis());
-                            
-                            }else{
-                                JOptionPane.showMessageDialog(cobroPanel, "Para aplicar la promoción es necesario el pago de "+entity.getMesesPagados()+" meses", "", JOptionPane.WARNING_MESSAGE);
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(cobroPanel, "Ya existe un descuento aplicado en el cobro. Si desea aplicar una promoción es necesario eliminar el descuento.", "", JOptionPane.WARNING_MESSAGE);
-                        }
-
-                    } else {
-                        JOptionPane.showMessageDialog(cobroPanel, "Ya existe un descuento aplicado en el pago", "", JOptionPane.WARNING_MESSAGE);
+                
+                if (suscriptorSeleccionado != null && comboPromociones.getModel().getSize() > 0 ) {
+                    
+                    if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_ACTIVO){               
+                        PromocionEntity promocion = (PromocionEntity) comboPromociones.getModel().getSelectedItem();
+                        setCamposPagoPromocion(promocion);
+                        Mes mesSeleccionado = (Mes) comboMeses.getModel().getSelectedItem();
+                        int anioSeleccionado = (int) comboAnios.getModel().getSelectedItem();
+                        promocionSeleccionada = promocion;
+                        cargarDatosSuscriptor(promocion, mesSeleccionado, anioSeleccionado, suscriptorSeleccionado, false);
+                        JOptionPane.showMessageDialog(cobroPanel, "Promoción agregada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                        campoMonto.setEnabled(false);
+                        comboMeses.setEnabled(false);
+                        comboAnios.setEnabled(false);
+                    }else{
+                        JOptionPane.showMessageDialog(cobroPanel, "Sólo es posible aplicar promociones a contratos en estatus Activo.", "", JOptionPane.WARNING_MESSAGE);
                     }
 
                 }
             }
         };
         botonAplicarPromocion.addActionListener(botonAplicarPromocionActionListener);
-
-        ActionListener botonEliminarDescuentoActionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                if (suscriptorSeleccionado != null) {
-
-                    if (!listaDetallesPago.isEmpty()
-                            && listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()) {
-                        listaDetallesPago = listaDetallesPago.stream().filter(d -> d.getTipoDetalle() != Constantes.TIPO_DETALLE_COBRO_DESCUENTO).collect(Collectors.toList());
-                        actualizarTablaDetallesPago();
-                        etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
-                        campoDescuentoAplicado.setText("");
-                        campoMotivoDescuento.setText("");
-                        campoMontoDescuento.setText("");
-                    }
-
-                }
-
-            }
-        };
-        botonEliminarDescuento.addActionListener(botonEliminarDescuentoActionListener);
-
-        ActionListener botonApliCarDescuentoActionLister = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (suscriptorSeleccionado != null && !campoMontoDescuento.getText().isEmpty() && !campoMotivoDescuento.getText().isEmpty()) {
-
-                    if (!listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()) {
-
-                        if (!listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()) {
-
-                            Double importeDescuento = null;
-                            boolean elImporteDescuentoEsNumerico = false;
-                            try {
-                                importeDescuento = Double.parseDouble(campoMontoDescuento.getText());
-                                elImporteDescuentoEsNumerico = true;
-                            } catch (NumberFormatException ex) {
-                                JOptionPane.showMessageDialog(cobroPanel, "Por favor capture un monto numérico de descuento", "", JOptionPane.WARNING_MESSAGE);
-                            }
-                            if (importeDescuento != null && elImporteDescuentoEsNumerico) {
-
-                                TipoDescuentoEntity entity = (TipoDescuentoEntity) comboTipoDescuento.getModel().getSelectedItem();
-                                DetallePagoServicio detalleDescuento = new DetallePagoServicio();
-                                StringBuilder descuento = new StringBuilder();
-                                descuento.append("Descuento - ");
-                                descuento.append(entity.getDescripcion());
-                                detalleDescuento.setTipoDetalle(Constantes.TIPO_DETALLE_COBRO_DESCUENTO);
-                                detalleDescuento.setConcepto(descuento.toString());
-                                detalleDescuento.setMonto(importeDescuento);
-                                detalleDescuento.setCadenaMonto("- $".concat(String.valueOf(importeDescuento)));
-                                detalleDescuento.setMotivoDescuento(campoMotivoDescuento.getText());
-                                detalleDescuento.setTipoDescuentoId(entity.getIdTipoDescuento());
-                                listaDetallesPago.add(detalleDescuento);
-                                actualizarTablaDetallesPago();
-                                etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
-                                campoDescuentoAplicado.setText(detalleDescuento.getMotivoDescuento());
-                                campoMotivoDescuento.setText("");
-                                campoMontoDescuento.setText("");
-
-                            }
-
-                        } else {
-                            JOptionPane.showMessageDialog(cobroPanel, "Ya existe una promoción aplicada en el cobro. Si desea agregar un descuento es necesario eliminar la promoción.", "", JOptionPane.WARNING_MESSAGE);
-                        }
-
-                    } else {
-                        JOptionPane.showMessageDialog(cobroPanel, "Ya existe un descuento aplicado en el pago", "", JOptionPane.WARNING_MESSAGE);
-                    }
-
-                }
-            }
-        };
-        botonAplicarDescuento.addActionListener(botonApliCarDescuentoActionLister);;
 
         KeyListener enterTablaSuscriptoresListener = new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
@@ -403,10 +393,12 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                         if (!suscriptoresConsultaList.isEmpty()) {
                             if (suscriptoresConsultaList.stream()
                                     .filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
-                                comboNumeroMeses.setSelectedIndex(0);
                                 ContratoxSuscriptorEntity entity = suscriptoresConsultaList
                                         .stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
-                                cargarDatosSuscriptor(entity, true);
+                                habilitarCamposPago();
+                                Mes mesSeleccionado = (Mes) comboMeses.getModel().getSelectedItem();
+                                int anioSeleccionado = (int) comboAnios.getModel().getSelectedItem();
+                                cargarDatosSuscriptor(null, mesSeleccionado, anioSeleccionado, entity, true);
                             }
                         }
                     }
@@ -427,10 +419,12 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                     if (!suscriptoresConsultaList.isEmpty()) {
                         if (suscriptoresConsultaList.stream()
                                 .filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
-                            comboNumeroMeses.setSelectedIndex(0);
                             ContratoxSuscriptorEntity entity = suscriptoresConsultaList
                                     .stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
-                            cargarDatosSuscriptor(entity, true);
+                            habilitarCamposPago();
+                            Mes mesSeleccionado = (Mes) comboMeses.getModel().getSelectedItem();
+                            int anioSeleccionado = (int) comboAnios.getModel().getSelectedItem();
+                            cargarDatosSuscriptor(null, mesSeleccionado, anioSeleccionado, entity, true);
                         }
                     }
                     mouseEvent.consume();
@@ -524,47 +518,73 @@ public class CobroServicioPanel extends javax.swing.JPanel {
 
     }
 
-    private void cargarDatosSuscriptor(
+    /**
+     * 
+     * @param mesSeleccionado
+     * @param anioSeleccionado
+     * @param contratosuscriptor
+     * @param seRefrescanPromociones 
+     */
+    private void cargarDatosSuscriptor( PromocionEntity promocion, Mes mesSeleccionado, int anioSeleccionado,
             ContratoxSuscriptorEntity contratosuscriptor, boolean seRefrescanPromociones) {
 
-        System.out.println("Seelccionado: " + contratosuscriptor.getContratoId());
-        comboNumeroMeses.setEnabled(true);
+        System.out.println("Seleccionado: " + contratosuscriptor.getContratoId());
+        
         // primero borrar los datos de suscriptores que se hayan seleccionado antes
+        etiquetaPromocionAplicada.setVisible(false);
         limpiarDatosSuscriptor();
         suscriptorSeleccionado = contratosuscriptor;
-        Integer numeroMeses = 1;
+        mesGuardado = mesSeleccionado;
+        anioGuardado = anioSeleccionado;
+        cobroCapturado = null;
+        //boolean seDebeMostrarAdvertenciaPromocionNoAplicada = false;  
+        
+        Mes mesPagado = util.obtenerMesAnterior(mesSeleccionado);
+        int anioPagado = anioSeleccionado;
+        if(mesPagado.getNumero() == 12)
+            anioPagado = anioPagado - 1;
+      
+        Integer numeroMeses = util.calcularMesesPagados(mesSeleccionado, anioSeleccionado, suscriptorSeleccionado.getFechaProximoPago());
+        
         Double montoTotalMeses = 0.0;
         if(contratosuscriptor.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
-            comboNumeroMeses.setEnabled(false);
-            numeroMeses = controller.obtenerMesesAtrasado(suscriptorSeleccionado);
-            montoTotalMeses = controller.obtenerMontoAtrasado(suscriptorSeleccionado);
+            comboMeses.setEnabled(false);
+            //montoTotalMeses = controller.obtenerMontoPorCobrar(suscriptorSeleccionado);
+            montoTotalMeses = suscriptorSeleccionado.getCostoServicio() * numeroMeses;
         }else if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
-            numeroMeses = 1;
             montoTotalMeses = 0.0;
         }else{
-            numeroMeses = (Integer) comboNumeroMeses.getModel().getSelectedItem();
-            montoTotalMeses = suscriptorSeleccionado.getCostoServicio()*numeroMeses;
+            //montoTotalMeses = controller.obtenerMontoPorCobrar(suscriptorSeleccionado)/* + (suscriptorSeleccionado.getCostoServicio()*numeroMeses)*/;
+            if(promocion != null){
+                //validar que se cumplan con los meses que se deben pagar para aplicar la promocion
+                //if(numeroMeses >= promocion.getMesesPagados()){
+                    montoTotalMeses = promocion.getCostoPromocion();
+                    //numeroMeses = numeroMeses + promocion.getMesesGratis();
+                    etiquetaPromocionAplicada.setVisible(true);
+                /*}else{
+                    seDebeMostrarAdvertenciaPromocionNoAplicada = true;
+                    montoTotalMeses = suscriptorSeleccionado.getCostoServicio() * numeroMeses;
+                } */    
+            }else{
+                montoTotalMeses = suscriptorSeleccionado.getCostoServicio() * numeroMeses;
+            } 
         }
+        
+        campoMontoSugerido.setText(String.valueOf(montoTotalMeses));
+        campoMonto.setText(String.valueOf(montoTotalMeses));
+        etiquetaImporte.setText(String.valueOf(montoTotalMeses));
         suscriptorSeleccionado.setMesesPorPagar(numeroMeses);
         
-        StringBuilder descripcionMes = new StringBuilder();
-        if(numeroMeses == 1)
-            descripcionMes.append("Un mes ");
-        else
-            descripcionMes.append(String.valueOf(numeroMeses).concat(" meses "));
-        
-        String descFechaProximoPago = null;
-        try {
-            descFechaProximoPago = util.obtenerNuevaFechaProximoPago(
-                    sesion.getDiaCorte(), 
-                    0, 
-                    contratosuscriptor.getFechaProximoPago(), 
-                    Constantes.FORMATO_FECHA_TICKET, 
-                    numeroMeses,
-                    contratosuscriptor.getEstatusContratoId());
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(CobroServicioPanel.class.getName()).log(Level.SEVERE, null, ex);
+        etiquetaDescPago1.setText("Usted está recibiendo el siguiente pago:");
+        if(numeroMeses == 1){
+            etiquetaDescPago2.setText(util.obtenerDescripcionPagoUnMes());
+        }else{
+            etiquetaDescPago2.setText(util.obtenerDescripcionVariosMeses(mesPagado, anioPagado, suscriptorSeleccionado.getFechaProximoPago()));
         }
+
+        campoMonto.setEnabled(true);
+        comboMeses.setEnabled(true);
+        comboAnios.setEnabled(true);
 
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptorSeleccionado.getNombre());
@@ -577,6 +597,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         campoSuscriptor.setText(nombre.toString());
         campoContrato.setText(String.valueOf(suscriptorSeleccionado.getContratoId()));
         campoFolioContrato.setText(String.valueOf(suscriptorSeleccionado.getFolioContrato()));
+        campoCostoServicio.setText(String.valueOf(suscriptorSeleccionado.getCostoServicio()));
         campoEstatus.setText(suscriptorSeleccionado.getEstatusContrato());
         if (contratosuscriptor.getFechaProximoPago() != null) {
             campoFechaPago.setText(util.convertirDateTime2String(contratosuscriptor.getFechaProximoPago(), "dd/MM/yyyy"));
@@ -587,81 +608,51 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         domicilio.append(" ").append(suscriptorSeleccionado.getColonia());
         campoDomicilio.setText(domicilio.toString());
         campoTelefono.setText(suscriptorSeleccionado.getTelefono());
-
-        DetallePagoServicio detalleMontoPago = new DetallePagoServicio();
-        StringBuilder conceptoMontoPago = new StringBuilder();
-        conceptoMontoPago.append("Pago Mensualidad ");
-        conceptoMontoPago.append(descripcionMes);
-        conceptoMontoPago.append(" ");
-        conceptoMontoPago.append(suscriptorSeleccionado.getServicio());
-        if(descFechaProximoPago != null)
-            conceptoMontoPago.append(" >> Proximo pago hasta: ").append(descFechaProximoPago);
-        detalleMontoPago.setConcepto(conceptoMontoPago.toString());
-        
-        
-        /*if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
-            montoTotalMeses = controller.obtenerMontoAtrasado(suscriptorSeleccionado);
-        }else if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
-            montoTotalMeses = 0.0;
-        }else{
-            montoTotalMeses = suscriptorSeleccionado.getCostoServicio()*numeroMeses;
-        }*/
-        
-        detalleMontoPago.setMonto(montoTotalMeses);
-        detalleMontoPago.setCadenaMonto("  $".concat(String.valueOf(montoTotalMeses)));
-        detalleMontoPago.setTipoDetalle(Constantes.TIPO_DETALLE_COBRO_SERVICIO);
-
-        listaDetallesPago.add(detalleMontoPago);
-        if (controller.seDebeGenerarRecargo(suscriptorSeleccionado)) {
-            DetallePagoServicio detalleRecargo = new DetallePagoServicio();
-            detalleRecargo.setConcepto("Recargo por pago tardío");
-            detalleRecargo.setMonto(50.0);
-            detalleRecargo.setCadenaMonto("  $50");
-            detalleRecargo.setTipoDetalle(Constantes.TIPO_DETALLE_COBRO_RECARGO);
-            listaDetallesPago.add(detalleRecargo);
-        }
-
-        actualizarTablaDetallesPago();
-        etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
+        etiquetaDescPago3.setText("Meses a cobrar: ".concat(String.valueOf(numeroMeses)));
 
         if(seRefrescanPromociones){
-            ///carcagr combo promociones
             comboPromociones.removeAllItems();
             cargarComboPromociones(suscriptorSeleccionado.getServicioId());
         }
-    }
-
-    private void actualizarTablaDetallesPago() {
-
-        DefaultTableModel model = (DefaultTableModel) tablaDetallesPago.getModel();
-        model.getDataVector().clear();
-        for (DetallePagoServicio o : listaDetallesPago) {
-            model.addRow(new Object[]{
-                o.getConcepto(),
-                o.getCadenaMonto()});
-        }
-        model.fireTableDataChanged();
-
-    }
-
-    private void limpiarDatosSuscriptor() {
-        listaDetallesPago.clear();
-        suscriptorSeleccionado = null;
-        campoSuscriptor.setText("");
-        campoContrato.setText("");
-        campoFolioContrato.setText("");
-        campoEstatus.setText("");
-        campoFechaPago.setText("");
-        campoServicioContratado.setText("");
-        campoDomicilio.setText("");
-        campoTelefono.setText("");
-        DefaultTableModel model = (DefaultTableModel) tablaDetallesPago.getModel();
-        model.getDataVector().clear();
-        model.fireTableDataChanged();
-        etiquetaImporte.setText("0.00");
-        etiquetaPromocionAplicada.setVisible(false);
-        campoDescuentoAplicado.setText("");
         
+        cobroCapturado = new CobroServicio();
+        cobroCapturado.setCadenaMonto("$ ".concat(String.valueOf(montoTotalMeses)));
+        cobroCapturado.setConcepto(etiquetaDescPago2.getText().replace(">>", "Pago ")); 
+        cobroCapturado.setDescuento(null);
+        cobroCapturado.setFechaProximoPagoTicket(util.obtenerCadenaFechaPago(mesSeleccionado, anioSeleccionado));
+        cobroCapturado.setFechaProximoPago(util.obtenerFechaPago(mesSeleccionado, anioSeleccionado));
+        cobroCapturado.setMesesPagados(numeroMeses);
+        if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
+            montoTotalMeses = montoTotalMeses + 50;
+             campoMontoSugerido.setText(String.valueOf(montoTotalMeses));
+            campoMonto.setText(String.valueOf(montoTotalMeses));
+            etiquetaImporte.setText(String.valueOf(montoTotalMeses));
+            cobroCapturado.setMontoRecargo(50.0);
+            cobroCapturado.setSeCobraRecargo(true);
+            etiquetaDescPago4.setVisible(true);
+        }else{
+            etiquetaDescPago4.setVisible(false);
+        }
+        cobroCapturado.setMontoServicio(suscriptorSeleccionado.getCostoServicio());
+        cobroCapturado.setMontoTotal(montoTotalMeses);
+        cobroCapturado.setMontoSugerido(montoTotalMeses);
+        //cobroCapturado.setObservaciones();  --> obtenerlo al presionar cobrar
+        if(promocionSeleccionada != null){
+            PromocionCobro promo = new PromocionCobro();
+            promo.setMesesGratis(promocionSeleccionada.getMesesGratis());
+            promo.setCostoPromocion(promocionSeleccionada.getCostoPromocion());
+            promo.setPromocionId(promocionSeleccionada.getPromocionId());
+            promo.setDescripcion(promocionSeleccionada.getDescripcion());
+            cobroCapturado.setPromocion(promo);
+        }else{
+            cobroCapturado.setPromocion(null);
+        }
+        
+        /*if(seDebeMostrarAdvertenciaPromocionNoAplicada){
+            JOptionPane.showMessageDialog(cobroPanel, "No se cumplen las condiciones para hacer efectiva la promocion: \n"
+                    + "Meses a pagar -> "+promocion.getMesesPagados(), "", JOptionPane.WARNING_MESSAGE);
+
+        }*/
     }
 
     /**
@@ -692,11 +683,127 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         } else {
             JOptionPane.showMessageDialog(cobroPanel, "No se encontraron suscriptores con la información solicitada", "", JOptionPane.WARNING_MESSAGE);
         }
+        
+        campoMonto.setEnabled(true);
 
     }
 
-    private void cargarComboTiposBusqueda() {
+    private void setCamposPagoDefault(){   
+        //posicionarse en el mes en curso
+        Calendar fechaEnCurso = Calendar.getInstance();
+        int mesEnCurso = fechaEnCurso.get(Calendar.MONTH);
+        comboMeses.setSelectedIndex(mesEnCurso+1);
+        comboAnios.setSelectedIndex(0);
+        
+        etiquetaPromocionAplicada.setVisible(false);
+        
+        etiquetaImporte.setText("0.00");
+        campoMonto.setText("0.00");
+        campoMonto.setEnabled(false);
+        comboMeses.setEnabled(false);
+        comboAnios.setEnabled(false);
+    }
+    
+    private void setCamposPagoPromocion(PromocionEntity promocion){   
+        //posicionarse en el mes en curso
+        Calendar fechaPromocion = Calendar.getInstance();
+        fechaPromocion.setTime(new Date());
+        //int mesEnCurso = fechaPromocion.get(Calendar.MONTH);
+        int mesesPromo = promocion.getMesesPagados() + promocion.getMesesGratis();
+        fechaPromocion.add(Calendar.MONTH, mesesPromo);
+        int mesPromocion = fechaPromocion.get(Calendar.MONTH);
+        comboMeses.setSelectedIndex(mesPromocion);
+        comboAnios.setSelectedItem(fechaPromocion.get(Calendar.YEAR));
+        
+        etiquetaPromocionAplicada.setVisible(false);
+        
+        etiquetaImporte.setText("0.00");
+        campoMonto.setText("0.00");
+        campoMonto.setEnabled(false);
+        comboMeses.setEnabled(false);
+        comboAnios.setEnabled(false);
+    }
+    
+    private void habilitarCamposPago(){   
+        //posicionarse en el mes en curso
+        Calendar fechaEnCurso = Calendar.getInstance();
+        int mesEnCurso = fechaEnCurso.get(Calendar.MONTH);
+        comboMeses.setSelectedIndex(mesEnCurso+1);
+        comboAnios.setSelectedIndex(0);        
+        etiquetaImporte.setText("0.00");
+        campoMonto.setText("0.00");
+        campoMonto.setEnabled(true);
+        comboMeses.setEnabled(true);
+        comboAnios.setEnabled(true);
+    }
+    
+    private void cargarComboAnios(){
+        
+        List<Integer> anios = util.obtenerAniosPorMostrar();
+        anios.forEach(a -> comboAnios.addItem(a));
+    }
 
+    private void cargarComboEstatusSuscriptor() {
+        try {
+
+            List<EstatusSuscriptorEntity> list = controller.consultarEstatusSuscriptor();
+            list = list.stream().filter(e -> e.getEstatusId() == Constantes.ESTATUS_SUSCRIPTOR_ACTIVO).collect(Collectors.toList());
+            list.forEach(e -> comboEstatusSuscriptor.addItem(e));
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    private void cargarComboTiposDescuento() {
+        try {
+
+            List<TipoDescuentoEntity> list = controller.consultarTiposDescuento();
+            list.forEach(td -> comboTipoDescuento.addItem(td));
+            comboTipoDescuento.setEnabled(true);
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    private void cargarComboPromociones(Long servicioId) {
+        try {
+
+            List<PromocionEntity> list = controller.consultarPromociones(servicioId);
+            list.forEach(p -> comboPromociones.addItem(p));
+            comboPromociones.setEnabled(true);
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    private void cargarComboMeses(){
+        
+        List<Mes> meses = new ArrayList<>();
+        meses.add(new Mes(1,"ENERO"));
+        meses.add(new Mes(2,"FEBRERO"));
+        meses.add(new Mes(3,"MARZO"));
+        meses.add(new Mes(4,"ABRIL"));
+        meses.add(new Mes(5,"MAYO"));
+        meses.add(new Mes(6,"JUNIO"));
+        meses.add(new Mes(7,"JULIO"));
+        meses.add(new Mes(8,"AGOSTO"));
+        meses.add(new Mes(9,"SEPTIEMBRE"));
+        meses.add(new Mes(10,"OCTUBRE"));
+        meses.add(new Mes(11,"NOVIEMBRE"));
+        meses.add(new Mes(12,"DICIEMBRE"));
+        meses.forEach(m -> comboMeses.addItem(m));
+        
+        //posicionarse en el mes en curso
+        Calendar fechaEnCurso = Calendar.getInstance();
+        int mesEnCurso = fechaEnCurso.get(Calendar.MONTH);
+        comboMeses.setSelectedIndex(mesEnCurso+1);
+        
+    }
+    
+    private void cargarComboTiposBusqueda() {
         List<TipoBusquedaCobro> list = new ArrayList<>();
         //list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_CONTRATO, "Por Contrato"));
         list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_FOLIO_CONTRATO, "Por Contrato"));
@@ -707,73 +814,13 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         list.forEach(tb -> comboTiposBusqueda.addItem(tb));
 
     }
-
-    /**
-     *
-     */
-    private void cargarComboPromociones(Long servicioId) {
-
-        try {
-
-            List<PromocionEntity> list = controller.consultarPromociones(servicioId);
-            list.forEach(p -> comboPromociones.addItem(p));
-            comboPromociones.setEnabled(true);
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
-        }
-
-    }
-
-    /**
-     *
-     */
-    private void cargarComboTiposDescuento() {
-
-        try {
-
-            List<TipoDescuentoEntity> list = controller.consultarTiposDescuento();
-            list.forEach(td -> comboTipoDescuento.addItem(td));
-            comboTipoDescuento.setEnabled(true);
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
-        }
-
-    }
     
-    private void cargarComboMeses(){
-        
-        for(int i=1; i<=12; i++)
-            comboNumeroMeses.addItem(i);
-        
-    }
-
-    private void limpiarPantalla() {
-        limpiarDatosSuscriptor();
-
-        DefaultTableModel model = (DefaultTableModel) tablaSuscriptores.getModel();
-        model.getDataVector().clear();
-        model.fireTableDataChanged();
-
-        campoMontoDescuento.setText("");
-        campoMotivoDescuento.setText("");
-        campoDescuentoAplicado.setText("");
-        etiquetaImporte.setText("0.00");
-        comboNumeroMeses.setSelectedIndex(0);
-        comboNumeroMeses.setEnabled(true);
-    }
-
     public void cargarDatosSesion() {
 
         etiquetaNumeroCaja.setText(sesion.getNumeroCaja().toString());
         etiquetaUsuario.setText(sesion.getUsuario());
         etiquetaSucursal.setText(sesion.getSucursal());
 
-        //JScrollPane scrollPane = new JScrollPane();
-        //scrollPane.setViewportView(tablaSuscriptores);
-        //scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        //tablaSuscriptores.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         tablaSuscriptores.getColumnModel().getColumn(0).setPreferredWidth(50);
         tablaSuscriptores.getColumnModel().getColumn(1).setPreferredWidth(130);
         tablaSuscriptores.getColumnModel().getColumn(2).setPreferredWidth(310);
@@ -781,33 +828,55 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         tablaSuscriptores.getColumnModel().getColumn(4).setPreferredWidth(390);
         tablaSuscriptores.getColumnModel().getColumn(5).setPreferredWidth(130);
         
-        tablaDetallesPago.getColumnModel().getColumn(0).setPreferredWidth(750);
-        //tablaSuscriptores.gets
-
         ImageIcon imagen = new ImageIcon("src/main/resources/logo_grande.jpg");
         Icon icono = new ImageIcon(imagen.getImage().getScaledInstance(/*etiquetaLogo.getWidth(), etiquetaLogo.getHeight()*/320, 130, Image.SCALE_DEFAULT));
         etiquetaLogo.setIcon(icono);
+        campoMontoSugerido.setEditable(false);
+        etiquetaPromocionAplicada.setVisible(false);
+        
+        etiquetaDescPago4.setVisible(false);
 
+        setCamposPagoDefault();
+    }
+    
+    private void limpiarPantalla() {
+        limpiarDatosSuscriptor();
+
+        DefaultTableModel model = (DefaultTableModel) tablaSuscriptores.getModel();
+        model.getDataVector().clear();
+        model.fireTableDataChanged();
+
+        campoMotivoDescuento.setText("");
+        campoMonto.setText("0.00");
+        etiquetaImporte.setText("0.00");
+        comboMeses.setSelectedIndex(0);
+        comboMeses.setEnabled(true);
+  
+        etiquetaDescPago1.setText("");
+        etiquetaDescPago2.setText("");
+        etiquetaDescPago3.setText("");
+        etiquetaDescPago4.setVisible(false);
+        
+        setCamposPagoDefault();
+    }
+    
+    private void limpiarDatosSuscriptor() {
+        suscriptorSeleccionado = null;
+        campoSuscriptor.setText("");
+        campoContrato.setText("");
+        campoFolioContrato.setText("");
+        campoEstatus.setText("");
+        campoFechaPago.setText("");
+        campoServicioContratado.setText("");
+        campoDomicilio.setText("");
+        campoTelefono.setText("");
         etiquetaImporte.setText("0.00");
         etiquetaPromocionAplicada.setVisible(false);
-        campoDescuentoAplicado.setEditable(false);
-    }
-
-    /**
-     *
-     */
-    private void cargarComboEstatusSuscriptor() {
-
-        try {
-
-            List<EstatusSuscriptorEntity> list = controller.consultarEstatusSuscriptor();
-            list = list.stream().filter(e -> e.getEstatusId() == Constantes.ESTATUS_SUSCRIPTOR_ACTIVO).collect(Collectors.toList());
-            list.forEach(e -> comboEstatusSuscriptor.addItem(e));
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
-        }
-
+        etiquetaDescPago1.setText("");
+        etiquetaDescPago2.setText("");
+        etiquetaDescPago3.setText("");
+        etiquetaDescPago4.setVisible(false);
+        
     }
 
     /**
@@ -857,35 +926,44 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         jLabel14 = new javax.swing.JLabel();
         campoFechaPago = new javax.swing.JTextField();
         campoTelefono = new javax.swing.JTextField();
+        jLabel15 = new javax.swing.JLabel();
+        campoCostoServicio = new javax.swing.JTextField();
         panelPromociones = new javax.swing.JPanel();
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         comboPromociones = new javax.swing.JComboBox<>();
         botonAplicarPromocion = new javax.swing.JButton();
         botonEliminarPromocion = new javax.swing.JButton();
-        jLabel23 = new javax.swing.JLabel();
-        comboNumeroMeses = new javax.swing.JComboBox<>();
+        jLabel25 = new javax.swing.JLabel();
+        campoMontoSugerido = new javax.swing.JTextField();
+        botonReestablecerMonto = new javax.swing.JButton();
         panelInfoPago = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tablaDetallesPago = new javax.swing.JTable();
         panelImportes = new javax.swing.JPanel();
         etiquetaPesos = new javax.swing.JLabel();
         etiquetaImporte = new javax.swing.JLabel();
         etiquetaPromocionAplicada = new javax.swing.JLabel();
+        botonRegresar = new javax.swing.JButton();
+        botonCobrar = new javax.swing.JButton();
+        jLabel28 = new javax.swing.JLabel();
+        jLabel27 = new javax.swing.JLabel();
+        campoMonto = new javax.swing.JTextField();
+        jLabel23 = new javax.swing.JLabel();
+        comboMeses = new javax.swing.JComboBox<>();
+        jLabel26 = new javax.swing.JLabel();
+        comboAnios = new javax.swing.JComboBox<>();
+        jLabel29 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        campoObservaciones = new javax.swing.JTextArea();
+        etiquetaDescPago1 = new javax.swing.JLabel();
+        etiquetaDescPago2 = new javax.swing.JLabel();
+        etiquetaDescPago3 = new javax.swing.JLabel();
+        etiquetaDescPago4 = new javax.swing.JLabel();
+        botonCalculaMonto = new javax.swing.JButton();
         panelDescuentos = new javax.swing.JPanel();
         jLabel20 = new javax.swing.JLabel();
         comboTipoDescuento = new javax.swing.JComboBox<>();
-        jLabel18 = new javax.swing.JLabel();
-        campoMontoDescuento = new javax.swing.JTextField();
         jLabel19 = new javax.swing.JLabel();
         campoMotivoDescuento = new javax.swing.JTextField();
-        jLabel15 = new javax.swing.JLabel();
-        campoDescuentoAplicado = new javax.swing.JTextField();
-        botonAplicarDescuento = new javax.swing.JButton();
-        botonEliminarDescuento = new javax.swing.JButton();
-        panelBotones = new javax.swing.JPanel();
-        botonRegresar = new javax.swing.JButton();
-        botonCobrar = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(204, 204, 204));
         setMaximumSize(new java.awt.Dimension(1500, 950));
@@ -1088,8 +1166,8 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                     .addComponent(campoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 17, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
+                .addContainerGap())
             .addComponent(etiquetaLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
@@ -1106,6 +1184,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         jLabel22.setText("ID Sistema:");
 
         campoContrato.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        campoContrato.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                campoContratoActionPerformed(evt);
+            }
+        });
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel6.setText("Número de Contrato:");
@@ -1129,7 +1212,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         campoEstatus.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel13.setText("Fecha de Pago:");
+        jLabel13.setText("Fecha de Corte:");
 
         jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel14.setText("Teléfono:");
@@ -1139,51 +1222,62 @@ public class CobroServicioPanel extends javax.swing.JPanel {
 
         campoTelefono.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
+        jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel15.setText("Costo:");
+
+        campoCostoServicio.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
         javax.swing.GroupLayout panelInfoContratoLayout = new javax.swing.GroupLayout(panelInfoContrato);
         panelInfoContrato.setLayout(panelInfoContratoLayout);
         panelInfoContratoLayout.setHorizontalGroup(
             panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelInfoContratoLayout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(campoSuscriptor)
-                    .addComponent(campoServicioContratado, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
+                .addContainerGap()
                 .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelInfoContratoLayout.createSequentialGroup()
-                        .addComponent(campoDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(26, 26, 26))
+                        .addComponent(jLabel21)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(panelInfoContratoLayout.createSequentialGroup()
-                        .addComponent(campoContrato, javax.swing.GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)
+                        .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelInfoContratoLayout.createSequentialGroup()
+                                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(campoServicioContratado, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panelInfoContratoLayout.createSequentialGroup()
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(campoSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel22, javax.swing.GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE)
+                            .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel6)
+                        .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(campoCostoServicio, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE)
+                            .addComponent(campoContrato))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel9)
+                        .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
-                        .addComponent(campoEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
-                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelInfoContratoLayout.createSequentialGroup()
-                        .addComponent(jLabel13)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
-                        .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(17, 17, 17))
-                    .addGroup(panelInfoContratoLayout.createSequentialGroup()
-                        .addComponent(jLabel14)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(campoTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(38, 38, 38))))
+                        .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelInfoContratoLayout.createSequentialGroup()
+                                .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel9)
+                                .addGap(18, 18, 18)
+                                .addComponent(campoEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel13)
+                                .addGap(18, 18, 18)
+                                .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panelInfoContratoLayout.createSequentialGroup()
+                                .addComponent(campoDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel14)
+                                .addGap(18, 18, 18)
+                                .addComponent(campoTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(52, 52, 52))))
         );
         panelInfoContratoLayout.setVerticalGroup(
             panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1191,27 +1285,27 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel22)
-                        .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel6)
-                        .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel9)
-                        .addComponent(campoEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel13)
-                        .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(campoSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5)
-                    .addComponent(campoSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel22)
+                    .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6)
+                    .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9)
+                    .addComponent(campoEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel13)
+                    .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel8)
-                        .addComponent(campoDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(campoServicioContratado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(campoTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel14))
+                    .addComponent(campoServicioContratado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel8)
+                    .addComponent(campoDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel15)
+                    .addComponent(campoCostoServicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel14)
+                    .addComponent(campoTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1241,162 +1335,77 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             }
         });
 
-        jLabel23.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel23.setForeground(java.awt.Color.red);
-        jLabel23.setText("Meses a pagar:");
+        jLabel25.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel25.setForeground(new java.awt.Color(255, 51, 51));
+        jLabel25.setText("Monto de Cobro Sugerido:");
 
-        comboNumeroMeses.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        campoMontoSugerido.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        campoMontoSugerido.setText("0.0");
+        campoMontoSugerido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                campoMontoSugeridoActionPerformed(evt);
+            }
+        });
+
+        botonReestablecerMonto.setBackground(new java.awt.Color(227, 126, 75));
+        botonReestablecerMonto.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        botonReestablecerMonto.setForeground(new java.awt.Color(255, 255, 255));
+        botonReestablecerMonto.setText("Restablecer");
 
         javax.swing.GroupLayout panelPromocionesLayout = new javax.swing.GroupLayout(panelPromociones);
         panelPromociones.setLayout(panelPromocionesLayout);
         panelPromocionesLayout.setHorizontalGroup(
             panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelPromocionesLayout.createSequentialGroup()
-                .addGap(30, 30, 30)
+                .addGap(12, 12, 12)
                 .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel17)
-                    .addComponent(jLabel16))
-                .addGap(18, 18, 18)
-                .addComponent(comboPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, 637, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(botonAplicarPromocion)
-                .addGap(18, 18, 18)
-                .addComponent(botonEliminarPromocion)
-                .addGap(63, 63, 63)
-                .addComponent(jLabel23)
-                .addGap(18, 18, 18)
-                .addComponent(comboNumeroMeses, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(88, Short.MAX_VALUE))
+                    .addComponent(jLabel16)
+                    .addGroup(panelPromocionesLayout.createSequentialGroup()
+                        .addComponent(jLabel17)
+                        .addGap(18, 18, 18)
+                        .addComponent(comboPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, 518, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(botonAplicarPromocion, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(botonEliminarPromocion)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel25)
+                        .addGap(18, 18, 18)
+                        .addComponent(campoMontoSugerido, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(botonReestablecerMonto)))
+                .addContainerGap(185, Short.MAX_VALUE))
         );
         panelPromocionesLayout.setVerticalGroup(
             panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelPromocionesLayout.createSequentialGroup()
-                .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel17)
                     .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(comboPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(botonAplicarPromocion)
                         .addComponent(botonEliminarPromocion)
-                        .addComponent(jLabel23)
-                        .addComponent(comboNumeroMeses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panelPromocionesLayout.createSequentialGroup()
-                        .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel17)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(campoMontoSugerido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(botonReestablecerMonto)))
+                .addContainerGap(11, Short.MAX_VALUE))
         );
 
-        jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+        panelInfoPago.setForeground(java.awt.Color.red);
 
-        tablaDetallesPago.setBackground(new java.awt.Color(227, 126, 75));
-        tablaDetallesPago.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        tablaDetallesPago.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
-            },
-            new String [] {
-                "Concepto", "Monto"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tablaDetallesPago.setAutoscrolls(false);
-        tablaDetallesPago.setMaximumSize(new java.awt.Dimension(195, 160));
-        tablaDetallesPago.setMinimumSize(new java.awt.Dimension(195, 160));
-        tablaDetallesPago.setRowHeight(40);
-        tablaDetallesPago.getTableHeader().setReorderingAllowed(false);
-        jScrollPane2.setViewportView(tablaDetallesPago);
-        if (tablaDetallesPago.getColumnModel().getColumnCount() > 0) {
-            tablaDetallesPago.getColumnModel().getColumn(0).setResizable(false);
-            tablaDetallesPago.getColumnModel().getColumn(0).setPreferredWidth(120);
-            tablaDetallesPago.getColumnModel().getColumn(1).setResizable(false);
-        }
-
-        etiquetaPesos.setFont(new java.awt.Font("Segoe UI", 0, 80)); // NOI18N
+        etiquetaPesos.setFont(new java.awt.Font("Segoe UI", 0, 70)); // NOI18N
         etiquetaPesos.setForeground(new java.awt.Color(255, 51, 51));
         etiquetaPesos.setText("$");
 
-        etiquetaImporte.setFont(new java.awt.Font("Segoe UI", 0, 80)); // NOI18N
+        etiquetaImporte.setFont(new java.awt.Font("Segoe UI", 0, 70)); // NOI18N
         etiquetaImporte.setForeground(new java.awt.Color(255, 51, 51));
         etiquetaImporte.setText("0.00");
 
         etiquetaPromocionAplicada.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         etiquetaPromocionAplicada.setForeground(new java.awt.Color(255, 51, 51));
         etiquetaPromocionAplicada.setText("Promocion Aplicada!!");
-
-        javax.swing.GroupLayout panelImportesLayout = new javax.swing.GroupLayout(panelImportes);
-        panelImportes.setLayout(panelImportesLayout);
-        panelImportesLayout.setHorizontalGroup(
-            panelImportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelImportesLayout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addComponent(etiquetaPesos)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(etiquetaImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(16, 16, 16))
-            .addGroup(panelImportesLayout.createSequentialGroup()
-                .addGap(65, 65, 65)
-                .addComponent(etiquetaPromocionAplicada)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        panelImportesLayout.setVerticalGroup(
-            panelImportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelImportesLayout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addGroup(panelImportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(etiquetaPesos, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(etiquetaImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(etiquetaPromocionAplicada)
-                .addContainerGap())
-        );
-
-        jLabel20.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel20.setText("Seleccione descuento:");
-
-        comboTipoDescuento.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-
-        jLabel18.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel18.setText("Ingrese monto descuento:");
-
-        campoMontoDescuento.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-
-        jLabel19.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel19.setText("Motivo Descuento:");
-
-        campoMotivoDescuento.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-
-        jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel15.setText("Descuento aplicado:");
-
-        campoDescuentoAplicado.setEditable(false);
-        campoDescuentoAplicado.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        campoDescuentoAplicado.setEnabled(false);
-
-        botonAplicarDescuento.setBackground(new java.awt.Color(227, 126, 75));
-        botonAplicarDescuento.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        botonAplicarDescuento.setForeground(new java.awt.Color(255, 255, 255));
-        botonAplicarDescuento.setText("Aplicar Descuento");
-
-        botonEliminarDescuento.setBackground(java.awt.Color.red);
-        botonEliminarDescuento.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        botonEliminarDescuento.setForeground(new java.awt.Color(255, 255, 255));
-        botonEliminarDescuento.setText("EliminarDescuento");
 
         botonRegresar.setBackground(new java.awt.Color(255, 51, 0));
         botonRegresar.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -1408,26 +1417,109 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         botonCobrar.setForeground(new java.awt.Color(255, 255, 255));
         botonCobrar.setText("Cobrar");
 
-        javax.swing.GroupLayout panelBotonesLayout = new javax.swing.GroupLayout(panelBotones);
-        panelBotones.setLayout(panelBotonesLayout);
-        panelBotonesLayout.setHorizontalGroup(
-            panelBotonesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelBotonesLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(botonCobrar, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(botonRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(48, Short.MAX_VALUE))
+        javax.swing.GroupLayout panelImportesLayout = new javax.swing.GroupLayout(panelImportes);
+        panelImportes.setLayout(panelImportesLayout);
+        panelImportesLayout.setHorizontalGroup(
+            panelImportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelImportesLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelImportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(panelImportesLayout.createSequentialGroup()
+                        .addComponent(etiquetaPromocionAplicada)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(etiquetaPesos)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(etiquetaImporte, javax.swing.GroupLayout.DEFAULT_SIZE, 223, Short.MAX_VALUE))
+                    .addGroup(panelImportesLayout.createSequentialGroup()
+                        .addComponent(botonCobrar, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(botonRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(12, 12, 12))
         );
-        panelBotonesLayout.setVerticalGroup(
-            panelBotonesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelBotonesLayout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addGroup(panelBotonesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(botonCobrar, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botonRegresar))
-                .addContainerGap(19, Short.MAX_VALUE))
+        panelImportesLayout.setVerticalGroup(
+            panelImportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelImportesLayout.createSequentialGroup()
+                .addGroup(panelImportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelImportesLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(panelImportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(etiquetaImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(etiquetaPesos, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(panelImportesLayout.createSequentialGroup()
+                        .addGap(22, 22, 22)
+                        .addComponent(etiquetaPromocionAplicada)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panelImportesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(botonRegresar)
+                    .addComponent(botonCobrar, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        jLabel28.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel28.setForeground(new java.awt.Color(255, 51, 51));
+        jLabel28.setText("Ingrese Información del Pago");
+
+        jLabel27.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel27.setForeground(java.awt.Color.red);
+        jLabel27.setText("Monto:");
+
+        campoMonto.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        campoMonto.setText("0.0");
+
+        jLabel23.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel23.setForeground(java.awt.Color.red);
+        jLabel23.setText("Mes Próximo Pago:");
+
+        comboMeses.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jLabel26.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel26.setForeground(java.awt.Color.red);
+        jLabel26.setText("Año Próximo Pago:");
+
+        comboAnios.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        comboAnios.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboAniosActionPerformed(evt);
+            }
+        });
+
+        jLabel29.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel29.setForeground(java.awt.Color.red);
+        jLabel29.setText("Observaciones:");
+
+        campoObservaciones.setColumns(20);
+        campoObservaciones.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        campoObservaciones.setLineWrap(true);
+        campoObservaciones.setRows(5);
+        jScrollPane3.setViewportView(campoObservaciones);
+
+        etiquetaDescPago1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        etiquetaDescPago1.setForeground(java.awt.Color.red);
+
+        etiquetaDescPago2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        etiquetaDescPago2.setForeground(java.awt.Color.red);
+
+        etiquetaDescPago3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        etiquetaDescPago3.setForeground(java.awt.Color.red);
+
+        etiquetaDescPago4.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        etiquetaDescPago4.setForeground(java.awt.Color.red);
+        etiquetaDescPago4.setText(">> Recargo por Pago Tardío");
+
+        botonCalculaMonto.setBackground(new java.awt.Color(227, 126, 75));
+        botonCalculaMonto.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        botonCalculaMonto.setForeground(new java.awt.Color(255, 255, 255));
+        botonCalculaMonto.setText("Calcular Monto Pago:");
+
+        jLabel20.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel20.setText("Seleccione descuento:");
+
+        comboTipoDescuento.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jLabel19.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel19.setText("Motivo Descuento:");
+
+        campoMotivoDescuento.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout panelDescuentosLayout = new javax.swing.GroupLayout(panelDescuentos);
         panelDescuentos.setLayout(panelDescuentosLayout);
@@ -1435,76 +1527,105 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelDescuentosLayout.createSequentialGroup()
                 .addGap(12, 12, 12)
-                .addGroup(panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel20)
-                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jLabel20)
                 .addGap(18, 18, 18)
-                .addGroup(panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelDescuentosLayout.createSequentialGroup()
-                        .addComponent(comboTipoDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel18)
-                        .addGap(18, 18, 18)
-                        .addComponent(campoMontoDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(campoDescuentoAplicado, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 667, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(campoMotivoDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, 667, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(botonAplicarDescuento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botonEliminarDescuento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(48, 48, 48)
-                .addComponent(panelBotones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(57, Short.MAX_VALUE))
+                .addComponent(comboTipoDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(campoMotivoDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, 667, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(313, 313, 313))
         );
         panelDescuentosLayout.setVerticalGroup(
             panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelDescuentosLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(comboTipoDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel18)
-                    .addComponent(campoMontoDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel20))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel19)
-                    .addComponent(campoMotivoDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botonAplicarDescuento))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel15)
-                    .addComponent(campoDescuentoAplicado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botonEliminarDescuento)))
-            .addGroup(panelDescuentosLayout.createSequentialGroup()
-                .addComponent(panelBotones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGroup(panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelDescuentosLayout.createSequentialGroup()
+                        .addComponent(jLabel20)
+                        .addGap(6, 6, 6))
+                    .addGroup(panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(comboTipoDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel19)
+                            .addComponent(campoMotivoDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(51, 51, 51))
         );
 
         javax.swing.GroupLayout panelInfoPagoLayout = new javax.swing.GroupLayout(panelInfoPago);
         panelInfoPago.setLayout(panelInfoPagoLayout);
         panelInfoPagoLayout.setHorizontalGroup(
             panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelInfoPagoLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1023, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31)
+            .addGroup(panelInfoPagoLayout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addGroup(panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel28)
+                        .addGroup(panelInfoPagoLayout.createSequentialGroup()
+                            .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(campoMonto, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel23)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(comboMeses, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel26)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(comboAnios, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(panelInfoPagoLayout.createSequentialGroup()
+                        .addComponent(jLabel29)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 545, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(botonCalculaMonto))
+                .addGap(21, 21, 21)
+                .addGroup(panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(etiquetaDescPago1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 376, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(etiquetaDescPago3, javax.swing.GroupLayout.PREFERRED_SIZE, 376, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(etiquetaDescPago4, javax.swing.GroupLayout.PREFERRED_SIZE, 376, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(etiquetaDescPago2, javax.swing.GroupLayout.PREFERRED_SIZE, 376, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(panelImportes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 6, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelInfoPagoLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(panelDescuentos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap())
         );
         panelInfoPagoLayout.setVerticalGroup(
             panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelInfoPagoLayout.createSequentialGroup()
-                .addGroup(panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(panelImportes, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE))
+                .addGroup(panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelInfoPagoLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel23)
+                            .addComponent(comboAnios, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel26)
+                            .addComponent(comboMeses)
+                            .addComponent(campoMonto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel27))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(etiquetaDescPago1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(botonCalculaMonto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelInfoPagoLayout.createSequentialGroup()
+                                .addComponent(etiquetaDescPago2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(etiquetaDescPago3, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(etiquetaDescPago4))
+                            .addComponent(jLabel29)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(panelImportes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelDescuentos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 40, Short.MAX_VALUE))
+                .addComponent(panelDescuentos, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -1513,15 +1634,15 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelCabecero, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelBusqueda, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1500, Short.MAX_VALUE)
+                    .addComponent(panelCabecero, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1596, Short.MAX_VALUE)
+                    .addComponent(panelBusqueda, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1596, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(panelInfoPago, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGap(16, 16, 16)
-                                .addComponent(panelInfoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(panelInfoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(panelInfoPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -1530,14 +1651,14 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(panelCabecero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 332, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
+                .addComponent(panelBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelInfoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelInfoPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(51, 51, 51))
+                .addContainerGap(187, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -1545,32 +1666,51 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_botonEliminarPromocionActionPerformed
 
+    private void comboAniosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboAniosActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboAniosActionPerformed
+
+    private void campoMontoSugeridoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoMontoSugeridoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_campoMontoSugeridoActionPerformed
+
+    private void campoContratoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoContratoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_campoContratoActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton botonAplicarDescuento;
     private javax.swing.JButton botonAplicarPromocion;
     private javax.swing.JButton botonBusqueda;
+    private javax.swing.JButton botonCalculaMonto;
     private javax.swing.JButton botonCobrar;
-    private javax.swing.JButton botonEliminarDescuento;
     private javax.swing.JButton botonEliminarPromocion;
+    private javax.swing.JButton botonReestablecerMonto;
     private javax.swing.JButton botonRegresar;
     private javax.swing.JTextField campoBusqueda;
     private javax.swing.JTextField campoContrato;
-    private javax.swing.JTextField campoDescuentoAplicado;
+    private javax.swing.JTextField campoCostoServicio;
     private javax.swing.JTextField campoDomicilio;
     private javax.swing.JTextField campoEstatus;
     private javax.swing.JTextField campoFechaPago;
     private javax.swing.JTextField campoFolioContrato;
-    private javax.swing.JTextField campoMontoDescuento;
+    private javax.swing.JTextField campoMonto;
+    private javax.swing.JTextField campoMontoSugerido;
     private javax.swing.JTextField campoMotivoDescuento;
+    private javax.swing.JTextArea campoObservaciones;
     private javax.swing.JTextField campoServicioContratado;
     private javax.swing.JTextField campoSuscriptor;
     private javax.swing.JTextField campoTelefono;
+    private javax.swing.JComboBox<Integer> comboAnios;
     private javax.swing.JComboBox<EstatusSuscriptorEntity> comboEstatusSuscriptor;
-    private javax.swing.JComboBox<Integer> comboNumeroMeses;
+    private javax.swing.JComboBox<Mes> comboMeses;
     private javax.swing.JComboBox<PromocionEntity> comboPromociones;
     private javax.swing.JComboBox<TipoDescuentoEntity> comboTipoDescuento;
     private javax.swing.JComboBox<TipoBusquedaCobro> comboTiposBusqueda;
+    private javax.swing.JLabel etiquetaDescPago1;
+    private javax.swing.JLabel etiquetaDescPago2;
+    private javax.swing.JLabel etiquetaDescPago3;
+    private javax.swing.JLabel etiquetaDescPago4;
     private javax.swing.JLabel etiquetaImporte;
     private javax.swing.JLabel etiquetaLogo;
     private javax.swing.JLabel etiquetaNumeroCaja;
@@ -1587,7 +1727,6 @@ public class CobroServicioPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
@@ -1595,6 +1734,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1603,8 +1747,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JPanel panelBotones;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JPanel panelBusqueda;
     private javax.swing.JPanel panelCabecero;
     private javax.swing.JPanel panelDescuentos;
@@ -1612,7 +1755,6 @@ public class CobroServicioPanel extends javax.swing.JPanel {
     private javax.swing.JPanel panelInfoContrato;
     private javax.swing.JPanel panelInfoPago;
     private javax.swing.JPanel panelPromociones;
-    private javax.swing.JTable tablaDetallesPago;
     private javax.swing.JTable tablaSuscriptores;
     // End of variables declaration//GEN-END:variables
 }

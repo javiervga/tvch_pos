@@ -173,7 +173,7 @@ public class TransaccionDao {
 
             StringBuilder query = new StringBuilder();
             
-            query.append("SELECT id_transaccion , id_apertura_caja, id_contrato, monto, fecha_transaccion FROM transacciones WHERE id_apertura_caja =");
+            query.append("SELECT id_transaccion , id_apertura_caja, id_contrato, monto, observaciones, periodo, fecha_transaccion FROM transacciones WHERE id_apertura_caja =");
             query.append(aperturaCajaId);
             
             ResultSet rs = stmt.executeQuery(query.toString());
@@ -183,6 +183,8 @@ public class TransaccionDao {
                 entity.setContratoId(rs.getLong("id_contrato"));
                 entity.setFechaTransaccion(String.valueOf(rs.getDate("fecha_transaccion")));
                 entity.setMonto(rs.getDouble("monto"));
+                entity.setObservaciones(rs.getString("observaciones"));
+                entity.setPeriodo(rs.getString("periodo"));
                 entity.setTransaccionId(rs.getLong("id_transaccion"));
                 list.add(entity);
             }
@@ -231,13 +233,15 @@ public class TransaccionDao {
             DbConfig dbConfig = DbConfig.getdDbConfig();
             conn = dbConfig.getConnection();
             
-            String query = "insert into transacciones (id_transaccion ,id_apertura_caja, id_contrato, monto, fecha_transaccion) values(?,?,?,?,?)";
+            String query = "insert into transacciones (id_transaccion ,id_apertura_caja, id_contrato, monto, observaciones, periodo, fecha_transaccion) values(?,?,?,?,?,?,?)";
             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setLong(1, entity.getTransaccionId());
             ps.setLong(2, entity.getAperturaCajaId());
             ps.setLong(3, entity.getContratoId());
             ps.setDouble(4, entity.getMonto());
-            ps.setString(5, entity.getFechaTransaccion());
+            ps.setString(5, entity.getObservaciones());
+            ps.setString(6, entity.getPeriodo());
+            ps.setString(7, entity.getFechaTransaccion());
             ps.executeUpdate();
             
             ResultSet rs = ps.getGeneratedKeys();
