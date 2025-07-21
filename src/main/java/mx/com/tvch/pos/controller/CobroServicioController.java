@@ -161,7 +161,9 @@ public class CobroServicioController {
             transaccionEntity.setFechaTransaccion(util.obtenerFechaFormatoMysql());
             transaccionEntity.setMonto(cobro.getMontoTotal());//monto a pagar ya con descuentos y promociones aplicadas si existieran
             transaccionEntity.setTransaccionId(util.generarIdLocal());
-            transaccionEntity.setObservaciones(cobro.getObservaciones());
+            transaccionEntity.setObservaciones(cobro.getObservaciones().toUpperCase());
+            transaccionEntity.setPeriodo(cobro.getConcepto().replace("Pago", "").toUpperCase());
+            transaccionEntity.setNuevaFechaCorte(util.convertirDateTime2String(cobro.getFechaProximoPago(), Constantes.FORMATO_FECHA_MYSQL));
             
             transaccionId = transaccionEntity.getTransaccionId();
             transaccionDao.registrarTransaccion(transaccionEntity);

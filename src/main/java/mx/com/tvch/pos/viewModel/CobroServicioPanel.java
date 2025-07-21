@@ -97,7 +97,6 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         cargarComboTiposBusqueda();
         cargarComboEstatusSuscriptor();
         cargarComboMeses();
-        cargarComboAnios();
     }
 
     private void crearEventos() {
@@ -150,7 +149,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                     }else{
                         comboMeses.setSelectedItem(mesGuardado);
                         comboAnios.setSelectedItem(anioGuardado);
-                        JOptionPane.showMessageDialog(cobroPanel, "La fecha de próximo pago debe ser de al menos un mes posterior al mes en curso. Por favor seleccione una fecha válida", "", JOptionPane.WARNING_MESSAGE);  
+                        JOptionPane.showMessageDialog(cobroPanel, "La fecha de próximo pago debe ser de al menos un mes posterior al mes en curso \n. Por favor seleccione una fecha válida", "", JOptionPane.WARNING_MESSAGE);  
                     }
                 }
             }
@@ -163,173 +162,185 @@ public class CobroServicioPanel extends javax.swing.JPanel {
 
                 if (suscriptorSeleccionado != null && cobroCapturado != null) {
                     
-                    try {
-                        
-                        //Primero realizar las validaciones necesarias
-                        
-                        //que existan observaciones
-                        if(campoObservaciones.getText().isEmpty())
-                            throw new TvchException("Por favor, ingrese sus observaciones.");
-                        
-                        //que las observaciones no pasen de los 200 caracteres
-                        if(campoObservaciones.getText().length() > 200){
-                            throw new TvchException("Por favor, ajuste sus observaciones a un máximo de 200 caracteres.");
-                        }
-                        
-                        //que el monto capturado se aun numero valido
-                        Double montoPorCobrar = null;
-                        try{
-                            montoPorCobrar = Double.parseDouble(campoMonto.getText());
-                        }catch(NumberFormatException nfe){
-                            throw new TvchException("Por favor, ingrese un monto a cobrar válido");
-                        }
-                        
-                        //que el monto no sea menor a cero
-                        if(montoPorCobrar < 0)
-                            throw new TvchException("El monto a cobrar no puede ser menor a cero");
-                        
-                        //que haya una promocion capturada, en ese caso se obtienen los datos 
-                        if(promocionSeleccionada != null){
-                            PromocionCobro promocion = new PromocionCobro();
-                            promocion.setMesesGratis(promocionSeleccionada.getMesesGratis());
-                            promocion.setCostoPromocion(promocionSeleccionada.getCostoPromocion());
-                            promocion.setPromocionId(promocionSeleccionada.getPromocionId());
-                            cobroCapturado.setPromocion(promocion);
-                            //cobroCapturado.setMontoTotal(promocionSeleccionada.getCostoPromocion());
-                        }
-                        
-                        //que en caso de que no exista promo y el monto a cobrar sea menor que el sugerido se 
-                        //hayan capturado los datos del descuento 
-                        //aqui mismo se obtienen los datos del descuento
-                        if(montoPorCobrar < cobroCapturado.getMontoSugerido() && promocionSeleccionada == null){
-                            if(campoMotivoDescuento.getText().isEmpty()){
-                                throw new TvchException("El monto capturado para ser cobrado es menor al sugerido por el sistema. \n"
-                                    + "Por favor capture Tipo y Motivo de descuento antes de realizar el cobro");
-                            }else{
-                                if(campoMotivoDescuento.getText().length() > 100){
-                                    throw new TvchException("Por favor, ajuste su motivo de descuento a un m+aximo de 100 caracteres.");
+                    Mes mesSeleccionado = (Mes) comboMeses.getModel().getSelectedItem();
+                    int anioSeleccionado = (int) comboAnios.getModel().getSelectedItem(); 
+                    if(util.esFechaPagoValida(
+                            suscriptorSeleccionado, mesSeleccionado, anioSeleccionado)){
+                    
+                        try {
+
+                            //Primero realizar las validaciones necesarias
+
+                            //que existan observaciones
+                            if(campoObservaciones.getText().isEmpty())
+                                throw new TvchException("Por favor, ingrese sus observaciones.");
+
+                            //que las observaciones no pasen de los 200 caracteres
+                            if(campoObservaciones.getText().length() > 200){
+                                throw new TvchException("Por favor, ajuste sus observaciones a un máximo de 200 caracteres.");
+                            }
+
+                            //que el monto capturado se aun numero valido
+                            Double montoPorCobrar = null;
+                            try{
+                                montoPorCobrar = Double.parseDouble(campoMonto.getText());
+                            }catch(NumberFormatException nfe){
+                                throw new TvchException("Por favor, ingrese un monto a cobrar válido");
+                            }
+
+                            //que el monto no sea menor a cero
+                            if(montoPorCobrar < 0)
+                                throw new TvchException("El monto a cobrar no puede ser menor a cero");
+
+                            //que haya una promocion capturada, en ese caso se obtienen los datos 
+                            if(promocionSeleccionada != null){
+                                PromocionCobro promocion = new PromocionCobro();
+                                promocion.setMesesGratis(promocionSeleccionada.getMesesGratis());
+                                promocion.setCostoPromocion(promocionSeleccionada.getCostoPromocion());
+                                promocion.setPromocionId(promocionSeleccionada.getPromocionId());
+                                promocion.setDescripcion(promocionSeleccionada.getDescripcion());
+                                cobroCapturado.setPromocion(promocion);
+                                //cobroCapturado.setMontoTotal(promocionSeleccionada.getCostoPromocion());
+                            }
+
+                            //que en caso de que no exista promo y el monto a cobrar sea menor que el sugerido se 
+                            //hayan capturado los datos del descuento 
+                            //aqui mismo se obtienen los datos del descuento
+                            if(montoPorCobrar < cobroCapturado.getMontoSugerido() && promocionSeleccionada == null){
+                                if(campoMotivoDescuento.getText().isEmpty()){
+                                    throw new TvchException("El monto capturado para ser cobrado es menor al sugerido por el sistema. \n"
+                                        + "Por favor capture Tipo y Motivo de descuento antes de realizar el cobro");
                                 }else{
-                                    double montoDescuento = cobroCapturado.getMontoSugerido() - montoPorCobrar;
-                                    TipoDescuentoEntity tipoDescuento = (TipoDescuentoEntity) comboTipoDescuento.getSelectedItem();
-                                    DescuentoCobro descuento = new DescuentoCobro();
-                                    descuento.setMontoDescuento(montoDescuento);
-                                    descuento.setMotivoDescuento(campoMotivoDescuento.getText());
-                                    descuento.setTipoDescuentoId(tipoDescuento.getIdTipoDescuento());
-                                    cobroCapturado.setDescuento(descuento);
-                                }             
-                            }                          
-                        }
-                        
-                        //despues de las validaciones se obtienen el resto de los campos necesarios para hacer el pago
-                        //cobroCapturado.setMontoTotal(montoPorCobrar);
-                        //if(promocionSeleccionada != null)
-                        //    cobroCapturado.setMontoTotal(promocionSeleccionada.getCostoPromocion());
-                        //else
-                        cobroCapturado.setMontoTotal(montoPorCobrar);
-                        cobroCapturado.setCadenaMonto("$ ".concat(String.valueOf(montoPorCobrar)));
-                        cobroCapturado.setObservaciones(campoObservaciones.getText());
-                        
-                        Long transaccionId = null;
-                        boolean seDebeGenerarOrden = false;
-                        boolean seCanceloPago = false;
-                        if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
-                            
-                            seDebeGenerarOrden = true;
-                            StringBuilder sb = new StringBuilder();
-                            sb.append("El contrato que esta cobrando se en cuentra En Corte:\n");
-                            sb.append("¿Desea generar Orden de Reconexión? \n");
-                            int input = JOptionPane.showConfirmDialog(null, sb.toString());
-                            if (input == 0) {
+                                    if(campoMotivoDescuento.getText().length() > 100){
+                                        throw new TvchException("Por favor, ajuste su motivo de descuento a un m+aximo de 100 caracteres.");
+                                    }else{
+                                        double montoDescuento = cobroCapturado.getMontoSugerido() - montoPorCobrar;
+                                        TipoDescuentoEntity tipoDescuento = (TipoDescuentoEntity) comboTipoDescuento.getSelectedItem();
+                                        DescuentoCobro descuento = new DescuentoCobro();
+                                        descuento.setMontoDescuento(montoDescuento);
+                                        descuento.setMotivoDescuento(campoMotivoDescuento.getText());
+                                        descuento.setTipoDescuentoId(tipoDescuento.getIdTipoDescuento());
+                                        cobroCapturado.setDescuento(descuento);
+                                    }             
+                                }                          
+                            }
+
+                            //despues de las validaciones se obtienen el resto de los campos necesarios para hacer el pago
+                            //cobroCapturado.setMontoTotal(montoPorCobrar);
+                            //if(promocionSeleccionada != null)
+                            //    cobroCapturado.setMontoTotal(promocionSeleccionada.getCostoPromocion());
+                            //else
+                            cobroCapturado.setMontoTotal(montoPorCobrar);
+                            cobroCapturado.setCadenaMonto("$ ".concat(String.valueOf(montoPorCobrar)));
+                            cobroCapturado.setObservaciones(campoObservaciones.getText());
+
+                            Long transaccionId = null;
+                            boolean seDebeGenerarOrden = false;
+                            boolean seCanceloPago = false;
+                            if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
+
                                 seDebeGenerarOrden = true;
-                            }else if (input == 1){
-                                seDebeGenerarOrden = false;
-                            }else{
-                                seCanceloPago = true;
-                            }
-                            
-                        }
-                        
-                        if(!seCanceloPago){
-                            
-                            boolean seAceptoPago = false;
-                            StringBuilder sb = new StringBuilder();
-                            sb.append("Se realizará el cobro al contrato: ").append(suscriptorSeleccionado.getFolioContrato());
-                            sb.append(" por un monto de ").append(cobroCapturado.getCadenaMonto());
-                            sb.append("\n¿Los datos son correctos? \n");
-                            int input = JOptionPane.showConfirmDialog(null, sb.toString());
-                            if (input == 0) {
-                                seAceptoPago = true;
-                            }
-                            
-                            if(seAceptoPago){
-                                
-                                transaccionId = controller.cobrarServicio(suscriptorSeleccionado, cobroCapturado);
-                                System.out.println("transaccionId: " + transaccionId);
-                                
-                                try {
-                                    impresora.imprimirTicketServicio(transaccionId, cobroCapturado, suscriptorSeleccionado, sesion.getSucursal()/*, numeroMeses*/);
-                                } catch (Exception ex) {
-                                    StringWriter sw = new StringWriter();
-                                    PrintWriter pw = new PrintWriter(sw);
-                                    ex.printStackTrace(pw);
-                                    logger.error("Fallo al imprimir ticket de transaccion: \n" + sw.toString());
-                                    JOptionPane.showMessageDialog(cobroPanel, "El cobro se realizó correctamente pero ocurrió un error al imprimir su ticket. Si desea una reimpresión vaya a sección de reimpresiones", "", JOptionPane.WARNING_MESSAGE);
+                                StringBuilder sb = new StringBuilder();
+                                sb.append("El contrato que esta cobrando se en cuentra En Corte:\n");
+                                sb.append("¿Desea generar Orden de Reconexión? \n");
+                                int input = JOptionPane.showConfirmDialog(null, sb.toString());
+                                if (input == 0) {
+                                    seDebeGenerarOrden = true;
+                                }else if (input == 1){
+                                    seDebeGenerarOrden = false;
+                                }else{
+                                    seCanceloPago = true;
                                 }
-                                
-                                if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
-                                    try{
-                                        //actualizar en local el estatus del contrato y en server el estatus y la orden en caso de requerirse
-                                        Response<UpdateContratoResponse> response = controller.actualizarContratoReconexion(suscriptorSeleccionado, seDebeGenerarOrden);
-                                        switch (response.getCode()) {
-                                            case Constantes.CODIGO_HTTP_OK:
-                                                if(seDebeGenerarOrden)
-                                                    JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus RECONEXION, \n "
-                                                        + "Su orden de reconexión se generó correctamente, por favor verifique en su portal web", "", JOptionPane.INFORMATION_MESSAGE);
-                                                else
-                                                    JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus ACTIVO, por favor verifique", "", JOptionPane.INFORMATION_MESSAGE);
-                                                break;
-                                            case Constantes.CODIGO_HTTP_OK_WARNING:
-                                                JOptionPane.showMessageDialog(cobroPanel, response.getMessage(), "", JOptionPane.WARNING_MESSAGE);
-                                                break;
-                                            default:
-                                                if(seDebeGenerarOrden){
-                                                    JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación con el servidor al actualizar su contrato y generar su orden en línea,\n"
-                                                        + "No fue posible validar que se haya generado la orden de reconexión solicitada, por favor revise, de ser necesario favor de generarla manualmente en el portal web", null, JOptionPane.WARNING_MESSAGE);
-                                                }else{
-                                                    JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación al actualizar su contrato en el servidor en línea, "
-                                                        + "Su pago se sincronizará posteriormente y el contrato pasará a estatus RECONEXION, de ser necesario actualice a Activo en el portal web", null, JOptionPane.WARNING_MESSAGE);
-                                                }   
-                                                break;
-                                        }
-                                    }catch(Exception ex){
-                                        if(seDebeGenerarOrden){
-                                            JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación con el servidor al actualizar su contrato y generar su orden en línea,\n"
-                                                + "No fue posible validar que se haya generado la orden de reconexión solicitada, por favor revise, de ser necesario favor de generarla manualmente en el portal web", null, JOptionPane.WARNING_MESSAGE);
-                                        }else{
-                                            JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación al actualizar su contrato en el servidor en línea, "
-                                                + "Su pago se sincronizará posteriormente y el contrato pasará a estatus RECONEXION, de ser necesario actualice a Activo en el portal web", null, JOptionPane.WARNING_MESSAGE);
+
+                            }
+
+                            if(!seCanceloPago){
+
+                                boolean seAceptoPago = false;
+                                StringBuilder sb = new StringBuilder();
+                                sb.append("Se realizará el cobro al contrato: ").append(suscriptorSeleccionado.getFolioContrato());
+                                sb.append(" por un monto de ").append(cobroCapturado.getCadenaMonto());
+                                sb.append("\n¿Los datos son correctos? \n");
+                                int input = JOptionPane.showConfirmDialog(null, sb.toString());
+                                if (input == 0) {
+                                    seAceptoPago = true;
+                                }
+
+                                if(seAceptoPago){
+
+                                    transaccionId = controller.cobrarServicio(suscriptorSeleccionado, cobroCapturado);
+                                    System.out.println("transaccionId: " + transaccionId);
+
+                                    try {
+                                        impresora.imprimirTicketServicio(transaccionId, cobroCapturado, suscriptorSeleccionado, sesion.getSucursal()/*, numeroMeses*/);
+                                    } catch (Exception ex) {
+                                        StringWriter sw = new StringWriter();
+                                        PrintWriter pw = new PrintWriter(sw);
+                                        ex.printStackTrace(pw);
+                                        logger.error("Fallo al imprimir ticket de transaccion: \n" + sw.toString());
+                                        JOptionPane.showMessageDialog(cobroPanel, "El cobro se realizó correctamente pero ocurrió un error al imprimir su ticket. Si desea una reimpresión vaya a sección de reimpresiones", "", JOptionPane.WARNING_MESSAGE);
+                                    }
+
+                                    if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
+                                        try{
+                                            //actualizar en local el estatus del contrato y en server el estatus y la orden en caso de requerirse
+                                            Response<UpdateContratoResponse> response = controller.actualizarContratoReconexion(suscriptorSeleccionado, seDebeGenerarOrden);
+                                            switch (response.getCode()) {
+                                                case Constantes.CODIGO_HTTP_OK:
+                                                    if(seDebeGenerarOrden)
+                                                        JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus RECONEXION, \n "
+                                                            + "Su orden de reconexión se generó correctamente, por favor verifique en su portal web", "", JOptionPane.INFORMATION_MESSAGE);
+                                                    else
+                                                        JOptionPane.showMessageDialog(cobroPanel, "El contrato se actualizo correctamente a estatus ACTIVO, por favor verifique", "", JOptionPane.INFORMATION_MESSAGE);
+                                                    break;
+                                                case Constantes.CODIGO_HTTP_OK_WARNING:
+                                                    JOptionPane.showMessageDialog(cobroPanel, response.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+                                                    break;
+                                                default:
+                                                    if(seDebeGenerarOrden){
+                                                        JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación con el servidor al actualizar su contrato y generar su orden en línea,\n"
+                                                            + "No fue posible validar que se haya generado la orden de reconexión solicitada, por favor revise, de ser necesario favor de generarla manualmente en el portal web", null, JOptionPane.WARNING_MESSAGE);
+                                                    }else{
+                                                        JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación al actualizar su contrato en el servidor en línea, "
+                                                            + "Su pago se sincronizará posteriormente y el contrato pasará a estatus RECONEXION, de ser necesario actualice a Activo en el portal web", null, JOptionPane.WARNING_MESSAGE);
+                                                    }   
+                                                    break;
+                                            }
+                                        }catch(Exception ex){
+                                            if(seDebeGenerarOrden){
+                                                JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación con el servidor al actualizar su contrato y generar su orden en línea,\n"
+                                                    + "No fue posible validar que se haya generado la orden de reconexión solicitada, por favor revise, de ser necesario favor de generarla manualmente en el portal web", null, JOptionPane.WARNING_MESSAGE);
+                                            }else{
+                                                JOptionPane.showMessageDialog(cobroPanel, "Su cobro fue realizado exitosamente, sin embargo ocurrió un error de comunicación al actualizar su contrato en el servidor en línea, "
+                                                    + "Su pago se sincronizará posteriormente y el contrato pasará a estatus RECONEXION, de ser necesario actualice a Activo en el portal web", null, JOptionPane.WARNING_MESSAGE);
+                                            }
                                         }
                                     }
+
+                                    limpiarPantalla();                              
+
                                 }
-                            
-                                limpiarPantalla();                              
-                                
+
                             }
-  
+
+                        } catch (TvchException ex) {
+                            StringWriter sw = new StringWriter();
+                            PrintWriter pw = new PrintWriter(sw);
+                            ex.printStackTrace(pw);
+                            logger.error("Error controlado al cobrar transaccion: \n" + sw.toString());
+                            JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
+                        }catch (Exception ex) {
+                            StringWriter sw = new StringWriter();
+                            PrintWriter pw = new PrintWriter(sw);
+                            ex.printStackTrace(pw);
+                            logger.error("Fallo al cobrar transaccion: \n" + sw.toString());
+                            JOptionPane.showMessageDialog(cobroPanel, "Ocurrió un error al realizar el cobro, por favor reintente. Si el problema persiste consulte a soporte.", "", JOptionPane.WARNING_MESSAGE);
                         }
-       
-                    } catch (TvchException ex) {
-                        StringWriter sw = new StringWriter();
-                        PrintWriter pw = new PrintWriter(sw);
-                        ex.printStackTrace(pw);
-                        logger.error("Error controlado al cobrar transaccion: \n" + sw.toString());
-                        JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
-                    }catch (Exception ex) {
-                        StringWriter sw = new StringWriter();
-                        PrintWriter pw = new PrintWriter(sw);
-                        ex.printStackTrace(pw);
-                        logger.error("Fallo al cobrar transaccion: \n" + sw.toString());
-                        JOptionPane.showMessageDialog(cobroPanel, "Ocurrió un error al realizar el cobro, por favor reintente. Si el problema persiste consulte a soporte.", "", JOptionPane.WARNING_MESSAGE);
+                    
+                    }else{
+                        comboMeses.setSelectedItem(mesGuardado);
+                        comboAnios.setSelectedItem(anioGuardado);
+                        JOptionPane.showMessageDialog(cobroPanel, "La fecha de próximo pago debe ser de al menos un mes posterior al mes en curso \n. Por favor seleccione una fecha válida", "", JOptionPane.WARNING_MESSAGE);  
                     }
                 }
 
@@ -351,6 +362,9 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                     campoMonto.setEnabled(true);
                     comboMeses.setEnabled(true);
                     comboAnios.setEnabled(true);
+                    comboTipoDescuento.setEnabled(true);
+                    campoMotivoDescuento.setEnabled(true);
+                    botonCalculaMonto.setEnabled(true);
                     JOptionPane.showMessageDialog(cobroPanel, "Promoción eliminada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
@@ -365,15 +379,24 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                     
                     if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_ACTIVO){               
                         PromocionEntity promocion = (PromocionEntity) comboPromociones.getModel().getSelectedItem();
-                        setCamposPagoPromocion(promocion);
-                        Mes mesSeleccionado = (Mes) comboMeses.getModel().getSelectedItem();
-                        int anioSeleccionado = (int) comboAnios.getModel().getSelectedItem();
-                        promocionSeleccionada = promocion;
-                        cargarDatosSuscriptor(promocion, mesSeleccionado, anioSeleccionado, suscriptorSeleccionado, false);
-                        JOptionPane.showMessageDialog(cobroPanel, "Promoción agregada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
-                        campoMonto.setEnabled(false);
-                        comboMeses.setEnabled(false);
-                        comboAnios.setEnabled(false);
+                        
+                        if(promocion.getMesesPagados() > 0){                  
+                            setCamposPagoPromocion(promocion);
+                            Mes mesSeleccionado = (Mes) comboMeses.getModel().getSelectedItem();
+                            int anioSeleccionado = (int) comboAnios.getModel().getSelectedItem();
+                            promocionSeleccionada = promocion;
+                            cargarDatosSuscriptor(promocion, mesSeleccionado, anioSeleccionado, suscriptorSeleccionado, false);
+                            JOptionPane.showMessageDialog(cobroPanel, "Promoción agregada exitosamente.", "", JOptionPane.INFORMATION_MESSAGE);
+                            campoMonto.setEnabled(false);
+                            comboMeses.setEnabled(false);
+                            comboAnios.setEnabled(false);
+                            comboTipoDescuento.setEnabled(false);
+                            campoMotivoDescuento.setEnabled(false);
+                            botonCalculaMonto.setEnabled(false);
+                        }else{
+                            JOptionPane.showMessageDialog(cobroPanel, "La promoción no está correctamente configurada. Por favor, contacte a soporte.", "", JOptionPane.WARNING_MESSAGE);
+                        }
+                            
                     }else{
                         JOptionPane.showMessageDialog(cobroPanel, "Sólo es posible aplicar promociones a contratos en estatus Activo.", "", JOptionPane.WARNING_MESSAGE);
                     }
@@ -395,7 +418,10 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                                     .filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
                                 ContratoxSuscriptorEntity entity = suscriptoresConsultaList
                                         .stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
+                                suscriptorSeleccionado = entity;
+                                cargarComboAnios(suscriptorSeleccionado.getFechaProximoPago());
                                 habilitarCamposPago();
+                                setCamposPagoDefault();
                                 Mes mesSeleccionado = (Mes) comboMeses.getModel().getSelectedItem();
                                 int anioSeleccionado = (int) comboAnios.getModel().getSelectedItem();
                                 cargarDatosSuscriptor(null, mesSeleccionado, anioSeleccionado, entity, true);
@@ -421,7 +447,10 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                                 .filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
                             ContratoxSuscriptorEntity entity = suscriptoresConsultaList
                                     .stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
+                            suscriptorSeleccionado = entity;
+                            cargarComboAnios(suscriptorSeleccionado.getFechaProximoPago());
                             habilitarCamposPago();
+                            setCamposPagoDefault();
                             Mes mesSeleccionado = (Mes) comboMeses.getModel().getSelectedItem();
                             int anioSeleccionado = (int) comboAnios.getModel().getSelectedItem();
                             cargarDatosSuscriptor(null, mesSeleccionado, anioSeleccionado, entity, true);
@@ -534,6 +563,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         etiquetaPromocionAplicada.setVisible(false);
         limpiarDatosSuscriptor();
         suscriptorSeleccionado = contratosuscriptor;
+        promocionSeleccionada = promocion;
         mesGuardado = mesSeleccionado;
         anioGuardado = anioSeleccionado;
         cobroCapturado = null;
@@ -577,7 +607,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         
         etiquetaDescPago1.setText("Usted está recibiendo el siguiente pago:");
         if(numeroMeses == 1){
-            etiquetaDescPago2.setText(util.obtenerDescripcionPagoUnMes());
+            etiquetaDescPago2.setText(util.obtenerDescripcionPagoUnMes(mesSeleccionado, anioSeleccionado));
         }else{
             etiquetaDescPago2.setText(util.obtenerDescripcionVariosMeses(mesPagado, anioPagado, suscriptorSeleccionado.getFechaProximoPago()));
         }
@@ -608,7 +638,8 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         domicilio.append(" ").append(suscriptorSeleccionado.getColonia());
         campoDomicilio.setText(domicilio.toString());
         campoTelefono.setText(suscriptorSeleccionado.getTelefono());
-        etiquetaDescPago3.setText("Meses a cobrar: ".concat(String.valueOf(numeroMeses)));
+        
+        
 
         if(seRefrescanPromociones){
             comboPromociones.removeAllItems();
@@ -644,8 +675,20 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             promo.setPromocionId(promocionSeleccionada.getPromocionId());
             promo.setDescripcion(promocionSeleccionada.getDescripcion());
             cobroCapturado.setPromocion(promo);
+            
+            if(promocionSeleccionada.getMesesGratis() > 0){
+                int mesesParaCobrarPromo = numeroMeses - promocionSeleccionada.getMesesGratis();
+                StringBuilder cadenaMesesPromo = new StringBuilder();
+                cadenaMesesPromo.append("Meses a Cobrar: ").append(mesesParaCobrarPromo).append("/");
+                cadenaMesesPromo.append("Meses Gratis: ").append(promocionSeleccionada.getMesesGratis());
+                etiquetaDescPago3.setText(cadenaMesesPromo.toString());
+            }else{
+                etiquetaDescPago3.setText("Meses a cobrar: ".concat(String.valueOf(numeroMeses)));
+            }
+  
         }else{
             cobroCapturado.setPromocion(null);
+            etiquetaDescPago3.setText("Meses a cobrar: ".concat(String.valueOf(numeroMeses)));
         }
         
         /*if(seDebeMostrarAdvertenciaPromocionNoAplicada){
@@ -689,12 +732,32 @@ public class CobroServicioPanel extends javax.swing.JPanel {
     }
 
     private void setCamposPagoDefault(){   
-        //posicionarse en el mes en curso
-        Calendar fechaEnCurso = Calendar.getInstance();
-        int mesEnCurso = fechaEnCurso.get(Calendar.MONTH);
-        comboMeses.setSelectedIndex(mesEnCurso+1);
-        comboAnios.setSelectedIndex(0);
+
+        Calendar fechaCorte = Calendar.getInstance();
+        fechaCorte.setTime(suscriptorSeleccionado.getFechaProximoPago());
         
+        Calendar fechaEnCurso = Calendar.getInstance();
+        fechaEnCurso.setTime(new Date());
+        
+        int mesCorte = fechaCorte.get(Calendar.MONTH);
+        int anioCorte = fechaCorte.get(Calendar.YEAR);
+        // si la fecha en curso es mayor a la actual quiere decir que el contrato lleva varios meses sin pagar
+        //se suman esos meses para obligar a que el pago se realice pro lo menos hasta el mes en curso
+        if(fechaEnCurso.after(fechaCorte)){
+            int diferenciaMeses = util.obtenerDiferenciaMeses(fechaCorte, fechaEnCurso);
+            fechaCorte.add(Calendar.MONTH, diferenciaMeses);
+            mesCorte = fechaCorte.get(Calendar.MONTH);
+            anioCorte = fechaCorte.get(Calendar.YEAR);
+        }
+
+        if(mesCorte < 11)
+            comboMeses.setSelectedIndex(mesCorte+1);
+        else{
+            comboMeses.setSelectedIndex(0);
+            anioCorte = anioCorte + 1;
+        }
+            
+        comboAnios.setSelectedItem(anioCorte);
         etiquetaPromocionAplicada.setVisible(false);
         
         etiquetaImporte.setText("0.00");
@@ -707,8 +770,8 @@ public class CobroServicioPanel extends javax.swing.JPanel {
     private void setCamposPagoPromocion(PromocionEntity promocion){   
         //posicionarse en el mes en curso
         Calendar fechaPromocion = Calendar.getInstance();
-        fechaPromocion.setTime(new Date());
-        //int mesEnCurso = fechaPromocion.get(Calendar.MONTH);
+        fechaPromocion.setTime(suscriptorSeleccionado.getFechaProximoPago());
+        //int mesCorte = fechaPromocion.get(Calendar.MONTH);
         int mesesPromo = promocion.getMesesPagados() + promocion.getMesesGratis();
         fechaPromocion.add(Calendar.MONTH, mesesPromo);
         int mesPromocion = fechaPromocion.get(Calendar.MONTH);
@@ -737,9 +800,9 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         comboAnios.setEnabled(true);
     }
     
-    private void cargarComboAnios(){
+    private void cargarComboAnios(Date fechaCorte){
         
-        List<Integer> anios = util.obtenerAniosPorMostrar();
+        List<Integer> anios = util.obtenerAniosPorMostrar(fechaCorte);
         anios.forEach(a -> comboAnios.addItem(a));
     }
 
@@ -836,7 +899,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         
         etiquetaDescPago4.setVisible(false);
 
-        setCamposPagoDefault();
+        //setCamposPagoDefault();
     }
     
     private void limpiarPantalla() {
@@ -851,17 +914,21 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         etiquetaImporte.setText("0.00");
         comboMeses.setSelectedIndex(0);
         comboMeses.setEnabled(true);
+        campoObservaciones.setText("");
+        campoMotivoDescuento.setText("");
+        campoMontoSugerido.setText("");
   
         etiquetaDescPago1.setText("");
         etiquetaDescPago2.setText("");
         etiquetaDescPago3.setText("");
         etiquetaDescPago4.setVisible(false);
         
-        setCamposPagoDefault();
     }
     
     private void limpiarDatosSuscriptor() {
         suscriptorSeleccionado = null;
+        cobroCapturado = null;
+        promocionSeleccionada = null;
         campoSuscriptor.setText("");
         campoContrato.setText("");
         campoFolioContrato.setText("");
@@ -870,13 +937,15 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         campoServicioContratado.setText("");
         campoDomicilio.setText("");
         campoTelefono.setText("");
+        campoCostoServicio.setText("");
         etiquetaImporte.setText("0.00");
         etiquetaPromocionAplicada.setVisible(false);
         etiquetaDescPago1.setText("");
         etiquetaDescPago2.setText("");
         etiquetaDescPago3.setText("");
         etiquetaDescPago4.setVisible(false);
-        
+        comboTipoDescuento.setEnabled(true);
+        campoMotivoDescuento.setEnabled(true);
     }
 
     /**
@@ -1381,15 +1450,15 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             .addGroup(panelPromocionesLayout.createSequentialGroup()
                 .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel17)
+                .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(comboPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(botonAplicarPromocion)
                         .addComponent(botonEliminarPromocion)
                         .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(campoMontoSugerido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(botonReestablecerMonto)))
+                        .addComponent(botonReestablecerMonto))
+                    .addComponent(jLabel17))
                 .addContainerGap(11, Short.MAX_VALUE))
         );
 
@@ -1541,14 +1610,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             .addGroup(panelDescuentosLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelDescuentosLayout.createSequentialGroup()
-                        .addComponent(jLabel20)
-                        .addGap(6, 6, 6))
+                    .addComponent(jLabel20)
                     .addGroup(panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(comboTipoDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(panelDescuentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel19)
-                            .addComponent(campoMotivoDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(jLabel19)
+                        .addComponent(campoMotivoDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(comboTipoDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(51, 51, 51))
         );
 

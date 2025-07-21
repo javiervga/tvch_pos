@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -53,6 +54,24 @@ public class Utilerias {
         meses.add(new Mes(11,"NOVIEMBRE"));
         meses.add(new Mes(12,"DICIEMBRE"));
     }
+    
+    /**
+     * 
+     * @param fechaCorte
+     * @param fechaEnCurso
+     * @return 
+     */
+    public Integer obtenerDiferenciaMeses(Calendar fechaCorte, Calendar fechaEnCurso) {
+        LocalDate fechaInicio = LocalDate
+                .of(fechaCorte.get(Calendar.YEAR), fechaCorte.get(Calendar.MONTH), fechaCorte.get(Calendar.DAY_OF_MONTH));
+        LocalDate fechaFin = LocalDate
+                .of(fechaEnCurso.get(Calendar.YEAR), fechaEnCurso.get(Calendar.MONTH), fechaEnCurso.get(Calendar.DAY_OF_MONTH));
+
+        Period periodo = Period.between(fechaInicio, fechaFin);
+        return periodo.getMonths();
+
+    }
+
     
     public Date obtenerFechaPago(Mes mesSeleccionado, int anioSeleccionado){
         
@@ -151,16 +170,16 @@ public class Utilerias {
         
     }
     
-    public String obtenerDescripcionPagoUnMes(){
+    public String obtenerDescripcionPagoUnMes(Mes mesSeleccionado, int anioSeleccionado){
         
-        Date fecha = new Date();
-        Calendar fechaEnCurso = Calendar.getInstance();
-        fechaEnCurso.setTime(fecha);
-        int mesEnCurso = fechaEnCurso.get(Calendar.MONTH)+1;
-        Mes mes = meses.stream().filter(m -> m.getNumero() == mesEnCurso).findFirst().get();
+        //si el mes es enero, se resta un año
+        if(mesSeleccionado.getNumero() == 1){
+            anioSeleccionado = anioSeleccionado -1;
+        }
         
         StringBuilder desc = new StringBuilder();
-        desc.append(">>").append(mes.getNombre()).append(" ").append(fechaEnCurso.get(Calendar.YEAR));
+        Mes mesPagado = obtenerMesAnterior(mesSeleccionado);
+        desc.append(">>").append(mesPagado.getNombre()).append(" ").append(anioSeleccionado);
         
         return desc.toString();
     }
@@ -189,7 +208,7 @@ public class Utilerias {
         Calendar fechaUltimoCorte = Calendar.getInstance();
         fechaUltimoCorte.setTime(fechaCorte);
         //int mesEnCurso = fechaUltimoCorte.get(Calendar.MONTH)+1;
-        //int anioEnCurso = fechaUltimoCorte.get(Calendar.YEAR);
+        //int anioCorte = fechaUltimoCorte.get(Calendar.YEAR);
         
         Calendar fechaSeleccionada = Calendar.getInstance();
         fechaSeleccionada.setTime(fecha);
@@ -203,15 +222,16 @@ public class Utilerias {
         return diferenciaMeses;
     }
     
-    public List<Integer> obtenerAniosPorMostrar(){
+    public List<Integer> obtenerAniosPorMostrar(Date fechaCorte){
         
         List<Integer> anios = new ArrayList<>();
         
-        Calendar fechaEnCurso = Calendar.getInstance();
-        int anioEnCurso = fechaEnCurso.get(Calendar.YEAR);
-        int siguienteAnio = anioEnCurso + 1;
+        Calendar fecha = Calendar.getInstance();
+        fecha.setTime(fechaCorte);
+        int anioCorte = fecha.get(Calendar.YEAR);
+        int siguienteAnio = anioCorte + 1;
         int siguiente2Anio = siguienteAnio + 1;
-        anios.add(anioEnCurso);
+        anios.add(anioCorte);
         anios.add(siguienteAnio);
         anios.add(siguiente2Anio);
         return anios;

@@ -565,7 +565,7 @@ public class Impresora {
 
         PrinterMatrix pm = new PrinterMatrix();
 
-        int cantidadLineas = 51;
+        int cantidadLineas = 55;
         
         if(cobro.getDescuento() != null || cobro.getPromocion() != null || cobro.isSeCobraRecargo())
             cantidadLineas = cantidadLineas + 4;
@@ -615,7 +615,7 @@ public class Impresora {
         }
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Periodo:");
-        pm.printTextLinCol(linea, 14, String.valueOf(cobro.getConcepto().toUpperCase()));
+        pm.printTextLinCol(linea, 14, String.valueOf(cobro.getConcepto().replace("Pago", "").toUpperCase()));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Contrato:");
         pm.printTextLinCol(linea, 14, contrato);
@@ -638,7 +638,7 @@ public class Impresora {
             
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Costo Mensualidad(es):");
-        pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoTotal()-montoRecargo)));
+        pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoSugerido())));
         if (cobro.isSeCobraRecargo()) {
             linea++;
             pm.printTextLinCol(linea, 1, "Pago tardio:");
@@ -646,13 +646,13 @@ public class Impresora {
         }
         if (cobro.getPromocion() != null) {
             linea++;
-            pm.printTextLinCol(linea, 1, "Promoción:");
-            pm.printTextLinCol(linea, 38, String.valueOf(cobro.getPromocion().getCostoPromocion()));
+            pm.printTextLinCol(linea, 1, "Costo Promoción:");
+            pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getPromocion().getCostoPromocion())));
         } else {
             if (cobro.getDescuento() != null) {
                 linea++;
                 pm.printTextLinCol(linea, 1, "Descuento:");
-                pm.printTextLinCol(linea, 38, String.valueOf(cobro.getMontoSugerido() - cobro.getMontoTotal()));
+                pm.printTextLinCol(linea, 39, "-$ ".concat(String.valueOf(cobro.getMontoSugerido() - cobro.getMontoTotal())));
             }
         }
 
