@@ -166,4 +166,68 @@ public class SalidaExtraordinariaDao {
         
     }
     
+    /**
+     * 
+     * @return
+     * @throws Exception 
+     */
+    public List<SalidaExtraordinariaEntity> obtenerSalidasExtraordinarias() throws Exception{
+
+        List<SalidaExtraordinariaEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("SELECT id_salida_extraordinaria , id_caja, ");
+            query.append("id_usuario , observaciones, monto, fecha_salida ");
+            query.append("FROM salida_extraordinaria WHERE id_salida_extraordinaria_server is null ");
+            query.append("order by id_salida_extraordinaria asc");
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                SalidaExtraordinariaEntity entity = new SalidaExtraordinariaEntity();
+                entity.setCajaId(rs.getLong("id_caja"));
+                entity.setFechaSalida(rs.getDate("fecha_salida"));
+                entity.setMonto(rs.getDouble("monto"));
+                entity.setObservaciones(rs.getString("observaciones"));
+                entity.setSalidaExtraordinariaId(rs.getLong("id_salida_extraordinaria"));
+                entity.setUsuarioId(rs.getLong("id_usuario"));
+                list.add(entity);
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar salidas extraordinarias en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return list;
+
+        
+    }
+    
 }

@@ -264,4 +264,78 @@ public class CobroProvisionalDao {
         
     }
     
+    /**
+     * 
+     * @return
+     * @throws Exception 
+     */
+    public List<CobroProvisionalEntity> obtenerCobrosProvisionales() throws Exception{
+
+        List<CobroProvisionalEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("select id_cobro, id_cobro_server , id_contrato, folio_contrato, suscriptor, domicilio, servicio, telefono, ");
+            query.append("tipo_orden, tipo_orden_servicio, observaciones, fecha, monto, id_usuario, id_caja, estatus ");
+            query.append("from cobro_provisional WHERE id_cobro_server is null ");
+            query.append("order by id_cobro asc");
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                CobroProvisionalEntity entity = new CobroProvisionalEntity();
+                entity.setCobroId(rs.getLong("id_cobro"));
+                entity.setCobroServerId(rs.getLong("id_cobro_server"));
+                entity.setContratoId(rs.getLong("id_contrato"));
+                entity.setFolioContrato(rs.getLong("folio_contrato"));
+                entity.setSuscriptor(rs.getString("suscriptor"));
+                entity.setDomicilio(rs.getString("domicilio"));
+                entity.setServicio(rs.getString("servicio"));
+                entity.setTelefono(rs.getString("telefono"));
+                entity.setTipoOrden(rs.getString("tipo_orden"));
+                entity.setTipoOrdenServicio(rs.getString("tipo_orden_servicio"));
+                entity.setObservaciones(rs.getString("observaciones"));
+                entity.setFecha(rs.getDate("fecha"));
+                entity.setMonto(rs.getDouble("monto"));
+                entity.setUsuarioId(rs.getLong("id_usuario"));
+                entity.setCajaId(rs.getLong("id_caja"));
+                entity.setEstatus(rs.getInt("estatus"));
+                list.add(entity);
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar cobros provisionales en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return list;
+
+        
+    }
+    
 }

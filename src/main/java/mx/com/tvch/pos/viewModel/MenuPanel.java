@@ -248,6 +248,16 @@ public class MenuPanel extends javax.swing.JPanel {
         };
         botonSalidaExtraordinaria.addActionListener(botonRegistrarSalidaExtraordinariaListener);
         
+        ActionListener botonEstatusOperacionesListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                posFrame.cambiarPantalla(menuPanel, VentanaEnum.ESTATUS_OPERACIONES);
+
+            }
+        };
+        botonEstatusOperaciones.addActionListener(botonEstatusOperacionesListener);
+        
     }
     
     public void cargarDatosSesion(){
@@ -289,6 +299,7 @@ public class MenuPanel extends javax.swing.JPanel {
         botonCorteCaja = new javax.swing.JButton();
         botonCobrarOrden = new javax.swing.JButton();
         botonCobroProvisional = new javax.swing.JButton();
+        botonEstatusOperaciones = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setMaximumSize(new java.awt.Dimension(1500, 800));
@@ -498,40 +509,43 @@ public class MenuPanel extends javax.swing.JPanel {
         botonCobroProvisional.setPreferredSize(new java.awt.Dimension(75, 25));
         botonCobroProvisional.setVerifyInputWhenFocusTarget(false);
 
+        botonEstatusOperaciones.setBackground(new java.awt.Color(153, 153, 255));
+        botonEstatusOperaciones.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        botonEstatusOperaciones.setForeground(new java.awt.Color(255, 255, 255));
+        botonEstatusOperaciones.setText("Estatus de Operaciones");
+
         javax.swing.GroupLayout panelInferiorLayout = new javax.swing.GroupLayout(panelInferior);
         panelInferior.setLayout(panelInferiorLayout);
         panelInferiorLayout.setHorizontalGroup(
             panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelInferiorLayout.createSequentialGroup()
+            .addGroup(panelInferiorLayout.createSequentialGroup()
                 .addGap(86, 86, 86)
-                .addComponent(botonAbrirCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(panelInferiorLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(botonSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(28, 28, 28))
-                    .addGroup(panelInferiorLayout.createSequentialGroup()
-                        .addGap(66, 66, 66)
+                .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(botonEstatusOperaciones, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(botonAbrirCaja, javax.swing.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE))
+                .addGap(66, 66, 66)
+                .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelInferiorLayout.createSequentialGroup()
                         .addComponent(botonCorteCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(54, 54, 54)
                         .addComponent(botonCobroProvisional, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(64, 64, 64)
-                        .addComponent(botonCobrarOrden, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(botonCobrarOrden, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(botonSalir, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelInferiorLayout.setVerticalGroup(
             panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelInferiorLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(botonCobrarOrden, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(botonSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20))
-            .addGroup(panelInferiorLayout.createSequentialGroup()
                 .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(botonCobroProvisional, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                    .addComponent(botonCobrarOrden, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
                     .addComponent(botonAbrirCaja, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botonCorteCaja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(botonCorteCaja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(botonCobroProvisional, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(botonSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botonEstatusOperaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -619,6 +633,7 @@ public class MenuPanel extends javax.swing.JPanel {
     private javax.swing.JButton botonCobrarServicio;
     private javax.swing.JButton botonCobroProvisional;
     private javax.swing.JButton botonCorteCaja;
+    private javax.swing.JButton botonEstatusOperaciones;
     private javax.swing.JButton botonRegistrarIngreso;
     private javax.swing.JButton botonRegistrarSalida;
     private javax.swing.JButton botonReimpresion;

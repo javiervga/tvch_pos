@@ -277,4 +277,71 @@ public class TransaccionDao {
         
     }
     
+    /**
+     * 
+     * @return
+     * @throws Exception 
+     */
+    public List<TransaccionEntity> obtenerTransacciones() throws Exception{
+
+        List<TransaccionEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("SELECT id_transaccion, id_transaccion_server, id_apertura_caja, ");
+            query.append("id_contrato, monto, observaciones, periodo, fecha_transaccion, nueva_fecha_corte ");
+            query.append("FROM transacciones WHERE id_transaccion_server is null ");
+            query.append("order by id_transaccion asc");
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                TransaccionEntity entity = new TransaccionEntity();
+                entity.setTransaccionId(rs.getLong("id_transaccion"));
+                entity.setTransaccionServerId(null);
+                entity.setAperturaCajaId(rs.getLong("id_apertura_caja"));
+                entity.setContratoId(rs.getLong("id_contrato"));
+                entity.setMonto(rs.getDouble("monto"));
+                entity.setObservaciones(rs.getString("observaciones"));
+                entity.setPeriodo(rs.getString("periodo"));
+                entity.setNuevaFechaCorte(String.valueOf(rs.getDate("nueva_fecha_corte")));
+                entity.setFechaTransaccion(String.valueOf(rs.getDate("fecha_transaccion")));
+                list.add(entity);
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar transacciones de caja en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return list;
+
+        
+    }
+    
 }

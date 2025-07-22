@@ -31,6 +31,7 @@ public class Utilerias {
     private final Sesion sesion;
     DecimalFormat df = new DecimalFormat("#.##");
     List<Mes> meses = new ArrayList<>();
+    private final SimpleDateFormat dateFormatMysql;
     
     public static Utilerias getUtilerias() {
         if (utilerias == null) {
@@ -40,6 +41,7 @@ public class Utilerias {
     }
 
     public Utilerias() {
+        dateFormatMysql = new SimpleDateFormat(Constantes.FORMATO_FECHA_MYSQL);
         sesion = Sesion.getSesion();
         meses.add(new Mes(1,"ENERO"));
         meses.add(new Mes(2,"FEBRERO"));
@@ -445,6 +447,16 @@ public class Utilerias {
         }
         return esValido;
 
+    }
+    
+    /**
+     *
+     * @param cadenaFechaMysql
+     * @return
+     * @throws ParseException
+     */
+    public Date convertirCadenaMysqlaDate(String cadenaFechaMysql) throws ParseException {
+        return dateFormatMysql.parse(cadenaFechaMysql);
     }
 
 }

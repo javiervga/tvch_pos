@@ -9,7 +9,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import mx.com.tvch.pos.entity.AperturaCajaEntity;
+import mx.com.tvch.pos.entity.CancelacionEntity;
+import mx.com.tvch.pos.entity.CobroProvisionalEntity;
+import mx.com.tvch.pos.entity.CorteCajaEntity;
+import mx.com.tvch.pos.entity.IngresoCajaEntity;
+import mx.com.tvch.pos.entity.SalidaCajaEntity;
+import mx.com.tvch.pos.entity.SalidaExtraordinariaEntity;
+import mx.com.tvch.pos.entity.TransaccionEntity;
+import mx.com.tvch.pos.model.OperacionPendiente;
 import mx.com.tvch.pos.model.Orden;
+import mx.com.tvch.pos.model.TipoOperacion;
 import mx.com.tvch.pos.model.TipoOrden;
 import mx.com.tvch.pos.model.client.AuthResponse;
 import mx.com.tvch.pos.model.client.ListOrdenesCambioDomicilioResponse;
@@ -28,6 +38,8 @@ import mx.com.tvch.pos.model.client.UpdateContratoResponse;
 import mx.com.tvch.pos.model.client.UpdateOrdenCambioDomicilioResponse;
 import mx.com.tvch.pos.model.client.UpdateOrdenInstalacionResponse;
 import mx.com.tvch.pos.model.client.UpdateOrdenServicioResponse;
+import mx.com.tvch.pos.util.Constantes;
+import mx.com.tvch.pos.util.Utilerias;
 
 /**
  *
@@ -37,10 +49,16 @@ public class PosMapper {
     
     private static PosMapper mapper;
     
+    private final Utilerias util;
+    
     public static PosMapper getPosMapper(){
         if(mapper == null)
             mapper = new PosMapper();
         return mapper;
+    }
+    
+    public PosMapper(){
+        util = Utilerias.getUtilerias();
     }
     
     /**
@@ -52,6 +70,142 @@ public class PosMapper {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper
                 .convertValue(object, new TypeReference<Map<String,Object>>(){});
+    }
+    
+    public List<OperacionPendiente> transacciones2OperacionPendientes(List<TransaccionEntity> entities, TipoOperacion tipo){
+        List<OperacionPendiente> list = new ArrayList<>();
+        entities.forEach(t -> list.add(transaccion2OperacionPendiente(t, tipo)));
+        return list;
+    }
+    
+    private OperacionPendiente transaccion2OperacionPendiente(TransaccionEntity entity, TipoOperacion tipo){
+        OperacionPendiente op = new OperacionPendiente();
+        op.setDescripcion(entity.getObservaciones());
+        op.setEstatus("PENDIENTE");
+        op.setFecha(entity.getFechaTransaccion());
+        op.setFolio(String.valueOf(entity.getTransaccionId()));
+        op.setTipo(tipo);
+        op.setMonto(entity.getMonto());
+        return op;
+    }
+    
+    public List<OperacionPendiente> cancelaciones2OperacionPendientes(List<CancelacionEntity> entities, TipoOperacion tipo){
+        List<OperacionPendiente> list = new ArrayList<>();
+        entities.forEach(s -> list.add(cancelacion2OperacionPendiente(s, tipo)));
+        return list;
+    }
+    
+    private OperacionPendiente cancelacion2OperacionPendiente(CancelacionEntity entity, TipoOperacion tipo){
+        OperacionPendiente op = new OperacionPendiente();
+        op.setDescripcion(entity.getObservaciones());
+        op.setEstatus("PENDIENTE");
+        op.setFecha(entity.getFechaCancelacion());
+        op.setFolio(String.valueOf(entity.getCancelacionId()));
+        op.setTipo(tipo);
+        op.setMonto(0.0);
+        return op;
+    }
+    
+    public List<OperacionPendiente> cobrosProvisionales2OperacionPendientes(List<CobroProvisionalEntity> entities, TipoOperacion tipo){
+        List<OperacionPendiente> list = new ArrayList<>();
+        entities.forEach(s -> list.add(cobroProvisional2OperacionPendiente(s, tipo)));
+        return list;
+    }
+    
+    private OperacionPendiente cobroProvisional2OperacionPendiente(CobroProvisionalEntity entity, TipoOperacion tipo){
+        OperacionPendiente op = new OperacionPendiente();
+        op.setDescripcion(entity.getObservaciones());
+        op.setEstatus("PENDIENTE");
+        op.setFecha(util.convertirDateTime2String(entity.getFecha(), Constantes.FORMATO_FECHA_HORA_WEB_SERVICE));
+        op.setFolio(String.valueOf(entity.getCobroId()));
+        op.setTipo(tipo);
+        op.setMonto(entity.getMonto());
+        return op;
+    }
+    
+    public List<OperacionPendiente> salidasExtraordinarias2OperacionPendientes(List<SalidaExtraordinariaEntity> entities, TipoOperacion tipo){
+        List<OperacionPendiente> list = new ArrayList<>();
+        entities.forEach(s -> list.add(salidaExtraordinaria2OperacionPendiente(s, tipo)));
+        return list;
+    }
+    
+    private OperacionPendiente salidaExtraordinaria2OperacionPendiente(SalidaExtraordinariaEntity entity, TipoOperacion tipo){
+        OperacionPendiente op = new OperacionPendiente();
+        op.setDescripcion(entity.getObservaciones());
+        op.setEstatus("PENDIENTE");
+        op.setFecha(util.convertirDateTime2String(entity.getFechaSalida(), Constantes.FORMATO_FECHA_HORA_WEB_SERVICE));
+        op.setFolio(String.valueOf(entity.getSalidaExtraordinariaId()));
+        op.setTipo(tipo);
+        op.setMonto(entity.getMonto());
+        return op;
+    }
+    
+    public List<OperacionPendiente> salidas2OperacionPendientes(List<SalidaCajaEntity> entities, TipoOperacion tipo){
+        List<OperacionPendiente> list = new ArrayList<>();
+        entities.forEach(s -> list.add(salida2OperacionPendiente(s, tipo)));
+        return list;
+    }
+    
+    private OperacionPendiente salida2OperacionPendiente(SalidaCajaEntity entity, TipoOperacion tipo){
+        OperacionPendiente op = new OperacionPendiente();
+        op.setDescripcion(entity.getObservaciones());
+        op.setEstatus("PENDIENTE");
+        op.setFecha(util.convertirDateTime2String(entity.getFechaSalida(), Constantes.FORMATO_FECHA_HORA_WEB_SERVICE));
+        op.setFolio(String.valueOf(entity.getSalidaCajaId()));
+        op.setTipo(tipo);
+        op.setMonto(entity.getMonto());
+        return op;
+    }
+    
+    public List<OperacionPendiente> ingresos2OperacionPendientes(List<IngresoCajaEntity> entities, TipoOperacion tipo){
+        List<OperacionPendiente> list = new ArrayList<>();
+        entities.forEach(i -> list.add(ingreso2OperacionPendiente(i, tipo)));
+        return list;
+    }
+    
+    private OperacionPendiente ingreso2OperacionPendiente(IngresoCajaEntity entity, TipoOperacion tipo){
+        OperacionPendiente op = new OperacionPendiente();
+        op.setDescripcion(entity.getObservaciones());
+        op.setEstatus("PENDIENTE");
+        op.setFecha(util.convertirDateTime2String(entity.getFechaIngreso(), Constantes.FORMATO_FECHA_HORA_WEB_SERVICE));
+        op.setFolio(String.valueOf(entity.getIngresoCajaId()));
+        op.setTipo(tipo);
+        op.setMonto(entity.getMonto());
+        return op;
+    }
+    
+    public List<OperacionPendiente> cortes2OperacionPendientes(List<CorteCajaEntity> entities, TipoOperacion tipo){
+        List<OperacionPendiente> list = new ArrayList<>();
+        entities.forEach(c -> list.add(corte2OperacionPendiente(c, tipo)));
+        return list;
+    }
+    
+    private OperacionPendiente corte2OperacionPendiente(CorteCajaEntity entity, TipoOperacion tipo){
+        OperacionPendiente op = new OperacionPendiente();
+        op.setDescripcion("CORTE DE CAJA");
+        op.setEstatus("PENDIENTE");
+        op.setFecha(entity.getFechaCorte());
+        op.setFolio(String.valueOf(entity.getCorteCajaId()));
+        op.setTipo(tipo);
+        op.setMonto(entity.getTotalEntregado());
+        return op;
+    }
+    
+    public List<OperacionPendiente> aperturas2OperacionPendientes(List<AperturaCajaEntity> entities, TipoOperacion tipo){
+        List<OperacionPendiente> list = new ArrayList<>();
+        entities.forEach(a -> list.add(apertura2OperacionPendiente(a, tipo)));
+        return list;
+    }
+    
+    private OperacionPendiente apertura2OperacionPendiente(AperturaCajaEntity entity, TipoOperacion tipo){
+        OperacionPendiente op = new OperacionPendiente();
+        op.setDescripcion("APERTURA DE CAJA");
+        op.setEstatus("PENDIENTE");
+        op.setFecha(util.convertirDateTime2String(entity.getFechaApertura(), Constantes.FORMATO_FECHA_HORA_WEB_SERVICE));
+        op.setFolio(String.valueOf(entity.getAperturaCajaId()));
+        op.setTipo(tipo);
+        op.setMonto(0.0);
+        return op;
     }
     
     /**

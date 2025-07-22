@@ -23,6 +23,7 @@ public enum VentanaEnum {
     INGRESO,
     CANCELACION_CONTRATO,
     COBRO_PROVISIONAL,
+    ESTATUS_OPERACIONES,
     LOADING
     
 }

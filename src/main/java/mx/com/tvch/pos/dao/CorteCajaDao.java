@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.entity.CorteCajaEntity;
 import mx.com.tvch.pos.util.Utilerias;
@@ -132,6 +134,83 @@ public class CorteCajaDao {
                 se.printStackTrace();
             }
         }
+        
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws Exception 
+     */
+    public List<CorteCajaEntity> obtenerCortesCaja() throws Exception{
+
+        List<CorteCajaEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("SELECT id_corte_caja, id_apertura_caja, ");
+            query.append("id_usuario, id_sucursal, fondo_fijo, cantidad_cobros, total_cobros, cantidad_descuentos, ");
+            query.append("total_descuentos, cantidad_salidas, total_salidas, cantidad_ingresos, total_ingresos, ");
+            query.append("promociones_aplicadas, total_solicitado, total_entregado, fecha_corte ");
+            query.append("FROM cortes_caja WHERE id_corte_caja_server is null ");
+            query.append("order by id_corte_caja asc");
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                CorteCajaEntity entity = new CorteCajaEntity();
+                entity.setAperturaCajaId(rs.getLong("id_apertura_caja"));
+                entity.setCantidadCobros(rs.getInt("cantidad_cobros"));
+                entity.setCantidadDescuentos(rs.getInt("cantidad_descuentos"));
+                entity.setCantidadSalidas(rs.getInt("cantidad_salidas"));
+                entity.setCorteCajaId(rs.getLong("id_corte_caja"));
+                entity.setFechaCorte(rs.getString("fecha_corte"));
+                entity.setFondoFijo(rs.getDouble("fondo_fijo"));
+                entity.setPromocionesAplicadas(rs.getInt("promociones_aplicadas"));
+                entity.setSucursalId(rs.getLong("id_sucursal"));
+                entity.setTotalCobros(rs.getDouble("total_cobros"));
+                entity.setTotalDescuentos(rs.getDouble("total_descuentos"));
+                entity.setTotalEntregado(rs.getDouble("total_entregado"));
+                entity.setTotalSalidas(rs.getDouble("total_salidas"));
+                entity.setTotalSolicitado(rs.getDouble("total_solicitado"));
+                entity.setUsuarioId(rs.getLong("id_usuario"));
+                entity.setCantidadIngresos(rs.getInt("cantidad_ingresos"));
+                entity.setTotalIngresos(rs.getDouble("total_ingresos"));
+                list.add(entity);
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar cortes de caja en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return list;
+
         
     }
     

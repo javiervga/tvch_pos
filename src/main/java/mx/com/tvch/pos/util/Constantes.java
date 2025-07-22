@@ -14,6 +14,7 @@ public class Constantes {
     public static final String FORMATO_FECHA_MYSQL = "yyyy-MM-dd HH:mm:ss";
     public static final String FORMATO_FECHA_TICKET = "dd/MM/yy";
     public static final String FORMATO_FECHA_WEB_SERVICE = "dd/MM/yyyy";
+    public static final String FORMATO_FECHA_HORA_WEB_SERVICE = "dd/MM/yyyy HH:mm:ss";
     public static final String FORMATO_HORA_TICKET = "HH:mm:ss";
     
     public static final long ESTATUS_USUARIO_ACTIVO = 1;
@@ -149,5 +150,14 @@ public class Constantes {
     
     public static final int ESTATUS_COBRO_PROVISIONAL_NUEVO = 0;
     public static final int ESTATUS_COBRO_PROVISIONAL_APLICADO = 1;
+    
+    public static final int OPERACION_COBRO_SERVICIO = 1;
+    public static final int OPERACION_CANCELACION = 2;
+    public static final int OPERACION_COBRO_PROVISIONAL = 3;
+    public static final int OPERACION_CORTE = 4;
+    public static final int OPERACION_APERTURA = 5;
+    public static final int OPERACION_INGRESO = 6;
+    public static final int OPERACION_EGRESO = 7;
+    public static final int OPERACION_EGRESO_EXTRAORDINARIO = 8;
     
 }
