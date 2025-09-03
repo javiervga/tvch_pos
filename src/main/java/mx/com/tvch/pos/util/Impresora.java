@@ -441,11 +441,13 @@ public class Impresora {
         pm.printTextLinCol(7, 27, String.valueOf(entity.getCajaId()));
         pm.printTextLinCol(8, 1, "Cajero:");
         pm.printTextLinCol(8, 27, entity.getUsuario());
+        pm.printTextLinCol(9, 1, "Monto:");
+        pm.printTextLinCol(9, 27, String.valueOf(entity.getMonto()));
         
-        pm.printTextLinCol(10, 1, "Fecha:");
-        pm.printTextLinCol(10, 27, utilerias.convertirDateTime2String(entity.getFechaSalida(), Constantes.FORMATO_FECHA_TICKET));
-        pm.printTextLinCol(11, 1, "Hora:");
-        pm.printTextLinCol(11, 27, utilerias.convertirDateTime2String(entity.getFechaSalida(), Constantes.FORMATO_HORA_TICKET));
+        pm.printTextLinCol(11, 1, "Fecha:");
+        pm.printTextLinCol(11, 27, utilerias.convertirDateTime2String(entity.getFechaSalida(), Constantes.FORMATO_FECHA_TICKET));
+        pm.printTextLinCol(12, 1, "Hora:");
+        pm.printTextLinCol(12, 27, utilerias.convertirDateTime2String(entity.getFechaSalida(), Constantes.FORMATO_HORA_TICKET));
         
         String nombreArchivo = ("impresion.txt");
         pm.toFile(nombreArchivo);
