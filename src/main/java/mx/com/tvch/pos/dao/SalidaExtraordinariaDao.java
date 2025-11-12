@@ -7,6 +7,8 @@ package mx.com.tvch.pos.dao;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,6 +17,7 @@ import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.entity.SalidaCajaEntity;
+import mx.com.tvch.pos.entity.SalidaExtraordinariaEntity;
 import mx.com.tvch.pos.util.Utilerias;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,33 +26,31 @@ import org.slf4j.LoggerFactory;
  *
  * @author fvega
  */
-public class SalidaCajaDao {
+public class SalidaExtraordinariaDao {
     
-    private static SalidaCajaDao dao;
+    private static SalidaExtraordinariaDao dao;
     
     private final Utilerias utilerias;
+        
+    Logger logger = LoggerFactory.getLogger(SalidaExtraordinariaDao.class);
     
-    Logger logger = LoggerFactory.getLogger(SalidaCajaDao.class);
-    
-    public static SalidaCajaDao getSalidaCajaDao(){
+    public static SalidaExtraordinariaDao getSalidaExtraordinariaDao(){
         if(dao == null)
-            dao = new SalidaCajaDao();
+            dao = new SalidaExtraordinariaDao();
         return dao;
     }
     
-    public SalidaCajaDao(){
+    public SalidaExtraordinariaDao(){
         utilerias = Utilerias.getUtilerias();
     }
     
     /**
      * 
-     * @param aperturaCajaId
+     * @param salidaId
      * @return
      * @throws Exception 
      */
-    public List<SalidaCajaEntity> obtenerSalidasPorAperturaCaja(Long aperturaCajaId) throws Exception{
-
-        List<SalidaCajaEntity> list = new ArrayList<>();
+    public SalidaExtraordinariaEntity obtenerSalidasPorId(Long salidaId) throws Exception{
 
         Connection conn = null;
         Statement stmt = null;
@@ -61,20 +62,24 @@ public class SalidaCajaDao {
 
             StringBuilder query = new StringBuilder();
             
-            query.append("SELECT id_salida_caja , id_apertura_caja , id_tipo_salida , observaciones, monto, fecha_salida FROM salidas_caja WHERE id_apertura_caja =");
-            query.append(aperturaCajaId);
+            query.append("SELECT id_salida_extraordinaria , id_salida_extraordinaria_server , observaciones, monto, fecha_salida, usuario ,id_usuario, id_caja FROM salida_extraordinaria WHERE id_salida_extraordinaria =");
+            query.append(salidaId);
             
             ResultSet rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
-                SalidaCajaEntity entity = new SalidaCajaEntity();
-                entity.setAperturaCajaId(rs.getLong("id_apertura_caja"));
-                entity.setMonto(rs.getDouble("monto"));
+                SalidaExtraordinariaEntity entity = new SalidaExtraordinariaEntity();
+                entity.setSalidaExtraordinariaId(rs.getLong("id_salida_extraordinaria"));
+                entity.setSalidaExtraordinariaServerId(rs.getLong("id_salida_extraordinaria_server"));
                 entity.setObservaciones(rs.getString("observaciones"));
-                entity.setSalidaCajaId(rs.getLong("id_salida_caja"));
-                entity.setTipoSalidaId(rs.getLong("id_tipo_salida"));
-                list.add(entity);
+                entity.setMonto(rs.getDouble("monto"));
+                entity.setFechaSalida(rs.getDate("fecha_salida"));
+                entity.setUsuario(rs.getString("usuario"));
+                entity.setUsuarioId(rs.getLong("id_usuario"));
+                entity.setCajaId(rs.getLong("id_caja"));
+                return entity;
             }
 
+            return null;
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
@@ -97,9 +102,6 @@ public class SalidaCajaDao {
                 se.printStackTrace();
             }
         }
-
-        return list;
-
         
     }
     
@@ -107,11 +109,11 @@ public class SalidaCajaDao {
      * 
      * @param sesion
      * @param montoSalida
-     * @param tipoSalidaId
      * @param observaciones
+     * @return
      * @throws Exception 
      */
-    public void registrarSalidaCaja(Sesion sesion, Double montoSalida, Long tipoSalidaId, String observaciones) throws Exception {
+    public Long registrarSalidaExtraordinaria(Sesion sesion, Double montoSalida, String observaciones) throws Exception {
         
         Connection conn = null;
         Statement stmt = null;
@@ -119,23 +121,32 @@ public class SalidaCajaDao {
         try {
             DbConfig dbConfig = DbConfig.getdDbConfig();
             conn = dbConfig.getConnection();
-            stmt = conn.createStatement();
-
-            StringBuilder query = new StringBuilder();
-            query.append("insert into salidas_caja ( id_apertura_caja, id_tipo_salida, observaciones, monto, fecha_salida) values (");
-            query.append(sesion.getAperturaCajaId()).append(",");
-            query.append(tipoSalidaId).append(",'");
-            query.append(observaciones).append("',");
-            query.append(montoSalida).append(",'");
-            query.append(utilerias.obtenerFechaFormatoMysql()).append("')");
-            stmt.executeUpdate(query.toString());
+            Long id = utilerias.generarIdLocal();
+            
+            String query = "insert into salida_extraordinaria (id_salida_extraordinaria , observaciones, monto, fecha_salida, id_usuario, usuario, id_caja) values(?,?,?,?,?,?,?)";
+            PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            ps.setLong(1, id);
+            ps.setString(2, observaciones);
+            ps.setDouble(3, montoSalida);
+            ps.setString(4, utilerias.obtenerFechaFormatoMysql());
+            ps.setLong(5, sesion.getUsuarioId());
+            ps.setString(6, sesion.getUsuario());
+            ps.setLong(7, sesion.getCajaId());
+            ps.executeUpdate();
+            
+            /*ResultSet rs = ps.getGeneratedKeys();
+            if(rs.next()){
+                id = rs.getLong(1);
+            }*/
+            
+            return id;
 
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
-            logger.error("Error al registrar salida de caja: " + sw.toString());
-            throw new Exception("Ocurrió un error al registrar su salida de caja. Por favor reintente.");
+            logger.error("Error al registrar salida extraordinaria: " + sw.toString());
+            throw new Exception("Ocurrió un error al registrar su salida extraordinaria. Por favor reintente.");
         } finally {
             try {
                 if (stmt != null) {
@@ -160,9 +171,9 @@ public class SalidaCajaDao {
      * @return
      * @throws Exception 
      */
-    public List<SalidaCajaEntity> obtenerSalidasCaja() throws Exception{
+    public List<SalidaExtraordinariaEntity> obtenerSalidasExtraordinarias() throws Exception{
 
-        List<SalidaCajaEntity> list = new ArrayList<>();
+        List<SalidaExtraordinariaEntity> list = new ArrayList<>();
 
         Connection conn = null;
         Statement stmt = null;
@@ -174,20 +185,20 @@ public class SalidaCajaDao {
 
             StringBuilder query = new StringBuilder();
             
-            query.append("SELECT id_salida_caja, id_apertura_caja, ");
-            query.append("id_tipo_salida, observaciones, monto, fecha_salida ");
-            query.append("FROM salidas_caja WHERE id_salida_caja_server is null ");
-            query.append("order by id_salida_caja asc");
+            query.append("SELECT id_salida_extraordinaria , id_caja, ");
+            query.append("id_usuario , observaciones, monto, fecha_salida ");
+            query.append("FROM salida_extraordinaria WHERE id_salida_extraordinaria_server is null ");
+            query.append("order by id_salida_extraordinaria asc");
             
             ResultSet rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
-                SalidaCajaEntity entity = new SalidaCajaEntity();
-                entity.setAperturaCajaId(rs.getLong("id_apertura_caja"));
+                SalidaExtraordinariaEntity entity = new SalidaExtraordinariaEntity();
+                entity.setCajaId(rs.getLong("id_caja"));
                 entity.setFechaSalida(rs.getDate("fecha_salida"));
                 entity.setMonto(rs.getDouble("monto"));
                 entity.setObservaciones(rs.getString("observaciones"));
-                entity.setSalidaCajaId(rs.getLong("id_salida_caja"));
-                entity.setTipoSalidaId(rs.getLong("id_tipo_salida"));
+                entity.setSalidaExtraordinariaId(rs.getLong("id_salida_extraordinaria"));
+                entity.setUsuarioId(rs.getLong("id_usuario"));
                 list.add(entity);
             }
 
@@ -195,7 +206,7 @@ public class SalidaCajaDao {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
-            logger.error("Error al consultar salidas de caja en bd: \n" + sw.toString());
+            logger.error("Error al consultar salidas extraordinarias en bd: \n" + sw.toString());
             throw new Exception(ex.getMessage());
         } finally {
             try {

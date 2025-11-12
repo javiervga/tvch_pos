@@ -63,7 +63,7 @@ public class TransaccionDao {
 
             StringBuilder query = new StringBuilder();
             
-            query.append("select t.fecha_transaccion, t.id_transaccion, t.id_transaccion_server, tc.id_tipo_cobro, tc.descripcion AS tipoCobro, c.id_contrato, c.id_contrato_anterior, c.fecha_proximo_pago, \n" +
+            query.append("select t.fecha_transaccion, t.id_transaccion, t.id_transaccion_server, tc.id_tipo_cobro, tc.descripcion AS tipoCobro, c.id_contrato, c.folio_contrato, c.fecha_proximo_pago, \n" +
 "		       t.id_apertura_caja, s.nombre, s.apellido_paterno, s.apellido_materno, d.calle, d.numero_calle, d.colonia, ser.nombre as servicio, s.telefono, t.monto \n" +
 "		  from transacciones t \n" +
 "		 inner\n" +
@@ -109,7 +109,7 @@ public class TransaccionDao {
                 entity.setCalle(rs.getString("calle"));
                 entity.setColonia(rs.getString("colonia"));
                 entity.setContratoId(rs.getLong("id_contrato"));
-                entity.setContratoAnteriorId(rs.getLong("id_contrato_anterior"));
+                entity.setFolioContrato(rs.getLong("folio_contrato"));
                 entity.setAperturaCajaId(rs.getLong("id_apertura_caja"));
                 entity.setDescripcionTipoCobro(rs.getString("tipoCobro"));
                 entity.setFechaProximoPago(util.convertirDateTime2String(rs.getDate("fecha_proximo_pago"), Constantes.FORMATO_FECHA_WEB_SERVICE));
@@ -173,7 +173,7 @@ public class TransaccionDao {
 
             StringBuilder query = new StringBuilder();
             
-            query.append("SELECT id_transaccion , id_apertura_caja, id_contrato, monto, fecha_transaccion FROM transacciones WHERE id_apertura_caja =");
+            query.append("SELECT id_transaccion , id_apertura_caja, id_contrato, monto, observaciones, periodo, fecha_transaccion FROM transacciones WHERE id_apertura_caja =");
             query.append(aperturaCajaId);
             
             ResultSet rs = stmt.executeQuery(query.toString());
@@ -183,6 +183,8 @@ public class TransaccionDao {
                 entity.setContratoId(rs.getLong("id_contrato"));
                 entity.setFechaTransaccion(String.valueOf(rs.getDate("fecha_transaccion")));
                 entity.setMonto(rs.getDouble("monto"));
+                entity.setObservaciones(rs.getString("observaciones"));
+                entity.setPeriodo(rs.getString("periodo"));
                 entity.setTransaccionId(rs.getLong("id_transaccion"));
                 list.add(entity);
             }
@@ -231,13 +233,16 @@ public class TransaccionDao {
             DbConfig dbConfig = DbConfig.getdDbConfig();
             conn = dbConfig.getConnection();
             
-            String query = "insert into transacciones (id_transaccion ,id_apertura_caja, id_contrato, monto, fecha_transaccion) values(?,?,?,?,?)";
+            String query = "insert into transacciones (id_transaccion ,id_apertura_caja, id_contrato, monto, observaciones, periodo, fecha_transaccion, nueva_fecha_corte) values(?,?,?,?,?,?,?,?)";
             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setLong(1, entity.getTransaccionId());
             ps.setLong(2, entity.getAperturaCajaId());
             ps.setLong(3, entity.getContratoId());
             ps.setDouble(4, entity.getMonto());
-            ps.setString(5, entity.getFechaTransaccion());
+            ps.setString(5, entity.getObservaciones());
+            ps.setString(6, entity.getPeriodo());
+            ps.setString(7, entity.getFechaTransaccion());
+            ps.setString(8, entity.getNuevaFechaCorte());
             ps.executeUpdate();
             
             ResultSet rs = ps.getGeneratedKeys();
@@ -269,6 +274,73 @@ public class TransaccionDao {
                 se.printStackTrace();
             }
         }
+        
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws Exception 
+     */
+    public List<TransaccionEntity> obtenerTransacciones() throws Exception{
+
+        List<TransaccionEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("SELECT id_transaccion, id_transaccion_server, id_apertura_caja, ");
+            query.append("id_contrato, monto, observaciones, periodo, fecha_transaccion, nueva_fecha_corte ");
+            query.append("FROM transacciones WHERE id_transaccion_server is null ");
+            query.append("order by id_transaccion asc");
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                TransaccionEntity entity = new TransaccionEntity();
+                entity.setTransaccionId(rs.getLong("id_transaccion"));
+                entity.setTransaccionServerId(null);
+                entity.setAperturaCajaId(rs.getLong("id_apertura_caja"));
+                entity.setContratoId(rs.getLong("id_contrato"));
+                entity.setMonto(rs.getDouble("monto"));
+                entity.setObservaciones(rs.getString("observaciones"));
+                entity.setPeriodo(rs.getString("periodo"));
+                entity.setNuevaFechaCorte(String.valueOf(rs.getDate("nueva_fecha_corte")));
+                entity.setFechaTransaccion(String.valueOf(rs.getDate("fecha_transaccion")));
+                list.add(entity);
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar transacciones de caja en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return list;
+
         
     }
     

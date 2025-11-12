@@ -12,6 +12,8 @@ import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.util.VentanaEnum;
 import static mx.com.tvch.pos.util.VentanaEnum.APERTURA;
+import static mx.com.tvch.pos.util.VentanaEnum.CANCELACION_CONTRATO;
+import static mx.com.tvch.pos.util.VentanaEnum.COBRO_ORDEN;
 import static mx.com.tvch.pos.util.VentanaEnum.COBRO_SERVICIO;
 import static mx.com.tvch.pos.util.VentanaEnum.REIMPRESION;
 import static mx.com.tvch.pos.util.VentanaEnum.SALIDA;
@@ -27,12 +29,15 @@ public class PosFrame extends javax.swing.JFrame {
     private final LoadingPanel loadingPanel;
     private final AperturaCajaPanel aperturaCajaPanel;
     private final SalidaCajaPanel salidaCajaPanel;
+    private final SalidaExtraordinariaPanel salidaExtraordinariaPanel;
     private final IngresoCajaPanel ingresoCajaPanel;
     private final CobroServicioPanel cobroServicioPanel;
     private final CobroOrdenPanel cobroOrdenPanel;
     private final CorteCajaPanel corteCajaPanel;
     private final ReimpresionesPanel reimpresionesPanel;
     private final CancelarContratoPanel cancelarContratoPanel;
+    private final CobroProvisionalPanel cobroProvisionalPanel;
+    private final EstatusOperacionesPanel estatusOperacionesPanel;
     private final DbConfig dbConfig;
     private Sesion sesion;
 
@@ -48,6 +53,7 @@ public class PosFrame extends javax.swing.JFrame {
         menuPanel = MenuPanel.getMenuPanel(this);
         aperturaCajaPanel = AperturaCajaPanel.getAperturaCajaPanel(this);
         salidaCajaPanel = SalidaCajaPanel.getSalidaCajaPanel(this);
+        salidaExtraordinariaPanel = SalidaExtraordinariaPanel.getSalidaCajaPanel(this);
         ingresoCajaPanel = IngresoCajaPanel.getIngresoCajaPanel(this);
         cobroServicioPanel = CobroServicioPanel.getCobroPanel(this);
         cobroOrdenPanel = CobroOrdenPanel.getCobroOrdenPanel(this);
@@ -55,6 +61,8 @@ public class PosFrame extends javax.swing.JFrame {
         corteCajaPanel = CorteCajaPanel.getCorteCajaPanel(this);
         this.reimpresionesPanel = ReimpresionesPanel.getReimpresionesPanel(this);
         cancelarContratoPanel = CancelarContratoPanel.getCobroPanel(this);
+        cobroProvisionalPanel = CobroProvisionalPanel.getCobroPanel(this);
+        estatusOperacionesPanel = EstatusOperacionesPanel.getEstatusOperacionesPanel(this);
         dbConfig = DbConfig.getdDbConfig();
         sesion = Sesion.getSesion();
 
@@ -117,6 +125,10 @@ public class PosFrame extends javax.swing.JFrame {
                 this.add(cobroOrdenPanel);
                 cobroOrdenPanel.cargarDatosSesion();
                 break;
+            case COBRO_PROVISIONAL:
+                this.add(cobroProvisionalPanel);
+                cobroProvisionalPanel.cargarDatosSesion();
+                break;
             case APERTURA:
                 this.add(aperturaCajaPanel);
                 aperturaCajaPanel.cargarDatosSesion();
@@ -124,6 +136,10 @@ public class PosFrame extends javax.swing.JFrame {
             case SALIDA:
                 this.add(salidaCajaPanel);
                 salidaCajaPanel.cargarDatosSesion();
+                break;
+            case SALIDA_EXTRAORDINARIA:
+                this.add(salidaExtraordinariaPanel);
+                salidaExtraordinariaPanel.cargarDatosSesion();
                 break;
             case INGRESO:
                 this.add(ingresoCajaPanel);
@@ -142,6 +158,10 @@ public class PosFrame extends javax.swing.JFrame {
             case CANCELACION_CONTRATO:
                 this.add(cancelarContratoPanel);
                 cancelarContratoPanel.cargarDatosSesion();
+                break;
+            case ESTATUS_OPERACIONES:
+                this.add(estatusOperacionesPanel);
+                estatusOperacionesPanel.cargarDatosSesion();
                 break;
             case LOGIN:
                 sesion = null;

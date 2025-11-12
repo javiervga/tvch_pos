@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.entity.AperturaCajaEntity;
@@ -196,6 +198,73 @@ public class AperturaCajaDao {
                 se.printStackTrace();
             }
         }  
+        
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws Exception 
+     */
+    public List<AperturaCajaEntity> obtenerAperturasCaja() throws Exception{
+
+        List<AperturaCajaEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("SELECT id_apertura_caja, id_apertura_caja_server, id_caja, ");
+            query.append("numero_caja, id_usuario, usuario, fondo_fijo, fecha_apertura, estatus ");
+            query.append("FROM aperturas_caja WHERE id_apertura_caja_server is null ");
+            query.append("order by id_apertura_caja asc");
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                AperturaCajaEntity entity = new AperturaCajaEntity();
+                entity.setAperturaCajaId(rs.getLong("id_apertura_caja"));
+                entity.setAperturaCajaServer(null);
+                entity.setCajaId(rs.getLong("id_caja"));
+                entity.setEstatus(rs.getInt("estatus"));
+                entity.setFondoFijo(rs.getDouble("fondo_fijo"));
+                entity.setFechaApertura(utilerias.convertirCadenaMysqlaDate(rs.getString("fecha_apertura")));
+                entity.setNumeroCaja(rs.getInt("numero_caja"));
+                entity.setUsuario(rs.getString("usuario"));
+                entity.setUsuarioId(rs.getLong("id_usuario"));
+                list.add(entity);
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar aperturas de caja en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return list;
+
         
     }
     

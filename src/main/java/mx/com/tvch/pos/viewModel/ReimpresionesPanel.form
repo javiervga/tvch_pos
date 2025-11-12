@@ -178,13 +178,13 @@
                   <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="panelCalendarioIni" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="panelCalendarioFin" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="106" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="89" max="-2" attributes="0"/>
                   <Component id="botonBusqueda" min="-2" pref="119" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="250" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -232,7 +232,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="187" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="193" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -277,7 +277,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="175" max="32767" attributes="0"/>
+                  <EmptySpace min="0" pref="192" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -333,8 +333,8 @@
                   <Table columnCount="7" rowCount="4">
                     <Column editable="false" title="Folio" type="java.lang.String"/>
                     <Column editable="false" title="Suscriptor" type="java.lang.String"/>
-                    <Column editable="false" title="Contrato" type="java.lang.Long"/>
-                    <Column editable="false" title="Contrato Anterior" type="java.lang.String"/>
+                    <Column editable="false" title="ID Sistema" type="java.lang.Long"/>
+                    <Column editable="false" title="N&#xfa;mero de Contrato" type="java.lang.String"/>
                     <Column editable="false" title="Fecha" type="java.lang.String"/>
                     <Column editable="false" title="Monto" type="java.lang.Double"/>
                     <Column editable="false" title="Tipo Operacion" type="java.lang.String"/>
@@ -461,7 +461,7 @@
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                       <Component id="campoContrato" pref="99" max="32767" attributes="0"/>
-                      <Component id="campoContratoAnterior" max="32767" attributes="0"/>
+                      <Component id="campoFolioContrato" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -509,7 +509,7 @@
                       <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="campoAPerturaCaja" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="campoContratoAnterior" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="campoFolioContrato" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="campoMonto" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel14" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -556,7 +556,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Segoe UI" size="14" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Contrato:"/>
+            <Property name="text" type="java.lang.String" value="Id Sistema:"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel7">
@@ -564,7 +564,7 @@
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Segoe UI" size="14" style="0"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Contrato Anterior:"/>
+            <Property name="text" type="java.lang.String" value="N&#xfa;mero de Contrato:"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="campoContrato">
@@ -574,7 +574,7 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="campoContratoAnterior">
+        <Component class="javax.swing.JTextField" name="campoFolioContrato">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
               <Font name="Segoe UI" size="14" style="0"/>

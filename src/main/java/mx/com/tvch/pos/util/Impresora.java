@@ -23,11 +23,14 @@ import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.entity.AperturaCajaEntity;
+import mx.com.tvch.pos.entity.CobroProvisionalEntity;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
 import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import mx.com.tvch.pos.entity.DetalleDescuentoTransaccionEntity;
 import mx.com.tvch.pos.entity.DetallePromocionTransaccionEntity;
+import mx.com.tvch.pos.entity.SalidaExtraordinariaEntity;
 import mx.com.tvch.pos.entity.TransaccionTicketEntity;
+import mx.com.tvch.pos.model.CobroServicio;
 import mx.com.tvch.pos.model.CorteCaja;
 import mx.com.tvch.pos.model.DetalleCorte;
 import mx.com.tvch.pos.model.DetallePagoServicio;
@@ -74,6 +77,107 @@ public class Impresora {
     
     /**
      * 
+     * @param sesion
+     * @param entity
+     * @throws Exception 
+     */
+    public void imprimirTicketCobroProvisional(Sesion sesion, CobroProvisionalEntity entity) throws Exception{
+        
+        PrinterMatrix pm = new PrinterMatrix();
+
+        int cantidadLineas = 51;
+
+        pm.setOutSize(cantidadLineas, 47);
+        //pm.printCharAtCol(1, 1, 47, "=");
+
+        int linea = 2;
+        pm.printTextLinCol(linea, 1, "\n");
+        linea++;
+        pm.printTextWrap(linea, 1, 13, 47, "Comprobante de Pago");
+        linea = linea + 2;
+        pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
+        linea++;
+        pm.printTextWrap(linea, 
+                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+                47, sesion.getTicketLineaCiudadRfc());
+        linea++;
+        pm.printTextWrap(linea, 
+                1, sesion.getTicketSangriaCalle().intValue() , 
+                47, sesion.getTicketLineaCalle());
+        linea++;
+        pm.printTextWrap(linea, 
+                1, sesion.getTicketSangriaColonia() , 
+                47, sesion.getTicketLineaColonia());
+        linea++;
+        pm.printTextWrap(linea, 
+                1, sesion.getTicketSangriaSucursal() , 
+                47, "Sucursal ".concat(sesion.getSucursal()));
+        linea = linea + 3;
+
+        pm.printTextLinCol(linea, 1, "Fecha:");
+        pm.printTextLinCol(linea, 16, utilerias.convertirDateTime2String(entity.getFecha(), Constantes.FORMATO_FECHA_TICKET));
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Caja:");
+        pm.printTextLinCol(linea, 16, entity.getCajaId().toString());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Folio:");
+        pm.printTextLinCol(linea, 16, entity.getCobroId().toString());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Tipo Orden:");
+        pm.printTextLinCol(linea, 16, entity.getTipoOrden());
+        if(entity.getTipoOrdenServicio() != null){
+            linea = linea + 2;
+            pm.printTextLinCol(linea, 1, "Orden Servicio:");
+            pm.printTextLinCol(linea, 16, entity.getTipoOrdenServicio());
+        }
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Contrato:");
+        pm.printTextLinCol(linea, 16, entity.getFolioContrato().toString());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Suscriptor:");
+        pm.printTextLinCol(linea, 16, entity.getSuscriptor());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Domicilio:");
+        pm.printTextLinCol(linea, 16, entity.getDomicilio());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Servicio:");
+        pm.printTextLinCol(linea, 16, entity.getServicio());
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Telefono:");
+        pm.printTextLinCol(linea, 16, entity.getTelefono());
+
+        linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Total a pagar:");
+        pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(entity.getMonto())));
+        linea++;
+        pm.printTextWrap(linea, 1, 1, 47, "RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO");
+        linea++;
+        pm.printTextWrap(linea, 1, 3, 47, "CANCELACION DEL 25 AL 30 DEL MES PAGADO");
+        linea++;
+        pm.printTextWrap(linea, 1, 2, 47, "HORARIO DE OFICINA LUNES A VIERNES 9AM A 6PM,");
+        linea++;
+        pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
+        linea = linea + 2;
+        
+        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+            pm.printTextLinCol(linea, 10, "Telefono Oficina:");
+            pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
+            linea++;
+        }
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+            pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+        }
+
+        String nombreArchivo = ("impresion.txt");
+        pm.toFile(nombreArchivo);
+
+        imprimirArchivo(nombreArchivo);
+        
+    }
+    
+    /**
+     * 
      * @param entity
      * @param detallesPago
      * @param nombreSucursal
@@ -98,10 +202,7 @@ public class Impresora {
             domicilio.append(entity.getColonia());
         }
 
-        String contrato = String.valueOf(entity.getContratoId());
-        if (entity.getContratoAnteriorId() != null && entity.getContratoAnteriorId() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getContratoAnteriorId()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getFolioContrato()));
 
         DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_CANCELACION).findAny().get();
         Double importeTotal = detalleCobro.getMonto();
@@ -223,10 +324,7 @@ public class Impresora {
             domicilio.append(suscriptor.getColonia());
         }
 
-        String contrato = String.valueOf(suscriptor.getContratoId());
-        if (suscriptor.getContratoAnteriorId() != null && suscriptor.getContratoAnteriorId() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getContratoAnteriorId()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getFolioContrato()));
 
         DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_CANCELACION).findAny().get();
         Double importeTotal = detalleCobro.getMonto();
@@ -321,6 +419,41 @@ public class Impresora {
 
     }
     
+    public void imprimirTicketSalidaExtraordinaria(SalidaExtraordinariaEntity entity) throws Exception {
+        
+        PrinterMatrix pm = new PrinterMatrix();
+        
+        pm.setOutSize(25, 47);
+        pm.printCharAtCol(1, 1, 47, "=");
+        pm.printTextWrap(1, 1, 13, 47, "Egreso Extraordinario");
+        
+        pm.printTextLinCol(4, 1, "Sucursal:");
+        pm.printTextLinCol(4, 27, sesion.getSucursal());
+        pm.printTextLinCol(5, 1, "Folio Salida:");
+        pm.printTextLinCol(5, 27, String.valueOf(entity.getSalidaExtraordinariaId()));
+        pm.printTextLinCol(6, 1, "Folio Server:");
+        if (entity.getSalidaExtraordinariaServerId() != null) {
+            pm.printTextLinCol(6, 27, entity.getSalidaExtraordinariaServerId().toString());
+        } else {
+            pm.printTextLinCol(6, 27, "");
+        }
+        pm.printTextLinCol(7, 1, "Num. Caja:");
+        pm.printTextLinCol(7, 27, String.valueOf(entity.getCajaId()));
+        pm.printTextLinCol(8, 1, "Cajero:");
+        pm.printTextLinCol(8, 27, entity.getUsuario());
+        pm.printTextLinCol(9, 1, "Monto:");
+        pm.printTextLinCol(9, 27, String.valueOf(entity.getMonto()));
+        
+        pm.printTextLinCol(11, 1, "Fecha:");
+        pm.printTextLinCol(11, 27, utilerias.convertirDateTime2String(entity.getFechaSalida(), Constantes.FORMATO_FECHA_TICKET));
+        pm.printTextLinCol(12, 1, "Hora:");
+        pm.printTextLinCol(12, 27, utilerias.convertirDateTime2String(entity.getFechaSalida(), Constantes.FORMATO_HORA_TICKET));
+        
+        String nombreArchivo = ("impresion.txt");
+        pm.toFile(nombreArchivo);
+
+        imprimirArchivo(nombreArchivo);
+    }
     
     public void imprimirTicketCorteCaja(List<DetalleCorte> list, CorteCaja corteCaja) throws Exception{
 
@@ -404,18 +537,17 @@ public class Impresora {
 
     /**
      *
-     * @param detallesPago
-     * @param orden
+     * @param transaccionId
+     * @param cobro
      * @param nombreSucursal
      * @param suscriptor
      * @throws Exception
      */
     public void imprimirTicketServicio(
             Long transaccionId, 
-            List<DetallePagoServicio> detallesPago, 
+            CobroServicio cobro, 
             ContratoxSuscriptorEntity suscriptor, 
-            String nombreSucursal/*,
-            Integer numeroMesesPagados*/) throws Exception {
+            String nombreSucursal) throws Exception {
 
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptor.getNombre()).append(" ").append(suscriptor.getApellidoPaterno()).append(" ").append(suscriptor.getApellidoMaterno());
@@ -431,26 +563,16 @@ public class Impresora {
             domicilio.append(suscriptor.getColonia());
         }
 
-        String contrato = String.valueOf(suscriptor.getContratoId());
-        if (suscriptor.getContratoAnteriorId() != null && suscriptor.getContratoAnteriorId() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getContratoAnteriorId()));
-        }
-
-        DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_SERVICIO).findAny().get();
-        Double importeTotal = detalleCobro.getMonto();
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getFolioContrato()));
 
         PrinterMatrix pm = new PrinterMatrix();
 
-        int cantidadLineas = 51;
-
-        if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()
-                || detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()
-                || detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_RECARGO).findAny().isPresent()) {
+        int cantidadLineas = 55;
+        
+        if(cobro.getDescuento() != null || cobro.getPromocion() != null || cobro.isSeCobraRecargo())
             cantidadLineas = cantidadLineas + 4;
-        }
 
         pm.setOutSize(cantidadLineas, 47);
-        //pm.printCharAtCol(1, 1, 47, "=");
 
         int linea = 2;
         pm.printTextLinCol(linea, 1, "\n");
@@ -494,6 +616,9 @@ public class Impresora {
             pm.printTextLinCol(linea, 14, descripcionPago.toString());
         }
         linea = linea + 2;
+        pm.printTextLinCol(linea, 1, "Periodo:");
+        pm.printTextLinCol(linea, 14, String.valueOf(cobro.getConcepto().replace("Pago", "").toUpperCase()));
+        linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Contrato:");
         pm.printTextLinCol(linea, 14, contrato);
         linea = linea + 2;
@@ -508,39 +633,37 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Telefono:");
         pm.printTextLinCol(linea, 14, suscriptor.getTelefono());
+        
+        double montoRecargo = 0;
+        if(cobro.isSeCobraRecargo())
+            montoRecargo = cobro.getMontoRecargo();
+            
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Costo Mensualidad(es):");
-        pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(detalleCobro.getMonto())));
-        if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_RECARGO).findAny().isPresent()) {
-            DetallePagoServicio detalleRecargo = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_RECARGO).findFirst().get();
-            importeTotal = importeTotal + detalleRecargo.getMonto();
+        pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoSugerido())));
+        if (cobro.isSeCobraRecargo()) {
             linea++;
             pm.printTextLinCol(linea, 1, "Pago tardio:");
-            pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(detalleRecargo.getMonto())));
+            pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoRecargo())));
         }
-        if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()) {
-            DetallePagoServicio detallePromocion = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get();
+        if (cobro.getPromocion() != null) {
             linea++;
-            importeTotal = detallePromocion.getMonto();
-            pm.printTextLinCol(linea, 1, "Promoción:");
-            pm.printTextLinCol(linea, 38, "- $ ".concat(String.valueOf(detalleCobro.getMonto()
-                    - detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get().getMonto())));
+            pm.printTextLinCol(linea, 1, "Costo Promoción:");
+            pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getPromocion().getCostoPromocion())));
         } else {
-            if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()) {
+            if (cobro.getDescuento() != null) {
                 linea++;
-                DetallePagoServicio detalleDescuento = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findFirst().get();
-                importeTotal = importeTotal -detalleDescuento.getMonto();
                 pm.printTextLinCol(linea, 1, "Descuento:");
-                pm.printTextLinCol(linea, 38, "- $ ".concat(String.valueOf(detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().get().getMonto())));
+                pm.printTextLinCol(linea, 39, "-$ ".concat(String.valueOf(cobro.getMontoSugerido() - cobro.getMontoTotal())));
             }
         }
 
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Total a pagar:");
-        pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(importeTotal)));
+        pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoTotal())));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Proximo pago antes de:");
-        pm.printTextLinCol(linea, 25, detalleCobro.getFechaProximoPago());
+        pm.printTextLinCol(linea, 25, cobro.getFechaProximoPagoTicket());
         linea++;
         pm.printTextWrap(linea, 1, 1, 47, "RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO");
         linea++;
@@ -601,10 +724,8 @@ public class Impresora {
             domicilio.append(entity.getColonia());
         }
 
-        String contrato = String.valueOf(entity.getContratoId());
-        if (entity.getContratoAnteriorId() != null && entity.getContratoAnteriorId() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getContratoAnteriorId()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getFolioContrato()));
+        
 
         DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_SERVICIO).findAny().get();
         Double importeTotal = detalleCobro.getMonto();
@@ -756,10 +877,7 @@ public class Impresora {
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptor.getNombre()).append(" ").append(suscriptor.getApellidoPaterno()).append(" ").append(suscriptor.getApellidoMaterno());
 
-        String contrato = String.valueOf(orden.getContratoId());
-        if (suscriptor.getContratoAnterior() != null && suscriptor.getContratoAnterior() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getContratoAnterior()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getFolioContrato()));
 
         PrinterMatrix pm = new PrinterMatrix();
 
@@ -900,10 +1018,8 @@ public class Impresora {
             domicilio.append(entity.getColonia());
         }
 
-        String contrato = String.valueOf(entity.getContratoId());
-        if (entity.getContratoAnteriorId() != null && entity.getContratoAnteriorId() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getContratoAnteriorId()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getFolioContrato()));
+        
 
         PrinterMatrix pm = new PrinterMatrix();
 
@@ -1028,11 +1144,8 @@ public class Impresora {
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptor.getNombre()).append(" ").append(suscriptor.getApellidoPaterno()).append(" ").append(suscriptor.getApellidoMaterno());
 
-        String contrato = String.valueOf(orden.getContratoId());
-        if (suscriptor.getContratoAnterior() != null && suscriptor.getContratoAnterior() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getContratoAnterior()));
-        }
-
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getFolioContrato()));
+      
         PrinterMatrix pm = new PrinterMatrix();
 
         int cantidadLineas = 51;
@@ -1175,10 +1288,8 @@ public class Impresora {
             domicilio.append(entity.getColonia());
         }
         
-        String contrato = String.valueOf(entity.getContratoId());
-        if (entity.getContratoAnteriorId() != null && entity.getContratoAnteriorId() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getContratoAnteriorId()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getFolioContrato()));
+        
 
         PrinterMatrix pm = new PrinterMatrix();
 
@@ -1307,10 +1418,7 @@ public class Impresora {
         StringBuilder nombre = new StringBuilder();
         nombre.append(suscriptor.getNombre()).append(" ").append(suscriptor.getApellidoPaterno()).append(" ").append(suscriptor.getApellidoMaterno());
 
-        String contrato = String.valueOf(orden.getContratoId());
-        if (suscriptor.getContratoAnterior() != null && suscriptor.getContratoAnterior() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getContratoAnterior()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getFolioContrato()));
 
         PrinterMatrix pm = new PrinterMatrix();
 
@@ -1447,10 +1555,8 @@ public class Impresora {
         if(entity.getColonia() != null)
             domicilio.append(" ").append(entity.getColonia());
         
-        String contrato = String.valueOf(entity.getContratoId());
-        if (entity.getContratoAnteriorId() != null && entity.getContratoAnteriorId() > 0) {
-            contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getContratoAnteriorId()));
-        }
+        String contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getFolioContrato()));
+        
 
         PrinterMatrix pm = new PrinterMatrix();
 

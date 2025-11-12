@@ -117,8 +117,7 @@ public class ContratoxSuscriptorDao {
                 entity.setApellidoPaterno(rs.getString("apellido_paterno"));
                 entity.setCalle(rs.getString("calle"));
                 entity.setColonia(rs.getString("colonia"));
-                //if(rs.getLong("id_contrato_anterior"))
-                entity.setContratoAnteriorId(rs.getLong("id_contrato_anterior"));
+                entity.setFolioContrato(rs.getLong("folio_contrato"));
                 entity.setContratoId(rs.getLong("id_contrato"));
                 entity.setDomicilioId(rs.getLong("id_domicilio"));
                 entity.setEstatusContratoId(rs.getInt("id_estatus_contrato"));
@@ -180,8 +179,8 @@ public class ContratoxSuscriptorDao {
         StringBuilder builder = new StringBuilder();
         
         switch(tipoBusquedaCobro){
-            case Constantes.TIPO_BUSQUEDA_CONTRATO:
-                builder.append("SELECT c.id_contrato, c.id_contrato_anterior, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
+            /*case Constantes.TIPO_BUSQUEDA_CONTRATO:
+                builder.append("SELECT c.id_contrato, c.folio_contrato, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
 "               sus.apellido_paterno, sus.apellido_materno, sus.telefono, sus.id_estatus as estatus_suscriptor, d.id_domicilio, d.colonia, d.calle,\n" +
 "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio\n" +
 "          FROM contratos c\n" +
@@ -203,9 +202,9 @@ public class ContratoxSuscriptorDao {
                 builder.append(contratoId);
                 builder.append(" and sc.estatus = 1 and d.estatus = 1");
                 //builder.append(" AND sus.id_estatus = 2");
-                break;
-            case Constantes.TIPO_BUSQUEDA_CONTRATO_ANTERIOR:
-                builder.append("SELECT c.id_contrato, c.id_contrato_anterior, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
+                break;*/
+            case Constantes.TIPO_BUSQUEDA_FOLIO_CONTRATO:
+                builder.append("SELECT c.id_contrato, c.folio_contrato, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
 "               sus.apellido_paterno, sus.apellido_materno, sus.telefono, sus.id_estatus as estatus_suscriptor, d.id_domicilio, d.colonia, d.calle,\n" +
 "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio\n" +
 "          FROM contratos c\n" +
@@ -223,13 +222,13 @@ public class ContratoxSuscriptorDao {
 "            ON cs.id_suscriptor = sus.id_suscriptor\n" +
 "    INNER JOIN estatus_contrato ec\n" +
 "            ON c.id_estatus = ec.id_estatus\n" +
-"         WHERE c.id_contrato_anterior = ");
+"         WHERE c.folio_contrato = ");
                 builder.append(contratoId);
                 builder.append(" and sc.estatus = 1 and d.estatus = 1");
                 //builder.append(" AND sus.id_estatus = 2");
                 break;
             case Constantes.TIPO_BUSQUEDA_NOMBRE:
-                builder.append("SELECT c.id_contrato, c.id_contrato_anterior, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
+                builder.append("SELECT c.id_contrato, c.folio_contrato, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
 "               sus.apellido_paterno, sus.apellido_materno, sus.telefono, sus.id_estatus as estatus_suscriptor, d.id_domicilio, d.colonia, d.calle,\n" +
 "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio\n" +
 "          FROM contratos c\n" +
@@ -254,7 +253,7 @@ public class ContratoxSuscriptorDao {
                 //builder.append(" AND sus.id_estatus = 2");
                 break;
             case Constantes.TIPO_BUSQUEDA_APELLIDO_PATERNO:
-                builder.append("SELECT c.id_contrato, c.id_contrato_anterior, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
+                builder.append("SELECT c.id_contrato, c.folio_contrato, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
 "               sus.apellido_paterno, sus.apellido_materno, sus.telefono, sus.id_estatus as estatus_suscriptor, d.id_domicilio, d.colonia, d.calle,\n" +
 "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio\n" +
 "          FROM contratos c\n" +
@@ -278,7 +277,7 @@ public class ContratoxSuscriptorDao {
                 builder.append(" and sc.estatus = 1 and d.estatus = 1");
                 break;
             case Constantes.TIPO_BUSQUEDA_APELLIDO_MATERNO:
-                builder.append("SELECT c.id_contrato, c.id_contrato_anterior, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
+                builder.append("SELECT c.id_contrato, c.folio_contrato, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
 "               sus.apellido_paterno, sus.apellido_materno, sus.telefono, sus.id_estatus as estatus_suscriptor, d.id_domicilio, d.colonia, d.calle,\n" +
 "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio\n" +
 "          FROM contratos c\n" +
@@ -302,7 +301,7 @@ public class ContratoxSuscriptorDao {
                 builder.append(" and sc.estatus = 1 and d.estatus = 1");
                 break;
             case Constantes.TIPO_BUSQUEDA_DOMICILIO:
-                builder.append("SELECT c.id_contrato, c.id_contrato_anterior, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
+                builder.append("SELECT c.id_contrato, c.folio_contrato, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
 "               sus.apellido_paterno, sus.apellido_materno, sus.telefono, sus.id_estatus as estatus_suscriptor, d.id_domicilio, d.colonia, d.calle,\n" +
 "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio\n" +
 "          FROM contratos c\n" +

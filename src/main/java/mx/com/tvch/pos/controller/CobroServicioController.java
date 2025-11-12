@@ -30,6 +30,7 @@ import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
 import mx.com.tvch.pos.entity.PromocionEntity;
 import mx.com.tvch.pos.entity.TipoDescuentoEntity;
 import mx.com.tvch.pos.entity.TransaccionEntity;
+import mx.com.tvch.pos.model.CobroServicio;
 import mx.com.tvch.pos.model.DetallePagoServicio;
 import mx.com.tvch.pos.model.client.Request;
 import mx.com.tvch.pos.model.client.Response;
@@ -127,55 +128,29 @@ public class CobroServicioController {
     /**
      * 
      * @param suscriptor
-     * @param detallesPago
-     * @param numeroMeses
+     * @param cobro
      * @return
      * @throws Exception 
      */
-    public Long cobrarServicio(ContratoxSuscriptorEntity suscriptor, List<DetallePagoServicio> detallesPago/*, Integer numeroMeses*/) throws Exception {
+    public Long cobrarServicio(ContratoxSuscriptorEntity suscriptor, CobroServicio cobro) throws Exception {
 
         Long transaccionId = null;
-        Integer numeroMeses = suscriptor.getMesesPorPagar();
+        Integer numeroMeses = cobro.getMesesPagados();
 
         try {
-            Double importePagar = Double.valueOf(obtenerImporteActualizado(detallesPago));
             //validar si hay meses gratis y agregarlos a la nueva fecha de pago
-            if(suscriptor.getMesesGratis() != null && suscriptor.getMesesGratis() > 0)
-                numeroMeses = numeroMeses + suscriptor.getMesesGratis();
+            //if(suscriptor.getMesesGratis() != null && suscriptor.getMesesGratis() > 0)
+              //  numeroMeses = numeroMeses + suscriptor.getMesesGratis();
 
             String nuevaFechaPagoTicket = "";
             String nuevaFechaPagoMySql = "";
-            if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()) {
-                    nuevaFechaPagoMySql = util.obtenerNuevaFechaProximoPago(
-                            sesion.getDiaCorte(),
-                        detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get().getMesesGratis(),
-                        suscriptor.getFechaProximoPago(), 
-                        Constantes.FORMATO_FECHA_MYSQL,
-                        numeroMeses,
-                        suscriptor.getEstatusContratoId());
-                    nuevaFechaPagoTicket = util.obtenerNuevaFechaProximoPago(
-                            sesion.getDiaCorte(),
-                        detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findFirst().get().getMesesGratis(),
-                        suscriptor.getFechaProximoPago(), 
-                        Constantes.FORMATO_FECHA_TICKET,
-                        numeroMeses,
-                        suscriptor.getEstatusContratoId());
+            if (cobro.getPromocion() != null) {
+                nuevaFechaPagoMySql = util.convertirDateTime2String(cobro.getFechaProximoPago(), Constantes.FORMATO_FECHA_MYSQL);
+                nuevaFechaPagoTicket = cobro.getFechaProximoPagoTicket();
 
             } else {
-                    nuevaFechaPagoMySql = util.obtenerNuevaFechaProximoPago(
-                            sesion.getDiaCorte(), 
-                            null, 
-                            suscriptor.getFechaProximoPago(), 
-                            Constantes.FORMATO_FECHA_MYSQL,
-                            numeroMeses,
-                            suscriptor.getEstatusContratoId());
-                    nuevaFechaPagoTicket = util.obtenerNuevaFechaProximoPago(
-                            sesion.getDiaCorte(), 
-                            null, 
-                            suscriptor.getFechaProximoPago(), 
-                            Constantes.FORMATO_FECHA_TICKET,
-                            numeroMeses,
-                            suscriptor.getEstatusContratoId());
+                nuevaFechaPagoMySql = util.convertirDateTime2String(cobro.getFechaProximoPago(), Constantes.FORMATO_FECHA_MYSQL);
+                nuevaFechaPagoTicket = cobro.getFechaProximoPagoTicket();
 
             }
 
@@ -184,17 +159,18 @@ public class CobroServicioController {
             transaccionEntity.setAperturaCajaId(sesion.getAperturaCajaId());
             transaccionEntity.setContratoId(suscriptor.getContratoId());
             transaccionEntity.setFechaTransaccion(util.obtenerFechaFormatoMysql());
-            transaccionEntity.setMonto(importePagar);//monto a pagar ya con descuentos y promociones aplicadas si existieran
+            transaccionEntity.setMonto(cobro.getMontoTotal());//monto a pagar ya con descuentos y promociones aplicadas si existieran
             transaccionEntity.setTransaccionId(util.generarIdLocal());
+            transaccionEntity.setObservaciones(cobro.getObservaciones().toUpperCase());
+            transaccionEntity.setPeriodo(cobro.getConcepto().replace("Pago", "").toUpperCase());
+            transaccionEntity.setNuevaFechaCorte(util.convertirDateTime2String(cobro.getFechaProximoPago(), Constantes.FORMATO_FECHA_MYSQL));
+            
             transaccionId = transaccionEntity.getTransaccionId();
             transaccionDao.registrarTransaccion(transaccionEntity);
 
             //registrar el detalle de la transaccion
-            DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_SERVICIO).findFirst().get();
-            //setear la nueva fecha de pago para despues se imprima en el ticket
-            detalleCobro.setFechaProximoPago(nuevaFechaPagoTicket);
             DetalleCobroTransaccionEntity detalleCobroTransaccionEntity = new DetalleCobroTransaccionEntity();
-            detalleCobroTransaccionEntity.setMonto(detalleCobro.getMonto());// monto sin descuentos ni promociones aplicadas
+            detalleCobroTransaccionEntity.setMonto(cobro.getMontoServicio()*cobro.getMesesPagados());// monto sin descuentos ni promociones aplicadas
             detalleCobroTransaccionEntity.setServicioId(suscriptor.getServicioId());
             detalleCobroTransaccionEntity.setTipoCobroId(Constantes.TIPO_COBRO_SERVICIO);
             detalleCobroTransaccionEntity.setTransaccionId(transaccionId);
@@ -202,10 +178,9 @@ public class CobroServicioController {
             Long detalleCobroId = detalleCobroTransaccionDao.registrarDetalleTransaccion(detalleCobroTransaccionEntity);
 
             //registrar el recargo del servicio
-            if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_RECARGO).findAny().isPresent()) {
-                DetallePagoServicio detalleRecargo = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_RECARGO).findFirst().get();
+            if (cobro.isSeCobraRecargo()) {
                 DetalleCobroTransaccionEntity detalleRecargoTransaccionEntity = new DetalleCobroTransaccionEntity();
-                detalleRecargoTransaccionEntity.setMonto(detalleRecargo.getMonto());// monto sin descuentos ni promociones aplicadas
+                detalleRecargoTransaccionEntity.setMonto(cobro.getMontoRecargo());// monto sin descuentos ni promociones aplicadas
                 detalleRecargoTransaccionEntity.setServicioId(suscriptor.getServicioId());
                 detalleRecargoTransaccionEntity.setTipoCobroId(Constantes.TIPO_COBRO_RECARGO_MENSUALIDAD);
                 detalleRecargoTransaccionEntity.setTransaccionId(transaccionId);
@@ -214,24 +189,22 @@ public class CobroServicioController {
             }
 
             //registrar el detalle de promocion
-            if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().isPresent()) {
-                DetallePagoServicio detallePromocion = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_PROMOCION).findAny().get();
+            if (cobro.getPromocion() != null) {
                 DetallePromocionTransaccionEntity detallePromocionTransaccionEntity = new DetallePromocionTransaccionEntity();
-                detallePromocionTransaccionEntity.setCostoPromocion(detallePromocion.getMonto());
-                detallePromocionTransaccionEntity.setDescripcionPromocion(detallePromocion.getConcepto());
-                detallePromocionTransaccionEntity.setPromocionId(detallePromocion.getPromocionId());
+                detallePromocionTransaccionEntity.setCostoPromocion(cobro.getPromocion().getCostoPromocion());
+                detallePromocionTransaccionEntity.setDescripcionPromocion(cobro.getPromocion().getDescripcion());
+                detallePromocionTransaccionEntity.setPromocionId(cobro.getPromocion().getPromocionId());
                 detallePromocionTransaccionEntity.setTransaccionId(transaccionId);
                 detallePromocionTransaccionEntity.setTipoPromocionId(Constantes.TIPO_PROMOCION_SERVICIO);
                 Long detallePromocionId = detallePromocionTransaccionDao.registrarDetallePromocion(detallePromocionTransaccionEntity);
             }
 
             //registrar el detalle de decuento
-            if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()) {
-                DetallePagoServicio detalleDescuento = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().get();
+            if (cobro.getDescuento() != null) {
                 DetalleDescuentoTransaccionEntity detalleDescuentoTransaccionEntity = new DetalleDescuentoTransaccionEntity();
-                detalleDescuentoTransaccionEntity.setMonto(detalleDescuento.getMonto());
-                detalleDescuentoTransaccionEntity.setObservaciones(detalleDescuento.getMotivoDescuento());
-                detalleDescuentoTransaccionEntity.setTipoDescuentoId(detalleDescuento.getTipoDescuentoId());
+                detalleDescuentoTransaccionEntity.setMonto(cobro.getDescuento().getMontoDescuento());
+                detalleDescuentoTransaccionEntity.setObservaciones(cobro.getDescuento().getMotivoDescuento());
+                detalleDescuentoTransaccionEntity.setTipoDescuentoId(cobro.getDescuento().getTipoDescuentoId());
                 detalleDescuentoTransaccionEntity.setTransaccionId(transaccionId);
                 Long detalleDescuentoId = detalleDescuentoTransaccionDao.registrarDetalleDescuento(detalleDescuentoTransaccionEntity);
             }
@@ -422,7 +395,7 @@ public class CobroServicioController {
 
     }
     
-    public Double obtenerMontoAtrasado(ContratoxSuscriptorEntity suscriptorSeleccionado){
+    public Double obtenerMontoPorCobrar(ContratoxSuscriptorEntity suscriptorSeleccionado){
         
         Double monto = 0.0;
                     
@@ -438,9 +411,9 @@ public class CobroServicioController {
             
         Calendar fechaHoy = Calendar.getInstance();
         fechaHoy.setTime(new Date());
-        int mesCancelacion = fechaHoy.get(Calendar.MONTH);
-        int anioCancelacion = fechaHoy.get(Calendar.YEAR);
-        int diaCancelacion = fechaHoy.get(Calendar.DAY_OF_MONTH);
+        int mesHoy = fechaHoy.get(Calendar.MONTH);
+        int anioHoy = fechaHoy.get(Calendar.YEAR);
+        int diaHoy = fechaHoy.get(Calendar.DAY_OF_MONTH);
         fechaHoy.set(Calendar.HOUR_OF_DAY, 0);
         fechaHoy.set(Calendar.MINUTE, 0);
         fechaHoy.set(Calendar.SECOND, 0);
@@ -448,8 +421,8 @@ public class CobroServicioController {
         
  
         //si esta vencido es porque la fecha ya se paso
-        int diferenciaAnios = anioCancelacion - anioFechaProximoPago;
-        int diferenciaMeses = (diferenciaAnios*12) + mesCancelacion - mesFechaProximoPago;
+        int diferenciaAnios = anioHoy - anioFechaProximoPago;
+        int diferenciaMeses = (diferenciaAnios*12) + mesHoy - mesFechaProximoPago;
         monto = (suscriptorSeleccionado.getCostoServicio() * (diferenciaMeses+1)) ;
        
         return monto;

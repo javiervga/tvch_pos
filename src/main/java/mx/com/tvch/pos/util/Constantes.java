@@ -14,6 +14,7 @@ public class Constantes {
     public static final String FORMATO_FECHA_MYSQL = "yyyy-MM-dd HH:mm:ss";
     public static final String FORMATO_FECHA_TICKET = "dd/MM/yy";
     public static final String FORMATO_FECHA_WEB_SERVICE = "dd/MM/yyyy";
+    public static final String FORMATO_FECHA_HORA_WEB_SERVICE = "dd/MM/yyyy HH:mm:ss";
     public static final String FORMATO_HORA_TICKET = "HH:mm:ss";
     
     public static final long ESTATUS_USUARIO_ACTIVO = 1;
@@ -64,16 +65,26 @@ public class Constantes {
     public static final int TIPO_DETALLE_COBRO_DESCUENTO = 4;
     public static final int TIPO_DETALLE_COBRO_CANCELACION = 6;
     
-    public static final int TIPO_BUSQUEDA_CONTRATO = 1;
-    public static final int TIPO_BUSQUEDA_CONTRATO_ANTERIOR = 2;
-    public static final int TIPO_BUSQUEDA_NOMBRE = 3;
-    public static final int TIPO_BUSQUEDA_APELLIDO_PATERNO = 4;
-    public static final int TIPO_BUSQUEDA_APELLIDO_MATERNO = 5;
-    public static final int TIPO_BUSQUEDA_DOMICILIO = 6;
+    //public static final int TIPO_BUSQUEDA_CONTRATO = 1;
+    public static final int TIPO_BUSQUEDA_FOLIO_CONTRATO = 1;
+    public static final int TIPO_BUSQUEDA_NOMBRE = 2;
+    public static final int TIPO_BUSQUEDA_APELLIDO_PATERNO = 3;
+    public static final int TIPO_BUSQUEDA_APELLIDO_MATERNO = 4;
+    public static final int TIPO_BUSQUEDA_DOMICILIO = 5;
     
     public static final int TIPO_ORDEN_INSTALACION = 1;
     public static final int TIPO_ORDEN_SERVICIO = 2;
-    public static final int TIPO_ORDEN_CAMBIO_DOMICILIO = 3;
+    public static final int TIPO_ORDEN_CAMBIO_DOMICILIO = 4;
+    
+    public static final int TIPO_ORDEN_SERVICIO_TV_ADICIONAL = 1;
+    public static final int TIPO_ORDEN_SERVICIO_CAMBIO_CABLE_ACOMETIDA = 2;
+    public static final int TIPO_ORDEN_SERVICIO_CAMBIO_CABLEADO = 3;
+    public static final int TIPO_ORDEN_SERVICIO_REUBICACION_MODEM = 4;
+    public static final int TIPO_ORDEN_SERVICIO_CAMBIO_UBICACION_TV = 5;
+    public static final int TIPO_ORDEN_SERVICIO_VISITA_TECNICA = 6;
+    public static final int TIPO_ORDEN_SERVICIO_CAMBIO_PLAN = 7;
+    public static final int TIPO_ORDEN_SERVICIO_RETIRO_EQUIPO_CANCELACION = 8;
+    public static final int TIPO_ORDEN_SERVICIO_RECONEXION_SERVICIO = 9;
     
     public static final long TIPO_COBRO_ORDEN_INSTALACION = 1;
     public static final long TIPO_COBRO_SERVICIO = 2;
@@ -81,6 +92,7 @@ public class Constantes {
     public static final long TIPO_COBRO_ORDEN_CAMBIO_DOMICILIO = 4;
     public static final long TIPO_COBRO_RECARGO_MENSUALIDAD = 5;
     public static final long TIPO_COBRO_CANCELACION_CONTRATO = 6;
+    public static final long TIPO_COBRO_PROVISIONAL = 7;
     
     // Propiedades
     public static final String TVCH_API_URL = "tvch.api.path.url";
@@ -135,5 +147,17 @@ public class Constantes {
     
     public static final long TIPO_DIFERENCIA_CORTE_FALTANTE = 1;
     public static final long TIPO_DIFERENCIA_CORTE_SOBRANTE = 2;
+    
+    public static final int ESTATUS_COBRO_PROVISIONAL_NUEVO = 0;
+    public static final int ESTATUS_COBRO_PROVISIONAL_APLICADO = 1;
+    
+    public static final int OPERACION_COBRO_SERVICIO = 1;
+    public static final int OPERACION_CANCELACION = 2;
+    public static final int OPERACION_COBRO_PROVISIONAL = 3;
+    public static final int OPERACION_CORTE = 4;
+    public static final int OPERACION_APERTURA = 5;
+    public static final int OPERACION_INGRESO = 6;
+    public static final int OPERACION_EGRESO = 7;
+    public static final int OPERACION_EGRESO_EXTRAORDINARIO = 8;
     
 }

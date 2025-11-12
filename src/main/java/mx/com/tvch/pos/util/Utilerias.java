@@ -10,12 +10,16 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import javax.swing.text.DateFormatter;
+import java.util.List;
 import mx.com.tvch.pos.config.Sesion;
+import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
+import mx.com.tvch.pos.model.Mes;
 
 /**
  *
@@ -26,12 +30,9 @@ public class Utilerias {
     private static Utilerias utilerias;
     private final Sesion sesion;
     DecimalFormat df = new DecimalFormat("#.##");
+    List<Mes> meses = new ArrayList<>();
+    private final SimpleDateFormat dateFormatMysql;
     
-    public Double redondearMonto(Double monto){
-        String montoCadena = df.format(monto);
-        return Double.valueOf(montoCadena);
-    }
-
     public static Utilerias getUtilerias() {
         if (utilerias == null) {
             utilerias = new Utilerias();
@@ -40,8 +41,210 @@ public class Utilerias {
     }
 
     public Utilerias() {
+        dateFormatMysql = new SimpleDateFormat(Constantes.FORMATO_FECHA_MYSQL);
         sesion = Sesion.getSesion();
+        meses.add(new Mes(1,"ENERO"));
+        meses.add(new Mes(2,"FEBRERO"));
+        meses.add(new Mes(3,"MARZO"));
+        meses.add(new Mes(4,"ABRIL"));
+        meses.add(new Mes(5,"MAYO"));
+        meses.add(new Mes(6,"JUNIO"));
+        meses.add(new Mes(7,"JULIO"));
+        meses.add(new Mes(8,"AGOSTO"));
+        meses.add(new Mes(9,"SEPTIEMBRE"));
+        meses.add(new Mes(10,"OCTUBRE"));
+        meses.add(new Mes(11,"NOVIEMBRE"));
+        meses.add(new Mes(12,"DICIEMBRE"));
     }
+    
+    /**
+     * 
+     * @param fechaCorte
+     * @param fechaEnCurso
+     * @return 
+     */
+    public Integer obtenerDiferenciaMeses(Calendar fechaCorte, Calendar fechaEnCurso) {
+        LocalDate fechaInicio = LocalDate
+                .of(fechaCorte.get(Calendar.YEAR), fechaCorte.get(Calendar.MONTH), fechaCorte.get(Calendar.DAY_OF_MONTH));
+        LocalDate fechaFin = LocalDate
+                .of(fechaEnCurso.get(Calendar.YEAR), fechaEnCurso.get(Calendar.MONTH), fechaEnCurso.get(Calendar.DAY_OF_MONTH));
+
+        Period periodo = Period.between(fechaInicio, fechaFin);
+        return periodo.getMonths();
+
+    }
+
+    
+    public Date obtenerFechaPago(Mes mesSeleccionado, int anioSeleccionado){
+        
+        Calendar fechaPago = Calendar.getInstance();
+        fechaPago.setTime(new Date());
+        fechaPago.set(Calendar.DAY_OF_MONTH, sesion.getDiaCorte());
+        fechaPago.set(Calendar.MONTH, mesSeleccionado.getNumero()-1);
+        fechaPago.set(Calendar.YEAR, anioSeleccionado);
+        fechaPago.set(Calendar.HOUR, 0);
+        fechaPago.set(Calendar.MINUTE, 0);
+        fechaPago.set(Calendar.SECOND, 0);
+
+        return fechaPago.getTime();
+    }
+    
+    public String obtenerCadenaFechaPago(Mes mesSeleccionado, int anioSeleccionado){
+        
+        StringBuilder cadena = new StringBuilder();
+                
+        int diaCorte = sesion.getDiaCorte();
+        
+        String cadenaDia = String.valueOf(diaCorte);
+        
+        if(diaCorte < 10)
+            cadena.append("0");
+        cadena.append(diaCorte).append("/");
+        cadena.append(mesSeleccionado.getNombre()).append("/");
+        cadena.append(anioSeleccionado);
+
+        return cadena.toString();
+    }
+    
+    public boolean esFechaPagoValida(ContratoxSuscriptorEntity suscriptor, Mes mesSeleccionado, int anioSeleccionado){
+        
+        boolean esValida = false;
+        
+        //primero obtener la fecha de corte
+        Calendar fechaCorte = Calendar.getInstance();
+        fechaCorte.setTime(suscriptor.getFechaProximoPago());
+        
+        //despues obtener la fecha selccionada en los combos de mes y año
+        Calendar fechaSeleccionada = Calendar.getInstance();
+        fechaSeleccionada.setTime(new Date());
+        fechaSeleccionada.set(Calendar.MONTH, mesSeleccionado.getNumero()-1);
+        fechaSeleccionada.set(Calendar.YEAR, anioSeleccionado);
+        fechaSeleccionada.set(Calendar.DAY_OF_MONTH, sesion.getDiaCorte());
+        
+        //tambien obtener la fecha en curso
+        Calendar fechaEnCurso = Calendar.getInstance();
+        fechaEnCurso.setTime(new Date());
+        
+        //primero validar que la fecha seleccionada en los combos sea mayor a la fecha de corte
+        int diferenciaAnios = anioSeleccionado - fechaCorte.get(Calendar.YEAR);
+        int diferenciaMeses = (diferenciaAnios*12) + mesSeleccionado.getNumero() - (fechaCorte.get(Calendar.MONTH)+1);
+        if(diferenciaMeses > 0){
+            //despues validar que la fecha seleccionada en los combos sea posterior al mes en curso
+            //este caso podria dar cuando un contrato lleve dos o mas meses sin pago pero aparezca en activo 
+            //y la fecha seleccionada en los combos sea menor a la fecha en curso
+            if(fechaSeleccionada.getTime().after(fechaEnCurso.getTime()))
+                esValida = true;
+        }
+        
+        return esValida;
+    }
+    
+    public Mes obtenerMesAnterior(Mes mesSeleccionado){
+        
+        int mes = mesSeleccionado.getNumero();
+        switch (mes) {
+            case 1:
+                return new Mes(12, "DICIEMBRE");
+            case 2:
+                return new Mes(1, "ENERO");
+            case 3:
+                return new Mes(2, "FEBRERO");
+            case 4:
+                return new Mes(3, "MARZO");
+            case 5:
+                return new Mes(4, "ABRIL");
+            case 6:
+                return new Mes(5, "MAYO");
+            case 7:
+                return new Mes(6, "JUNIO");
+            case 8:
+                return new Mes(7, "JULIO");
+            case 9:
+                return new Mes(8, "AGOSTO");
+            case 10:
+                return new Mes(9, "SEPTIEMBRE");
+            case 11:
+                return new Mes(10, "OCTUBRE");
+            case 12:
+                return new Mes(11, "NOVIEMBRE");
+        }
+        return null;
+        
+    }
+    
+    public String obtenerDescripcionPagoUnMes(Mes mesSeleccionado, int anioSeleccionado){
+        
+        //si el mes es enero, se resta un año
+        if(mesSeleccionado.getNumero() == 1){
+            anioSeleccionado = anioSeleccionado -1;
+        }
+        
+        StringBuilder desc = new StringBuilder();
+        Mes mesPagado = obtenerMesAnterior(mesSeleccionado);
+        desc.append(">>").append(mesPagado.getNombre()).append(" ").append(anioSeleccionado);
+        
+        return desc.toString();
+    }
+    
+    public String obtenerDescripcionVariosMeses(Mes mesPagado, int anioPagado, Date fechaCorte){
+        
+        Calendar fechaUltimoCorte = Calendar.getInstance();
+        fechaUltimoCorte.setTime(fechaCorte);
+        int mesEnCurso = fechaUltimoCorte.get(Calendar.MONTH)+1;
+        Mes mes = meses.stream().filter(m -> m.getNumero() == mesEnCurso).findFirst().get();
+        
+        Calendar fechaSeleccionada = Calendar.getInstance();
+        fechaSeleccionada.setTime(fechaCorte);
+        
+        StringBuilder desc = new StringBuilder();
+        desc.append(">>").append(mes.getNombre()).append(" ").append(fechaUltimoCorte.get(Calendar.YEAR));
+        desc.append(" a ").append(mesPagado.getNombre()).append(" ").append(anioPagado);
+        
+        return desc.toString();
+    }
+    
+    public int calcularMesesPagados(Mes mesSeleccionado, int anioSeleccionado, Date fechaCorte){
+        
+        Date fecha = new Date();
+        
+        Calendar fechaUltimoCorte = Calendar.getInstance();
+        fechaUltimoCorte.setTime(fechaCorte);
+        //int mesEnCurso = fechaUltimoCorte.get(Calendar.MONTH)+1;
+        //int anioCorte = fechaUltimoCorte.get(Calendar.YEAR);
+        
+        Calendar fechaSeleccionada = Calendar.getInstance();
+        fechaSeleccionada.setTime(fecha);
+        fechaSeleccionada.set(Calendar.YEAR, anioSeleccionado);
+        fechaSeleccionada.set(Calendar.MONTH, mesSeleccionado.getNumero()-1);
+        
+        //si esta vencido es porque la fecha ya se paso
+        int diferenciaAnios = anioSeleccionado - fechaUltimoCorte.get(Calendar.YEAR);
+        int diferenciaMeses = (diferenciaAnios*12) + mesSeleccionado.getNumero() - (fechaUltimoCorte.get(Calendar.MONTH)+1);
+        
+        return diferenciaMeses;
+    }
+    
+    public List<Integer> obtenerAniosPorMostrar(Date fechaCorte){
+        
+        List<Integer> anios = new ArrayList<>();
+        
+        Calendar fecha = Calendar.getInstance();
+        fecha.setTime(fechaCorte);
+        int anioCorte = fecha.get(Calendar.YEAR);
+        int siguienteAnio = anioCorte + 1;
+        int siguiente2Anio = siguienteAnio + 1;
+        anios.add(anioCorte);
+        anios.add(siguienteAnio);
+        anios.add(siguiente2Anio);
+        return anios;
+    }
+    
+    public Double redondearMonto(Double monto){
+        String montoCadena = df.format(monto);
+        return Double.valueOf(montoCadena);
+    }
+
+    
 
     public static void main(String args[]) {
         Utilerias utilerias = getUtilerias();
@@ -140,14 +343,6 @@ public class Utilerias {
             diaCorte = 10;
         }
 
-        /*
-        
-        nuevaFechaPago = Calendar.getInstance();
-        SimpleDateFormat dateFormat = new SimpleDateFormat(Constantes.FORMATO_FECHA_WEB_SERVICE);
-        Date fechaPagoActual = dateFormat.parse(fechaPago);
-        nuevaFechaPago.setTime(fechaPagoActual);
-
-        return convertirDateTime2String(nuevaFechaPago.getTime(), Constantes.FORMATO_FECHA_WEB_SERVICE);*/
         Date nuevaFechaPago = obtenerFechaProximoPago(diaCorte);
         Calendar calFecha = Calendar.getInstance();
         calFecha.setTime(nuevaFechaPago);
@@ -252,6 +447,16 @@ public class Utilerias {
         }
         return esValido;
 
+    }
+    
+    /**
+     *
+     * @param cadenaFechaMysql
+     * @return
+     * @throws ParseException
+     */
+    public Date convertirCadenaMysqlaDate(String cadenaFechaMysql) throws ParseException {
+        return dateFormatMysql.parse(cadenaFechaMysql);
     }
 
 }
