@@ -164,7 +164,8 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
+                !sesion.getTelefonoSoporte().contains("null")){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
             pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
@@ -284,7 +285,8 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
+                !sesion.getTelefonoSoporte().contains("null")){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
             pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
@@ -407,7 +409,8 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
+                !sesion.getTelefonoSoporte().contains("null")){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
             pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
@@ -679,7 +682,8 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
+                !sesion.getTelefonoSoporte().contains("null")){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
             pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
@@ -847,7 +851,8 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
+                !sesion.getTelefonoSoporte().contains("null")){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
             pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
@@ -975,7 +980,8 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
+                !sesion.getTelefonoSoporte().contains("null")){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
             pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
@@ -1118,7 +1124,8 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
+                !sesion.getTelefonoSoporte().contains("null")){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
             pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
@@ -1242,7 +1249,8 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
+                !sesion.getTelefonoSoporte().contains("null")){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
             pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
@@ -1387,7 +1395,8 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
+                !sesion.getTelefonoSoporte().contains("null")){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
             pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
@@ -1516,7 +1525,8 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
+                !sesion.getTelefonoSoporte().contains("null")){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
             pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
@@ -1654,7 +1664,8 @@ public class Impresora {
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()){
+        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
+                !sesion.getTelefonoSoporte().contains("null")){
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
             pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
         }
