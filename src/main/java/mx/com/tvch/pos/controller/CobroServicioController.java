@@ -163,6 +163,7 @@ public class CobroServicioController {
             transaccionEntity.setTransaccionId(util.generarIdLocal());
             transaccionEntity.setObservaciones(cobro.getObservaciones().toUpperCase());
             transaccionEntity.setPeriodo(cobro.getConcepto().replace("Pago", "").toUpperCase());
+            transaccionEntity.setActualFechaCorte(util.convertirDateTime2String(suscriptor.getFechaProximoPago(), Constantes.FORMATO_FECHA_MYSQL));
             transaccionEntity.setNuevaFechaCorte(util.convertirDateTime2String(cobro.getFechaProximoPago(), Constantes.FORMATO_FECHA_MYSQL));
             
             transaccionId = transaccionEntity.getTransaccionId();
