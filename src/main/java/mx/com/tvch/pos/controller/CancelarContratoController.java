@@ -109,6 +109,9 @@ public class CancelarContratoController {
             transaccionEntity.setFechaTransaccion(util.obtenerFechaFormatoMysql());
             transaccionEntity.setMonto(importePagar);
             transaccionEntity.setTransaccionId(util.generarIdLocal());
+            transaccionEntity.setActualFechaCorte(util.convertirDateTime2String(suscriptor.getFechaProximoPago(), Constantes.FORMATO_FECHA_MYSQL));
+            transaccionEntity.setNuevaFechaCorte(util.convertirDateTime2String(suscriptor.getFechaProximoPago(), Constantes.FORMATO_FECHA_MYSQL));
+            transaccionEntity.setObservaciones("CANCELACION DE CONTRATO");
             transaccionId = transaccionEntity.getTransaccionId();
             transaccionDao.registrarTransaccion(transaccionEntity);
             
