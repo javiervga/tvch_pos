@@ -120,6 +120,7 @@ public class CobroOrdenController {
         Date fechaActualCorte =  util.convertirString2Date(orden.getFechaProximoPago(), Constantes.FORMATO_FECHA_WEB_SERVICE);
         transaccionEntity.setActualFechaCorte(util.convertirDateTime2String(fechaActualCorte, Constantes.FORMATO_FECHA_MYSQL));
         transaccionEntity.setNuevaFechaCorte(util.convertirDateTime2String(fechaActualCorte, Constantes.FORMATO_FECHA_MYSQL));
+        transaccionEntity.setObservaciones(orden.getTipoOrden());
         transaccionId = transaccionEntity.getTransaccionId();
         transaccionDao.registrarTransaccion(transaccionEntity);
 
