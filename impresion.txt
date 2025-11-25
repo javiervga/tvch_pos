@@ -5,40 +5,40 @@
              Comprobante de Pago               
                                                
              TV Cable Hidalguense              
-       Tulancingo  R.F.C. TCH151120HY6         
-         CAR. TULANCINGO-ACATLAN #44           
-                COL. METEPEC                   
-             Sucursal ACATLAN                  
+       Atotonilco  R.F.C. TCH151120HY6         
+           AV. ALLENDE 1 COL. CENTRO,          
+         ATOTONILCO EL GRANDE, HIDALGO         
+             Sucursal ATOTONILCO               
                                                
-Fecha:       12/07/25                          
+Fecha:       20/11/2025 02:12:39               
                                                
 Caja:        1                                 
                                                
-Folio:       120250712020821                   
+Folio:       120251120021239                   
                                                
-Tipo Orden:  ORDEN DE CAMBIO DE DOMICILIO      
+Servicio:    CAMBIO DE PLAN                    
                                                
-Contrato:    0                                 
+Contrato:    ATOTONILCO-210019                 
                                                
-Suscriptor:  JOSE LUIS  REYES  MORALES         
+Suscriptor:  CAROLINA ALARCON DAMIAN           
                                                
-Domicilio:   ZACATECAS  S/N METEPEC SEGUNDO    
+Domicilio:   CALLE ARAUCARIA 210 CENTRO        
                                                
-Servicio:    PAQUETE ORO                       
+Servicio:    TV                                
                                                
-Telefono:    7751180085                        
+Telefono:    7716087378                        
                                                
-Total a pagar:                         $ 0.0   
+Costo Instalacion:                     $ 0.0   
+                                               
+Total:                                 $ 0.0   
+                                               
+Próximo pago antes de:  10/12/2026             
                                                
  RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO
    CANCELACION DEL 25 AL 30 DEL MES PAGADO     
   HORARIO DE OFICINA LUNES A VIERNES 9AM A 6PM,
               SABADO DE 9AM A 2PM              
-         Telefono Oficina:  7716087378         
-                                               
-                                               
-                                               
-                                               
+         Telefono Oficina:  7713614498         
                                                
                                                
                                                

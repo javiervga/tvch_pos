@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.dao.AperturaCajaDao;
+import mx.com.tvch.pos.dao.CajaDao;
 import mx.com.tvch.pos.dao.CorteCajaDao;
 import mx.com.tvch.pos.dao.DetalleCobroTransaccionDao;
 import mx.com.tvch.pos.dao.DetalleDescuentoTransaccionDao;
@@ -42,6 +43,7 @@ public class CorteCajaController {
 
     private static CorteCajaController controller;
 
+    private final CajaDao cajaDao;
     private final AperturaCajaDao aperturaCajaDao;
     private final CorteCajaDao corteCajaDao;
     private final DetalleCobroTransaccionDao detalleCobroTransaccionDao;
@@ -64,6 +66,7 @@ public class CorteCajaController {
     }
 
     public CorteCajaController() {
+        cajaDao = CajaDao.getCajaDao();
         aperturaCajaDao = AperturaCajaDao.getAperturaCajaDao();
         corteCajaDao = CorteCajaDao.getCorteCajaDao();
         detalleCobroTransaccionDao = DetalleCobroTransaccionDao.getDetalleCobroTransaccionDao();
@@ -199,6 +202,8 @@ public class CorteCajaController {
             //Long idCorteCaja = 11L;
             Long idCorteCaja = corteCajaDao.registrarCorteCaja(entity);
             aperturaCajaDao.actualizarEstatusApertura(sesion.getAperturaCajaId(), Constantes.ESTATUS_INACTIVO);
+            cajaDao.actualizarEstatusCaja(sesion.getCajaId(), Constantes.ESTATUS_CAJA_INACTIVA);
+            
             DetalleCorte detalleId = new DetalleCorte();
             detalleId.setConcepto(String.valueOf(idCorteCaja));
             detalleId.setTipoDetalle(Constantes.TIPO_DETALLE_CORTE_ID);

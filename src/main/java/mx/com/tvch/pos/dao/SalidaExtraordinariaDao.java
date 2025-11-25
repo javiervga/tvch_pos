@@ -72,7 +72,7 @@ public class SalidaExtraordinariaDao {
                 entity.setSalidaExtraordinariaServerId(rs.getLong("id_salida_extraordinaria_server"));
                 entity.setObservaciones(rs.getString("observaciones"));
                 entity.setMonto(rs.getDouble("monto"));
-                entity.setFechaSalida(rs.getDate("fecha_salida"));
+                entity.setFechaSalida(rs.getTimestamp("fecha_salida"));
                 entity.setUsuario(rs.getString("usuario"));
                 entity.setUsuarioId(rs.getLong("id_usuario"));
                 entity.setCajaId(rs.getLong("id_caja"));

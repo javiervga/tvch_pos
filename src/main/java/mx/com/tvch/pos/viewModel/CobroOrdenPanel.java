@@ -670,7 +670,12 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
 
         try {
 
-            List<EstatusSuscriptorEntity> list = controller.consultarEstatusSuscriptor();
+            //List<EstatusSuscriptorEntity> list = controller.consultarEstatusSuscriptor();
+            
+            List<EstatusSuscriptorEntity> list = new ArrayList<>();
+            list.add(new EstatusSuscriptorEntity(2L, "ACTIVO"));
+            list.add(new EstatusSuscriptorEntity(3L, "INACTIVO"));
+            
             list.forEach(e -> comboEstatusSuscriptor.addItem(e));
 
         } catch (Exception ex) {
@@ -694,6 +699,8 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         } else {
             if (estatusContratoId == Constantes.ESTATUS_CONTRATO_NUEVO) {
                 listTiposOrden.add(new TipoOrden(Constantes.TIPO_ORDEN_INSTALACION, "Orden de Instalación"));
+                listTiposOrden.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO, "Orden de Servicio"));
+                listTiposOrden.add(new TipoOrden(Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO, "Orden de Cambio de Domicilio"));
             } else if (estatusContratoId == Constantes.ESTATUS_CONTRATO_CORTESIA) {
                 listTiposOrden.add(new TipoOrden(Constantes.TIPO_ORDEN_INSTALACION, "Orden de Instalación"));
                 listTiposOrden.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO, "Orden de Servicio"));
@@ -1241,19 +1248,19 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                     .addGroup(panelInfoContratoLayout.createSequentialGroup()
                         .addGap(12, 12, 12)
                         .addComponent(jLabel8)
-                        .addGap(18, 18, 18)
-                        .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel9)
-                        .addGap(18, 18, 18)
+                        .addGap(33, 33, 33)
                         .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addGap(27, 27, 27)
                         .addComponent(jLabel13)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(campoEstatusContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel19)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(68, 68, 68))
         );
@@ -1264,15 +1271,14 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                 .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelInfoContratoLayout.createSequentialGroup()
                         .addGap(1, 1, 1)
-                        .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel8)
-                            .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9)
-                            .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel13)
-                            .addComponent(campoEstatusContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel19)
-                            .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(campoEstatusContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel9)
+                                .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel13)
+                                .addComponent(jLabel19)
+                                .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(campoTelefono)
@@ -1282,7 +1288,9 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                     .addGroup(panelInfoContratoLayout.createSequentialGroup()
                         .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7)
-                            .addComponent(campoSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(campoSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8)
+                            .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(8, 8, 8)
                         .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel14)
@@ -1398,7 +1406,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
-        jLabel23.setFont(new java.awt.Font("Segoe UI", 0, 80)); // NOI18N
+        jLabel23.setFont(new java.awt.Font("Segoe UI", 0, 85)); // NOI18N
         jLabel23.setForeground(java.awt.Color.red);
         jLabel23.setText("$");
 
@@ -1406,7 +1414,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         etiquetaPromoActiva.setForeground(java.awt.Color.red);
         etiquetaPromoActiva.setText("Precio Promoción!!");
 
-        etiquetaImporte.setFont(new java.awt.Font("Segoe UI", 0, 80)); // NOI18N
+        etiquetaImporte.setFont(new java.awt.Font("Segoe UI", 0, 85)); // NOI18N
         etiquetaImporte.setForeground(java.awt.Color.red);
         etiquetaImporte.setText("0.00");
 
@@ -1428,25 +1436,25 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         panelImporte.setLayout(panelImporteLayout);
         panelImporteLayout.setHorizontalGroup(
             panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelImporteLayout.createSequentialGroup()
-                .addGap(57, 57, 57)
-                .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelImporteLayout.createSequentialGroup()
-                        .addComponent(jLabel23)
-                        .addGap(18, 18, 18)
-                        .addComponent(etiquetaImporte, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelImporteLayout.createSequentialGroup()
+                .addContainerGap(77, Short.MAX_VALUE)
+                .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(panelImporteLayout.createSequentialGroup()
-                        .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(etiquetaCortesia)
-                            .addComponent(botonCobrar, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(etiquetaCortesia, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(botonCobrar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelImporteLayout.createSequentialGroup()
                                 .addGap(18, 18, 18)
                                 .addComponent(botonRegresar))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelImporteLayout.createSequentialGroup()
                                 .addGap(32, 32, 32)
-                                .addComponent(etiquetaPromoActiva, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(167, Short.MAX_VALUE))
+                                .addComponent(etiquetaPromoActiva, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelImporteLayout.createSequentialGroup()
+                        .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(etiquetaImporte, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(60, 60, 60))
         );
         panelImporteLayout.setVerticalGroup(
             panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1462,7 +1470,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelImporteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(botonCobrar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botonRegresar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(botonRegresar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(21, 21, 21))
         );
 
@@ -1542,17 +1550,20 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
         panelInferior.setLayout(panelInferiorLayout);
         panelInferiorLayout.setHorizontalGroup(
             panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelInferiorLayout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(panelInferiorLayout.createSequentialGroup()
                 .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelInferiorLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(panelInfoOrdenes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, 899, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelInferiorLayout.createSequentialGroup()
                         .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelInferiorLayout.createSequentialGroup()
-                                .addGap(19, 19, 19)
+                                .addComponent(jScrollPane2)
+                                .addGap(85, 85, 85))
+                            .addGroup(panelInferiorLayout.createSequentialGroup()
+                                .addGap(25, 25, 25)
                                 .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(panelInferiorLayout.createSequentialGroup()
                                         .addComponent(jLabel20)
@@ -1573,10 +1584,8 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                                         .addGap(18, 18, 18)
                                         .addComponent(etiquetaImporteDescuento)
                                         .addGap(18, 18, 18)
-                                        .addComponent(campoImporteDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(panelInferiorLayout.createSequentialGroup()
-                                .addComponent(jScrollPane2)
-                                .addGap(27, 27, 27)))
+                                        .addComponent(campoImporteDescuento, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addComponent(panelImporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );

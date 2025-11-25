@@ -26,6 +26,8 @@ public class TransaccionEntity {
 
     private String fechaTransaccion;
     
+    private String actualFechaCorte;
+    
     private String nuevaFechaCorte;
 
     public Long getTransaccionId() {
@@ -90,6 +92,14 @@ public class TransaccionEntity {
 
     public void setFechaTransaccion(String fechaTransaccion) {
         this.fechaTransaccion = fechaTransaccion;
+    }
+
+    public String getActualFechaCorte() {
+        return actualFechaCorte;
+    }
+
+    public void setActualFechaCorte(String actualFechaCorte) {
+        this.actualFechaCorte = actualFechaCorte;
     }
 
     public String getNuevaFechaCorte() {

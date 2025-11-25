@@ -233,7 +233,7 @@ public class TransaccionDao {
             DbConfig dbConfig = DbConfig.getdDbConfig();
             conn = dbConfig.getConnection();
             
-            String query = "insert into transacciones (id_transaccion ,id_apertura_caja, id_contrato, monto, observaciones, periodo, fecha_transaccion, nueva_fecha_corte) values(?,?,?,?,?,?,?,?)";
+            String query = "insert into transacciones (id_transaccion ,id_apertura_caja, id_contrato, monto, observaciones, periodo, fecha_transaccion, actual_fecha_corte, nueva_fecha_corte) values(?,?,?,?,?,?,?,?,?)";
             PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             ps.setLong(1, entity.getTransaccionId());
             ps.setLong(2, entity.getAperturaCajaId());
@@ -242,7 +242,8 @@ public class TransaccionDao {
             ps.setString(5, entity.getObservaciones());
             ps.setString(6, entity.getPeriodo());
             ps.setString(7, entity.getFechaTransaccion());
-            ps.setString(8, entity.getNuevaFechaCorte());
+            ps.setString(8, entity.getActualFechaCorte());
+            ps.setString(9, entity.getNuevaFechaCorte());
             ps.executeUpdate();
             
             ResultSet rs = ps.getGeneratedKeys();
@@ -297,7 +298,7 @@ public class TransaccionDao {
             StringBuilder query = new StringBuilder();
             
             query.append("SELECT id_transaccion, id_transaccion_server, id_apertura_caja, ");
-            query.append("id_contrato, monto, observaciones, periodo, fecha_transaccion, nueva_fecha_corte ");
+            query.append("id_contrato, monto, observaciones, periodo, fecha_transaccion, actual_fecha_corte, nueva_fecha_corte ");
             query.append("FROM transacciones WHERE id_transaccion_server is null ");
             query.append("order by id_transaccion asc");
             
@@ -311,6 +312,7 @@ public class TransaccionDao {
                 entity.setMonto(rs.getDouble("monto"));
                 entity.setObservaciones(rs.getString("observaciones"));
                 entity.setPeriodo(rs.getString("periodo"));
+                entity.setActualFechaCorte(String.valueOf(rs.getDate("actual_fecha_corte")));
                 entity.setNuevaFechaCorte(String.valueOf(rs.getDate("nueva_fecha_corte")));
                 entity.setFechaTransaccion(String.valueOf(rs.getDate("fecha_transaccion")));
                 list.add(entity);

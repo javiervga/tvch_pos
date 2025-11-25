@@ -14,6 +14,14 @@ public class EstatusSuscriptorEntity {
 
     private String descripcion;
 
+    public EstatusSuscriptorEntity(Long estatusId, String descripcion) {
+        this.estatusId = estatusId;
+        this.descripcion = descripcion;
+    }
+    
+    public EstatusSuscriptorEntity() {
+    }
+
     public Long getEstatusId() {
         return estatusId;
     }
