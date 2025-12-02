@@ -28,7 +28,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.controller.CancelarContratoController;
-import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
+import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
 import mx.com.tvch.pos.entity.MotivoCancelacionEntity;
 import mx.com.tvch.pos.model.DetallePagoServicio;
@@ -53,8 +53,8 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
     private final Utilerias util;
     private final Impresora impresora;
 
-    List<ContratoxSuscriptorEntity> suscriptoresConsultaList;
-    private ContratoxSuscriptorEntity suscriptorSeleccionado;
+    List<ContratoxSuscriptorDetalleEntity> suscriptoresConsultaList;
+    private ContratoxSuscriptorDetalleEntity suscriptorSeleccionado;
     private List<DetallePagoServicio> listaDetallesPago;
 
     org.slf4j.Logger logger = LoggerFactory.getLogger(CancelarContratoPanel.class);
@@ -200,7 +200,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                         System.out.println("contrato seleccionado: " + contratoId);
                         if (!suscriptoresConsultaList.isEmpty()) {
                             if (suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
-                                ContratoxSuscriptorEntity entity = suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
+                                ContratoxSuscriptorDetalleEntity entity = suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
                                 cargarDatosSuscriptor(entity);
                             }
                         }
@@ -221,7 +221,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                     System.out.println("contrato seleccionado: " + contratoId);
                     if (!suscriptoresConsultaList.isEmpty()) {
                         if (suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
-                            ContratoxSuscriptorEntity entity = suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
+                            ContratoxSuscriptorDetalleEntity entity = suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
                             cargarDatosSuscriptor(entity);
                         }
                     }
@@ -320,7 +320,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
      * 
      * @param contratosuscriptor 
      */
-    private void cargarDatosSuscriptor(ContratoxSuscriptorEntity contratosuscriptor) {
+    private void cargarDatosSuscriptor(ContratoxSuscriptorDetalleEntity contratosuscriptor) {
 
         System.out.println("Seelccionado: " + contratosuscriptor.getContratoId());
 
@@ -422,7 +422,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
 
             model.getDataVector().clear();
             model.fireTableDataChanged();
-            for (ContratoxSuscriptorEntity c : suscriptoresConsultaList) {
+            for (ContratoxSuscriptorDetalleEntity c : suscriptoresConsultaList) {
                 model.addRow(new Object[]{c.getContratoId(),
                     c.getFolioContrato() == null ? "" : c.getFolioContrato(),
                     c.getNombre().concat(" ").concat(c.getApellidoPaterno()).concat(" ").concat(c.getApellidoMaterno()),

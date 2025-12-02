@@ -31,7 +31,7 @@ import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.controller.CobroProvisionalController;
 import mx.com.tvch.pos.controller.CobroServicioController;
 import mx.com.tvch.pos.entity.CobroProvisionalEntity;
-import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
+import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
 import mx.com.tvch.pos.model.TipoOrdenServicio;
 import mx.com.tvch.pos.model.TipoBusquedaCobro;
@@ -58,8 +58,8 @@ public class CobroProvisionalPanel extends javax.swing.JPanel {
     private TipoOrden tipoOrdenSeleccionado;
     private final CobroServicioController cobroServicioController;
 
-    List<ContratoxSuscriptorEntity> suscriptoresConsultaList;
-    private ContratoxSuscriptorEntity suscriptorSeleccionado;
+    List<ContratoxSuscriptorDetalleEntity> suscriptoresConsultaList;
+    private ContratoxSuscriptorDetalleEntity suscriptorSeleccionado;
     List<TipoOrden> listTiposOrden = new ArrayList<>();
     List<TipoOrdenServicio> listTiposOrdenServicio = new ArrayList<>();
 
@@ -239,7 +239,7 @@ public class CobroProvisionalPanel extends javax.swing.JPanel {
                         if (!suscriptoresConsultaList.isEmpty()) {
                             if (suscriptoresConsultaList.stream()
                                     .filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
-                                ContratoxSuscriptorEntity entity = suscriptoresConsultaList
+                                ContratoxSuscriptorDetalleEntity entity = suscriptoresConsultaList
                                         .stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
                                 cargarDatosSuscriptor(entity);
                             }
@@ -262,7 +262,7 @@ public class CobroProvisionalPanel extends javax.swing.JPanel {
                     if (!suscriptoresConsultaList.isEmpty()) {
                         if (suscriptoresConsultaList.stream()
                                 .filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
-                            ContratoxSuscriptorEntity entity = suscriptoresConsultaList
+                            ContratoxSuscriptorDetalleEntity entity = suscriptoresConsultaList
                                     .stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
                             cargarDatosSuscriptor(entity);
                         }
@@ -359,7 +359,7 @@ public class CobroProvisionalPanel extends javax.swing.JPanel {
     }
 
     private void cargarDatosSuscriptor(
-            ContratoxSuscriptorEntity contratosuscriptor) {
+            ContratoxSuscriptorDetalleEntity contratosuscriptor) {
 
         System.out.println("Seelccionado: " + contratosuscriptor.getContratoId());
         // primero borrar los datos de suscriptores que se hayan seleccionado antes
@@ -414,13 +414,13 @@ public class CobroProvisionalPanel extends javax.swing.JPanel {
      */
     private void cargarTablaSuscriptores(DefaultTableModel model, Long contrato, int tipoBusquedaCobro, String cadenaBusqueda) throws Exception {
 
-        suscriptoresConsultaList = cobroServicioController.consultarSuscriptores(contrato, tipoBusquedaCobro, cadenaBusqueda);
+        suscriptoresConsultaList = cobroServicioController.consultarSuscriptores(contrato, tipoBusquedaCobro, cadenaBusqueda, false);
 
         if (!suscriptoresConsultaList.isEmpty()) {
 
             model.getDataVector().clear();
             model.fireTableDataChanged();
-            for (ContratoxSuscriptorEntity c : suscriptoresConsultaList) {
+            for (ContratoxSuscriptorDetalleEntity c : suscriptoresConsultaList) {
                 model.addRow(new Object[]{c.getContratoId(),
                     c.getFolioContrato() == null ? "" : c.getFolioContrato(),
                     c.getNombre().concat(" ").concat(c.getApellidoPaterno()).concat(" ").concat(c.getApellidoMaterno()),

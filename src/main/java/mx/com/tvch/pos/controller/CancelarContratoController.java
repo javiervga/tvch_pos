@@ -21,7 +21,7 @@ import mx.com.tvch.pos.dao.EstatusSuscriptorDao;
 import mx.com.tvch.pos.dao.MotivoCancelacionDao;
 import mx.com.tvch.pos.dao.TransaccionDao;
 import mx.com.tvch.pos.entity.CancelacionEntity;
-import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
+import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
 import mx.com.tvch.pos.entity.MotivoCancelacionEntity;
@@ -80,7 +80,7 @@ public class CancelarContratoController {
      * @return 
      */
     public Long cobrarCancelacion(
-            ContratoxSuscriptorEntity suscriptor, 
+            ContratoxSuscriptorDetalleEntity suscriptor, 
             List<DetallePagoServicio> detallesPago, 
             Long motivoCancelacionId,
             String observaciones) throws Exception{
@@ -156,11 +156,11 @@ public class CancelarContratoController {
      * @return
      * @throws Exception 
      */
-    public List<ContratoxSuscriptorEntity> consultarSuscriptores(Long contratoId, int tipoBusquedaCobro, String cadenaBusqueda) throws Exception {
+    public List<ContratoxSuscriptorDetalleEntity> consultarSuscriptores(Long contratoId, int tipoBusquedaCobro, String cadenaBusqueda) throws Exception {
 
         try {
 
-            List<ContratoxSuscriptorEntity> list = dao.obtenerContratosSuscriptor(contratoId, tipoBusquedaCobro, cadenaBusqueda);
+            List<ContratoxSuscriptorDetalleEntity> list = dao.obtenerContratosSuscriptor(contratoId, tipoBusquedaCobro, cadenaBusqueda);
             //quitar los cancelados
             list = list
                     .stream()
@@ -251,7 +251,7 @@ public class CancelarContratoController {
 
     }
     
-    public boolean seDebeGenerarRecargo(ContratoxSuscriptorEntity suscriptorSeleccionado) {
+    public boolean seDebeGenerarRecargo(ContratoxSuscriptorDetalleEntity suscriptorSeleccionado) {
         boolean seGeneraRecargo = false;
 
         if (suscriptorSeleccionado.getFechaProximoPago() != null) {
@@ -279,7 +279,7 @@ public class CancelarContratoController {
         return seGeneraRecargo;
     }
     
-    public Double calcularMontoPorDia(ContratoxSuscriptorEntity suscriptorSeleccionado){
+    public Double calcularMontoPorDia(ContratoxSuscriptorDetalleEntity suscriptorSeleccionado){
         return suscriptorSeleccionado.getCostoServicio() / 30;
     }
     
@@ -288,7 +288,7 @@ public class CancelarContratoController {
      * @param suscriptorSeleccionado
      * @return 
      */
-    public Double obtenerMontoCancelacion(ContratoxSuscriptorEntity suscriptorSeleccionado, Double montoPorDia){
+    public Double obtenerMontoCancelacion(ContratoxSuscriptorDetalleEntity suscriptorSeleccionado, Double montoPorDia){
         
         Double monto = 0.0;
                     

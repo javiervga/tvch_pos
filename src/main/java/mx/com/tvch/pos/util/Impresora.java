@@ -24,7 +24,7 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.entity.AperturaCajaEntity;
 import mx.com.tvch.pos.entity.CobroProvisionalEntity;
-import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
+import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import mx.com.tvch.pos.entity.DetalleDescuentoTransaccionEntity;
 import mx.com.tvch.pos.entity.DetallePromocionTransaccionEntity;
@@ -309,7 +309,7 @@ public class Impresora {
     public void imprimirTicketCancelacion(
             Long transaccionId, 
             List<DetallePagoServicio> detallesPago, 
-            ContratoxSuscriptorEntity suscriptor, 
+            ContratoxSuscriptorDetalleEntity suscriptor, 
             String nombreSucursal) throws Exception {
 
         StringBuilder nombre = new StringBuilder();
@@ -549,7 +549,7 @@ public class Impresora {
     public void imprimirTicketServicio(
             Long transaccionId, 
             CobroServicio cobro, 
-            ContratoxSuscriptorEntity suscriptor, 
+            ContratoxSuscriptorDetalleEntity suscriptor, 
             String nombreSucursal) throws Exception {
 
         StringBuilder nombre = new StringBuilder();

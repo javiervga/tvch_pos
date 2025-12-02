@@ -1,46 +1,14 @@
+===============================================
+               Apertura de caja                
                                                
-
-                                              
-                                               
-             Comprobante de Pago               
-                                               
-             TV Cable Hidalguense              
-       Atotonilco  R.F.C. TCH151120HY6         
-           AV. ALLENDE 1 COL. CENTRO,          
-         ATOTONILCO EL GRANDE, HIDALGO         
-             Sucursal ATOTONILCO               
-                                               
-Fecha:       20/11/2025 02:12:39               
-                                               
-Caja:        1                                 
-                                               
-Folio:       120251120021239                   
-                                               
-Servicio:    CAMBIO DE PLAN                    
-                                               
-Contrato:    ATOTONILCO-210019                 
-                                               
-Suscriptor:  CAROLINA ALARCON DAMIAN           
-                                               
-Domicilio:   CALLE ARAUCARIA 210 CENTRO        
-                                               
-Servicio:    TV                                
-                                               
-Telefono:    7716087378                        
-                                               
-Costo Instalacion:                     $ 0.0   
-                                               
-Total:                                 $ 0.0   
-                                               
-Próximo pago antes de:  10/12/2026             
-                                               
- RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO
-   CANCELACION DEL 25 AL 30 DEL MES PAGADO     
-  HORARIO DE OFICINA LUNES A VIERNES 9AM A 6PM,
-              SABADO DE 9AM A 2PM              
-         Telefono Oficina:  7713614498         
-                                               
-                                               
+Sucursal:              ATOTONILCO              
+Folio Caja:            120251129020246         
+Folio Server:          0                       
+Num. Caja:             1                       
+Cajero:                MDELGADO                
+Fondo Fijo:            0.0                     
+Fecha:                 29/11/25                
+Hora:                  02:02:46                
                                                
                                                
                                                

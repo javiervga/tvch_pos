@@ -22,7 +22,7 @@ import mx.com.tvch.pos.dao.EstatusSuscriptorDao;
 import mx.com.tvch.pos.dao.PromocionDao;
 import mx.com.tvch.pos.dao.TipoDescuentoDao;
 import mx.com.tvch.pos.dao.TransaccionDao;
-import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
+import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import mx.com.tvch.pos.entity.DetalleDescuentoTransaccionEntity;
 import mx.com.tvch.pos.entity.DetallePromocionTransaccionEntity;
@@ -92,7 +92,7 @@ public class CobroServicioController {
      * @param seDebeGenerarorden
      * @throws Exception 
      */
-    public Response<UpdateContratoResponse> actualizarContratoReconexion(ContratoxSuscriptorEntity suscriptorSeleccionado, boolean seDebeGenerarorden) throws Exception{
+    public Response<UpdateContratoResponse> actualizarContratoReconexion(ContratoxSuscriptorDetalleEntity suscriptorSeleccionado, boolean seDebeGenerarorden) throws Exception{
         
         try{
             
@@ -132,7 +132,7 @@ public class CobroServicioController {
      * @return
      * @throws Exception 
      */
-    public Long cobrarServicio(ContratoxSuscriptorEntity suscriptor, CobroServicio cobro) throws Exception {
+    public Long cobrarServicio(ContratoxSuscriptorDetalleEntity suscriptor, CobroServicio cobro) throws Exception {
 
         Long transaccionId = null;
         Integer numeroMeses = cobro.getMesesPagados();
@@ -277,16 +277,24 @@ public class CobroServicioController {
 
     }
 
-    public List<ContratoxSuscriptorEntity> consultarSuscriptores(Long contratoId, int tipoBusquedaCobro, String cadenaBusqueda) throws Exception {
+    public List<ContratoxSuscriptorDetalleEntity> consultarSuscriptores(Long contratoId, int tipoBusquedaCobro, String cadenaBusqueda, boolean seBuscanCancelados) throws Exception {
 
         try {
 
-            List<ContratoxSuscriptorEntity> list = dao.obtenerContratosSuscriptor(contratoId, tipoBusquedaCobro, cadenaBusqueda);
-            //quitar los cancelados
-            list = list
+            List<ContratoxSuscriptorDetalleEntity> list = dao.obtenerContratosSuscriptor(contratoId, tipoBusquedaCobro, cadenaBusqueda);
+            
+            //validar y quitar los cancelados
+            if(seBuscanCancelados){
+                list = list
+                    .stream()
+                    .filter(s -> s.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO || s.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO)
+                    .collect(Collectors.toList());
+            }else{
+                list = list
                     .stream()
                     .filter(s -> s.getEstatusContratoId() != Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO && s.getEstatusContratoId() != Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO)
                     .collect(Collectors.toList());
+            }
 
             if (list == null) {
                 throw new NoSuchElementException(("No se encontraron suscriptores registrados con la información solicitada."));
@@ -324,7 +332,7 @@ public class CobroServicioController {
      *
      * @return
      */
-    public boolean seDebeGenerarRecargo(ContratoxSuscriptorEntity suscriptorSeleccionado) {
+    public boolean seDebeGenerarRecargo(ContratoxSuscriptorDetalleEntity suscriptorSeleccionado) {
         boolean seGeneraRecargo = false;
 
         if (suscriptorSeleccionado.getFechaProximoPago() != null) {
@@ -396,7 +404,7 @@ public class CobroServicioController {
 
     }
     
-    public Double obtenerMontoPorCobrar(ContratoxSuscriptorEntity suscriptorSeleccionado){
+    public Double obtenerMontoPorCobrar(ContratoxSuscriptorDetalleEntity suscriptorSeleccionado){
         
         Double monto = 0.0;
                     
@@ -429,7 +437,7 @@ public class CobroServicioController {
         return monto;
     }
     
-    public Integer obtenerMesesAtrasado(ContratoxSuscriptorEntity suscriptorSeleccionado){
+    public Integer obtenerMesesAtrasado(ContratoxSuscriptorDetalleEntity suscriptorSeleccionado){
         
         Double monto = 0.0;
                     

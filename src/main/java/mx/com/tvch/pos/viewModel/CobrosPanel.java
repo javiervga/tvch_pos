@@ -5,41 +5,28 @@
 package mx.com.tvch.pos.viewModel;
 
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableModel;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.controller.CobroServicioController;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
-import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
 import mx.com.tvch.pos.entity.PromocionEntity;
 import mx.com.tvch.pos.entity.TipoDescuentoEntity;
 import mx.com.tvch.pos.model.CobroServicio;
 import mx.com.tvch.pos.model.DescuentoCobro;
 import mx.com.tvch.pos.model.Mes;
 import mx.com.tvch.pos.model.PromocionCobro;
-import mx.com.tvch.pos.model.TipoBusquedaCobro;
 import mx.com.tvch.pos.model.client.Response;
 import mx.com.tvch.pos.model.client.UpdateContratoResponse;
 import mx.com.tvch.pos.util.Constantes;
@@ -53,9 +40,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author fvega
  */
-public class CobroServicioPanel extends javax.swing.JPanel {
+public class CobrosPanel extends javax.swing.JPanel {
 
-    private static CobroServicioPanel cobroPanel;
+    private static CobrosPanel cobroPanel;
     private static PosFrame posFrame;
 
     private final Sesion sesion;
@@ -71,11 +58,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
     private Mes mesGuardado;
     private int anioGuardado;
 
-    org.slf4j.Logger logger = LoggerFactory.getLogger(CobroServicioPanel.class);
+    org.slf4j.Logger logger = LoggerFactory.getLogger(CobrosPanel.class);
 
-    public static CobroServicioPanel getCobroPanel(PosFrame frame) {
+    public static CobrosPanel getCobroPanel(PosFrame frame) {
         if (cobroPanel == null) {
-            cobroPanel = new CobroServicioPanel();
+            cobroPanel = new CobrosPanel();
         }
         posFrame = frame;
         return cobroPanel;
@@ -84,7 +71,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
     /**
      * Creates new form CobroPanel
      */
-    public CobroServicioPanel() {
+    public CobrosPanel() {
         initComponents();
 
         sesion = Sesion.getSesion();
@@ -94,13 +81,14 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         suscriptoresConsultaList = new ArrayList<>();
         cargarComboTiposDescuento();
         crearEventos();
-        cargarComboTiposBusqueda();
-        cargarComboEstatusSuscriptor();
         cargarComboMeses();
     }
 
     private void crearEventos() {
         
+        /**
+         * 
+         */
         campoMonto.getDocument().addDocumentListener(new DocumentListener() {
             public void changedUpdate(DocumentEvent e) {
                 warn();
@@ -119,6 +107,9 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             }
         });
        
+        /**
+         * 
+         */
         ActionListener botonRestablecerMontoSugeridoActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -134,6 +125,9 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         };
         botonReestablecerMonto.addActionListener(botonRestablecerMontoSugeridoActionListener);
         
+        /**
+         * 
+         */
         ActionListener botonCalcularPagoActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -156,6 +150,9 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         };
         botonCalculaMonto.addActionListener(botonCalcularPagoActionListener);
 
+        /**
+         * 
+         */
         ActionListener botonCobrarActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -348,6 +345,9 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         };
         botonCobrar.addActionListener(botonCobrarActionListener);
 
+        /**
+         * 
+         */
         ActionListener botonEliminarPromocionActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -371,6 +371,9 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         };
         botonEliminarPromocion.addActionListener(botonEliminarPromocionActionListener);
 
+        /**
+         * 
+         */
         ActionListener botonAplicarPromocionActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -406,144 +409,17 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         };
         botonAplicarPromocion.addActionListener(botonAplicarPromocionActionListener);
 
-        KeyListener enterTablaSuscriptoresListener = new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    int selectedRow = tablaSuscriptores.getSelectedRow();
-                    if (selectedRow >= 0) {
-                        Long contratoId = (Long) tablaSuscriptores.getModel().getValueAt(selectedRow, 0);
-                        System.out.println("contrato seleccionado: " + contratoId);
-                        if (!suscriptoresConsultaList.isEmpty()) {
-                            if (suscriptoresConsultaList.stream()
-                                    .filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
-                                ContratoxSuscriptorDetalleEntity entity = suscriptoresConsultaList
-                                        .stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
-                                suscriptorSeleccionado = entity;
-                                cargarComboAnios(suscriptorSeleccionado.getFechaProximoPago());
-                                habilitarCamposPago();
-                                setCamposPagoDefault();
-                                Mes mesSeleccionado = (Mes) comboMeses.getModel().getSelectedItem();
-                                int anioSeleccionado = (int) comboAnios.getModel().getSelectedItem();
-                                cargarDatosSuscriptor(null, mesSeleccionado, anioSeleccionado, entity, true);
-                            }
-                        }
-                    }
-                }
-            }
-        };
-        tablaSuscriptores.addKeyListener(enterTablaSuscriptoresListener);
-
-        MouseListener dobleClickTablaSuscriptoresListener = new MouseAdapter() {
-            public void mousePressed(MouseEvent mouseEvent) {
-                JTable table = (JTable) mouseEvent.getSource();
-                Point point = mouseEvent.getPoint();
-                int row = table.rowAtPoint(point);
-                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    // your valueChanged overridden method
-                    Long contratoId = (Long) tablaSuscriptores.getModel().getValueAt(row, 0);
-                    System.out.println("contrato seleccionado: " + contratoId);
-                    if (!suscriptoresConsultaList.isEmpty()) {
-                        if (suscriptoresConsultaList.stream()
-                                .filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
-                            ContratoxSuscriptorDetalleEntity entity = suscriptoresConsultaList
-                                    .stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
-                            suscriptorSeleccionado = entity;
-                            cargarComboAnios(suscriptorSeleccionado.getFechaProximoPago());
-                            habilitarCamposPago();
-                            setCamposPagoDefault();
-                            Mes mesSeleccionado = (Mes) comboMeses.getModel().getSelectedItem();
-                            int anioSeleccionado = (int) comboAnios.getModel().getSelectedItem();
-                            cargarDatosSuscriptor(null, mesSeleccionado, anioSeleccionado, entity, true);
-                        }
-                    }
-                    mouseEvent.consume();
-                }
-            }
-        };
-        tablaSuscriptores.addMouseListener(dobleClickTablaSuscriptoresListener);
-
+        /**
+         * 
+         */
         ActionListener botonRegresarActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 limpiarPantalla();
-                posFrame.cambiarPantalla(cobroPanel, VentanaEnum.MENU);
+                posFrame.cambiarPantalla(cobroPanel, VentanaEnum.CONSULTA_CONTRATOS);
             }
         };
         botonRegresar.addActionListener(botonRegresarActionListener);
-
-        KeyListener keyListenerBuscarSuscriptor = new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    buscarSuscriptor();
-                }
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-            }
-        };
-        campoBusqueda.addKeyListener(keyListenerBuscarSuscriptor);
-        
-        ActionListener botonBusquedaActionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                buscarSuscriptor();
-            }
-        };
-        botonBusqueda.addActionListener(botonBusquedaActionListener);
-
-    }
-
-    private void buscarSuscriptor() {
-
-        if (!campoBusqueda.getText().isEmpty()) {
-
-            TipoBusquedaCobro tipoBusquedaCobro = (TipoBusquedaCobro) comboTiposBusqueda.getModel().getSelectedItem();
-
-            try {
-
-                Long contrato = null;
-                DefaultTableModel model = (DefaultTableModel) tablaSuscriptores.getModel();
-                model.getDataVector().clear();
-                //model.fireTableStructureChanged();
-
-                if (tipoBusquedaCobro.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_FOLIO_CONTRATO) {
-                    try {
-
-                        contrato = Long.parseLong(campoBusqueda.getText().trim());
-                        cargarTablaSuscriptores(model, contrato, tipoBusquedaCobro.getTipoCobroId(), "");
-                        limpiarDatosSuscriptor();
-
-                    } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(cobroPanel, "Formato de contrato incorrecto. Por favor ingrese un contrato numérico", "", JOptionPane.WARNING_MESSAGE);
-                    }
-                } else {
-
-                    if (!campoBusqueda.getText().trim().isEmpty()) {
-
-                        cargarTablaSuscriptores(model, contrato, tipoBusquedaCobro.getTipoCobroId(), campoBusqueda.getText().trim().toUpperCase());
-                        limpiarDatosSuscriptor();
-
-                    } else {
-                        JOptionPane.showMessageDialog(cobroPanel, "Por favor ingrese ingrese un texto a buscar válido.", "", JOptionPane.WARNING_MESSAGE);
-                    }
-
-                }
-
-            } catch (NoSuchElementException ex) {
-                JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
-            }
-
-        } else {
-            JOptionPane.showMessageDialog(cobroPanel, "Por favor ingrese información para realizar la busqueda.", "", JOptionPane.WARNING_MESSAGE);
-        }
 
     }
 
@@ -698,39 +574,6 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         }*/
     }
 
-    /**
-     *
-     * @param model
-     * @param contrato
-     * @param tipoBusquedaCobro
-     * @param cadenaBusqueda
-     * @throws Exception
-     */
-    private void cargarTablaSuscriptores(DefaultTableModel model, Long contrato, int tipoBusquedaCobro, String cadenaBusqueda) throws Exception {
-
-        suscriptoresConsultaList = controller.consultarSuscriptores(contrato, tipoBusquedaCobro, cadenaBusqueda, false);
-
-        if (!suscriptoresConsultaList.isEmpty()) {
-
-            model.getDataVector().clear();
-            model.fireTableDataChanged();
-            for (ContratoxSuscriptorDetalleEntity c : suscriptoresConsultaList) {
-                model.addRow(new Object[]{c.getContratoId(),
-                    c.getFolioContrato()== null ? "" : c.getFolioContrato(),
-                    c.getNombre().concat(" ").concat(c.getApellidoPaterno()).concat(" ").concat(c.getApellidoMaterno()),
-                    c.getServicio(),
-                    c.getCalle().concat(" ").concat(c.getNumeroCalle()).concat(" ").concat(c.getColonia()),
-                    c.getEstatusContrato()});
-            }
-            tablaSuscriptores.setRowSelectionInterval(0, 0);
-        } else {
-            JOptionPane.showMessageDialog(cobroPanel, "No se encontraron suscriptores con la información solicitada", "", JOptionPane.WARNING_MESSAGE);
-        }
-        
-        campoMonto.setEnabled(true);
-
-    }
-
     private void setCamposPagoDefault(){   
 
         Calendar fechaCorte = Calendar.getInstance();
@@ -805,18 +648,6 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         List<Integer> anios = util.obtenerAniosPorMostrar(fechaCorte);
         anios.forEach(a -> comboAnios.addItem(a));
     }
-
-    private void cargarComboEstatusSuscriptor() {
-        try {
-
-            List<EstatusSuscriptorEntity> list = controller.consultarEstatusSuscriptor();
-            list = list.stream().filter(e -> e.getEstatusId() == Constantes.ESTATUS_SUSCRIPTOR_ACTIVO).collect(Collectors.toList());
-            list.forEach(e -> comboEstatusSuscriptor.addItem(e));
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(cobroPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
-        }
-    }
     
     private void cargarComboTiposDescuento() {
         try {
@@ -871,48 +702,27 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         
     }
     
-    private void cargarComboTiposBusqueda() {
-        List<TipoBusquedaCobro> list = new ArrayList<>();
-        //list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_CONTRATO, "Por Contrato"));
-        list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_FOLIO_CONTRATO, "Por Contrato"));
-        list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_NOMBRE, "Por Nombre"));
-        list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_APELLIDO_PATERNO, "Por Apellido Paterno"));
-        list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_APELLIDO_MATERNO, "Por Apellido Materno"));
-        list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_DOMICILIO, "Por Domicilio"));
-        list.forEach(tb -> comboTiposBusqueda.addItem(tb));
-
-    }
-    
     public void cargarDatosSesion() {
+        
+        //primero validar si se selecciono un contrato y se guardo en sesion
+        if(sesion.getContratoSeleccionado() == null){
+            
+        }
 
         etiquetaNumeroCaja.setText(sesion.getNumeroCaja().toString());
         etiquetaUsuario.setText(sesion.getUsuario());
         etiquetaSucursal.setText(sesion.getSucursal());
-
-        tablaSuscriptores.getColumnModel().getColumn(0).setPreferredWidth(50);
-        tablaSuscriptores.getColumnModel().getColumn(1).setPreferredWidth(130);
-        tablaSuscriptores.getColumnModel().getColumn(2).setPreferredWidth(310);
-        tablaSuscriptores.getColumnModel().getColumn(3).setPreferredWidth(190);
-        tablaSuscriptores.getColumnModel().getColumn(4).setPreferredWidth(390);
-        tablaSuscriptores.getColumnModel().getColumn(5).setPreferredWidth(130);
         
         ImageIcon imagen = new ImageIcon("src/main/resources/logo_grande.jpg");
         Icon icono = new ImageIcon(imagen.getImage().getScaledInstance(/*etiquetaLogo.getWidth(), etiquetaLogo.getHeight()*/320, 130, Image.SCALE_DEFAULT));
-        etiquetaLogo.setIcon(icono);
         campoMontoSugerido.setEditable(false);
         etiquetaPromocionAplicada.setVisible(false);
-        
         etiquetaDescPago4.setVisible(false);
 
-        //setCamposPagoDefault();
     }
     
     private void limpiarPantalla() {
         limpiarDatosSuscriptor();
-
-        DefaultTableModel model = (DefaultTableModel) tablaSuscriptores.getModel();
-        model.getDataVector().clear();
-        model.fireTableDataChanged();
 
         campoMotivoDescuento.setText("");
         campoMonto.setText("0.00");
@@ -970,18 +780,6 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         etiquetaNumeroCaja = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jLabel24 = new javax.swing.JLabel();
-        panelBusqueda = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tablaSuscriptores = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        comboTiposBusqueda = new javax.swing.JComboBox<>();
-        jLabel3 = new javax.swing.JLabel();
-        campoBusqueda = new javax.swing.JTextField();
-        botonBusqueda = new javax.swing.JButton();
-        etiquetaLogo = new javax.swing.JLabel();
-        comboEstatusSuscriptor = new javax.swing.JComboBox<>();
-        jLabel4 = new javax.swing.JLabel();
         panelInfoContrato = new javax.swing.JPanel();
         jLabel21 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -1103,146 +901,6 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                     .addComponent(etiquetaUsuario)
                     .addComponent(jLabel24))
                 .addGap(0, 5, Short.MAX_VALUE))
-        );
-
-        panelBusqueda.setBackground(new java.awt.Color(255, 255, 255));
-        panelBusqueda.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(163, 73, 164), null, null));
-        panelBusqueda.setMaximumSize(new java.awt.Dimension(1499, 300));
-        panelBusqueda.setMinimumSize(new java.awt.Dimension(1499, 300));
-        panelBusqueda.setPreferredSize(new java.awt.Dimension(1499, 300));
-
-        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        jScrollPane1.setAutoscrolls(true);
-        jScrollPane1.setFocusTraversalPolicyProvider(true);
-        jScrollPane1.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
-        jScrollPane1.setMaximumSize(new java.awt.Dimension(16, 6));
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(462, 195));
-
-        tablaSuscriptores.setBackground(new java.awt.Color(204, 204, 204));
-        tablaSuscriptores.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
-            },
-            new String [] {
-                "ID Sistema", "Número de  Contrato", "Nombre", "Servicio Contratado", "Domicilio Contrato", "Estatus Contrato"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Long.class, java.lang.Long.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tablaSuscriptores.setToolTipText("");
-        tablaSuscriptores.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
-        tablaSuscriptores.setFillsViewportHeight(true);
-        tablaSuscriptores.setMaximumSize(new java.awt.Dimension(1438, 2200));
-        tablaSuscriptores.setMinimumSize(new java.awt.Dimension(1438, 2200));
-        tablaSuscriptores.setPreferredSize(new java.awt.Dimension(1438, 2200));
-        tablaSuscriptores.setRowHeight(15);
-        tablaSuscriptores.setShowGrid(false);
-        jScrollPane1.setViewportView(tablaSuscriptores);
-        if (tablaSuscriptores.getColumnModel().getColumnCount() > 0) {
-            tablaSuscriptores.getColumnModel().getColumn(0).setResizable(false);
-            tablaSuscriptores.getColumnModel().getColumn(1).setResizable(false);
-            tablaSuscriptores.getColumnModel().getColumn(2).setResizable(false);
-            tablaSuscriptores.getColumnModel().getColumn(3).setResizable(false);
-            tablaSuscriptores.getColumnModel().getColumn(4).setResizable(false);
-            tablaSuscriptores.getColumnModel().getColumn(5).setResizable(false);
-        }
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 0, 0));
-        jLabel1.setText("Busqueda de Suscriptor");
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel2.setText("Tipo de Búsqueda:");
-
-        comboTiposBusqueda.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        comboTiposBusqueda.setFocusCycleRoot(true);
-
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel3.setText("Texto a buscar:");
-
-        campoBusqueda.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-
-        botonBusqueda.setBackground(new java.awt.Color(227, 126, 75));
-        botonBusqueda.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        botonBusqueda.setForeground(new java.awt.Color(255, 255, 255));
-        botonBusqueda.setText("Buscar Suscriptor");
-
-        etiquetaLogo.setBackground(new java.awt.Color(255, 255, 255));
-        etiquetaLogo.setInheritsPopupMenu(false);
-        etiquetaLogo.setMaximumSize(new java.awt.Dimension(410, 88));
-        etiquetaLogo.setMinimumSize(new java.awt.Dimension(410, 88));
-        etiquetaLogo.setPreferredSize(new java.awt.Dimension(410, 88));
-
-        comboEstatusSuscriptor.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel4.setText("Estatus Suscriptor:");
-
-        javax.swing.GroupLayout panelBusquedaLayout = new javax.swing.GroupLayout(panelBusqueda);
-        panelBusqueda.setLayout(panelBusquedaLayout);
-        panelBusquedaLayout.setHorizontalGroup(
-            panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelBusquedaLayout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(panelBusquedaLayout.createSequentialGroup()
-                        .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(panelBusquedaLayout.createSequentialGroup()
-                                .addComponent(comboTiposBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(comboEstatusSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(campoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 529, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(78, 78, 78)
-                        .addComponent(botonBusqueda))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1458, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(etiquetaLogo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(73, 73, 73))
-        );
-        panelBusquedaLayout.setVerticalGroup(
-            panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelBusquedaLayout.createSequentialGroup()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(botonBusqueda)
-                    .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel2)
-                        .addComponent(comboTiposBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel4)
-                        .addComponent(comboEstatusSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(campoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
-                .addContainerGap())
-            .addComponent(etiquetaLogo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         jLabel21.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -1706,14 +1364,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelCabecero, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1596, Short.MAX_VALUE)
-                    .addComponent(panelBusqueda, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1596, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(panelInfoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(panelInfoPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(panelInfoPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(panelInfoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -1722,10 +1377,8 @@ public class CobroServicioPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(panelCabecero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelInfoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(318, 318, 318)
                 .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelInfoPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1752,13 +1405,11 @@ public class CobroServicioPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonAplicarPromocion;
-    private javax.swing.JButton botonBusqueda;
     private javax.swing.JButton botonCalculaMonto;
     private javax.swing.JButton botonCobrar;
     private javax.swing.JButton botonEliminarPromocion;
     private javax.swing.JButton botonReestablecerMonto;
     private javax.swing.JButton botonRegresar;
-    private javax.swing.JTextField campoBusqueda;
     private javax.swing.JTextField campoContrato;
     private javax.swing.JTextField campoCostoServicio;
     private javax.swing.JTextField campoDomicilio;
@@ -1773,23 +1424,19 @@ public class CobroServicioPanel extends javax.swing.JPanel {
     private javax.swing.JTextField campoSuscriptor;
     private javax.swing.JTextField campoTelefono;
     private javax.swing.JComboBox<Integer> comboAnios;
-    private javax.swing.JComboBox<EstatusSuscriptorEntity> comboEstatusSuscriptor;
     private javax.swing.JComboBox<Mes> comboMeses;
     private javax.swing.JComboBox<PromocionEntity> comboPromociones;
     private javax.swing.JComboBox<TipoDescuentoEntity> comboTipoDescuento;
-    private javax.swing.JComboBox<TipoBusquedaCobro> comboTiposBusqueda;
     private javax.swing.JLabel etiquetaDescPago1;
     private javax.swing.JLabel etiquetaDescPago2;
     private javax.swing.JLabel etiquetaDescPago3;
     private javax.swing.JLabel etiquetaDescPago4;
     private javax.swing.JLabel etiquetaImporte;
-    private javax.swing.JLabel etiquetaLogo;
     private javax.swing.JLabel etiquetaNumeroCaja;
     private javax.swing.JLabel etiquetaPesos;
     private javax.swing.JLabel etiquetaPromocionAplicada;
     private javax.swing.JLabel etiquetaSucursal;
     private javax.swing.JLabel etiquetaUsuario;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -1799,7 +1446,6 @@ public class CobroServicioPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
@@ -1810,22 +1456,17 @@ public class CobroServicioPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JPanel panelBusqueda;
     private javax.swing.JPanel panelCabecero;
     private javax.swing.JPanel panelDescuentos;
     private javax.swing.JPanel panelImportes;
     private javax.swing.JPanel panelInfoContrato;
     private javax.swing.JPanel panelInfoPago;
     private javax.swing.JPanel panelPromociones;
-    private javax.swing.JTable tablaSuscriptores;
     // End of variables declaration//GEN-END:variables
 }

@@ -7,7 +7,7 @@ package mx.com.tvch.pos.controller;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.dao.CobroProvisionalDao;
 import mx.com.tvch.pos.entity.CobroProvisionalEntity;
-import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
+import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Utilerias;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ public class CobroProvisionalController {
      * @return
      * @throws Exception 
      */
-    public CobroProvisionalEntity registrarCobroProvisional(ContratoxSuscriptorEntity suscriptorEntity,
+    public CobroProvisionalEntity registrarCobroProvisional(ContratoxSuscriptorDetalleEntity suscriptorEntity,
             String tipoOrden, String tipoOrdenServicio, String observaciones, double monto) throws Exception {
         
         StringBuilder domicilio = new StringBuilder();

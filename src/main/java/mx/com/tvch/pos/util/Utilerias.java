@@ -5,6 +5,7 @@
 package mx.com.tvch.pos.util;
 
 import java.text.DecimalFormat;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -17,8 +18,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javafx.util.converter.LocalDateStringConverter;
 import mx.com.tvch.pos.config.Sesion;
-import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
+import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.model.Mes;
 
 /**
@@ -55,6 +57,32 @@ public class Utilerias {
         meses.add(new Mes(10,"OCTUBRE"));
         meses.add(new Mes(11,"NOVIEMBRE"));
         meses.add(new Mes(12,"DICIEMBRE"));
+    }
+    
+    public LocalDate dateToLocalDate(Date fecha) {
+        return fecha.toInstant()
+            .atZone(ZoneId.of(Constantes.ZONA_HORARIA))
+            .toLocalDate();
+    }
+    
+    public LocalDateTime dateToLocalDateTime(Date fecha){
+        return Instant.ofEpochMilli(fecha.getTime())
+                .atZone(ZoneId.of(Constantes.ZONA_HORARIA))
+                .toLocalDateTime();
+    }
+
+    public List<Mes> obtenerMeses(){
+        return meses;
+    }
+    
+    public Mes obtenerMesEnCurso(){
+        LocalDate ld = LocalDate.now();
+        return meses.stream().filter(m -> m.getNumero() == ld.getMonthValue()).findFirst().get();
+    }
+    
+    public Mes obtenerMes(Integer mesPorBuscar){
+        Mes mes = meses.stream().filter(m -> m.getNumero() == mesPorBuscar ).findFirst().get();
+        return mes;
     }
     
     /**
@@ -106,7 +134,7 @@ public class Utilerias {
         return cadena.toString();
     }
     
-    public boolean esFechaPagoValida(ContratoxSuscriptorEntity suscriptor, Mes mesSeleccionado, int anioSeleccionado){
+    public boolean esFechaPagoValida(ContratoxSuscriptorDetalleEntity suscriptor, Mes mesSeleccionado, int anioSeleccionado){
         
         boolean esValida = false;
         
@@ -427,6 +455,15 @@ public class Utilerias {
         return Long.valueOf(cadenaId);
 
     }
+    
+    public Long generarIdSucursal(Long idSucursal) {
+
+        LocalDateTime ld = LocalDateTime.now(ZoneId.of(Constantes.ZONA_HORARIA));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+        String cadenaId = String.valueOf(idSucursal).concat(ld.format(formatter));
+        return Long.valueOf(cadenaId);
+
+    }
 
     public boolean esMontoValido(String montoCadena, boolean sePermiteCero) {
 
@@ -457,6 +494,27 @@ public class Utilerias {
      */
     public Date convertirCadenaMysqlaDate(String cadenaFechaMysql) throws ParseException {
         return dateFormatMysql.parse(cadenaFechaMysql);
+    }
+    
+    /**
+     * 
+     * @param cadena
+     * @return 
+     */
+    public String limpiarAcentos(String cadena) {
+        String cadenaLimpia = null;
+        if (cadena != null) {
+            String valor = cadena;
+            valor = valor.toUpperCase();
+            // Normalizar texto para eliminar acentos, dieresis, cedillas y tildes
+            cadenaLimpia = Normalizer.normalize(valor, Normalizer.Form.NFD);
+            // Quitar caracteres no ASCII excepto la enie, interrogacion que abre, exclamacion que abre, grados, U con dieresis.
+            //cadenaLimpia = cadenaLimpia.replaceAll("[^\\p{ASCII}(N\u0303)(n\u0303)(\u00A1)(\u00BF)(\u00B0)(U\u0308)(u\u0308)]", "");
+            cadenaLimpia = cadenaLimpia.replaceAll("[^\\p{ASCII}]", "");
+            // Regresar a la forma compuesta, para poder comparar la enie con la tabla de valores
+            cadenaLimpia = Normalizer.normalize(cadenaLimpia, Normalizer.Form.NFC);
+        }
+        return cadenaLimpia;
     }
 
 }

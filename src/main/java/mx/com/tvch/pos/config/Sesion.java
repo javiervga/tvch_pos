@@ -4,6 +4,9 @@
  */
 package mx.com.tvch.pos.config;
 
+import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
+import mx.com.tvch.pos.model.TipoBusquedaCobro;
+
 /**
  *
  * @author fvega
@@ -49,6 +52,14 @@ public class Sesion {
     private Integer ticketSangriaColonia;
 
     private Integer ticketSangriaSucursal;
+    
+    private ContratoxSuscriptorDetalleEntity contratoSeleccionado;
+    
+    private TipoBusquedaCobro tipoBusquedaAlmacenada;
+    
+    private String textoBusquedaAlmacenada;
+    
+    private Long contratoRegistrado;
 
     public static Sesion getSesion() {
         if (sesion == null) {
@@ -208,7 +219,37 @@ public class Sesion {
     public void setTicketSangriaSucursal(Integer ticketSangriaSucursal) {
         this.ticketSangriaSucursal = ticketSangriaSucursal;
     }
-    
-    
+
+    public ContratoxSuscriptorDetalleEntity getContratoSeleccionado() {
+        return contratoSeleccionado;
+    }
+
+    public void setContratoSeleccionado(ContratoxSuscriptorDetalleEntity contratoSeleccionado) {
+        this.contratoSeleccionado = contratoSeleccionado;
+    }
+
+    public TipoBusquedaCobro getTipoBusquedaAlmacenada() {
+        return tipoBusquedaAlmacenada;
+    }
+
+    public void setTipoBusquedaAlmacenada(TipoBusquedaCobro tipoBusquedaAlmacenada) {
+        this.tipoBusquedaAlmacenada = tipoBusquedaAlmacenada;
+    }
+
+    public String getTextoBusquedaAlmacenada() {
+        return textoBusquedaAlmacenada;
+    }
+
+    public void setTextoBusquedaAlmacenada(String textoBusquedaAlmacenada) {
+        this.textoBusquedaAlmacenada = textoBusquedaAlmacenada;
+    }
+
+    public Long getContratoRegistrado() {
+        return contratoRegistrado;
+    }
+
+    public void setContratoRegistrado(Long contratoRegistrado) {
+        this.contratoRegistrado = contratoRegistrado;
+    }
 
 }

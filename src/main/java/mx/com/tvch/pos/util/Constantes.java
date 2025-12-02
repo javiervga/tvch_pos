@@ -23,6 +23,10 @@ public class Constantes {
     
     public static final long ESTATUS_SUSCRIPTOR_ACTIVO = 2;
     
+    public static final long ESTATUS_DOMICILIO_CONTRATO_ACTIVO = 1;
+    
+    public static final int ESTATUS_SERVICIO_CONTRATO_ACTIVO = 1;
+    
     public static final long ESTATUS_CONTRATO_NUEVO = 1;
     public static final long ESTATUS_CONTRATO_PENDIENTE_INSTALAR = 2;
     public static final long ESTATUS_CONTRATO_ACTIVO = 3;

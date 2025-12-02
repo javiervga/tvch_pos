@@ -17,6 +17,9 @@ import static mx.com.tvch.pos.util.VentanaEnum.COBRO_ORDEN;
 import static mx.com.tvch.pos.util.VentanaEnum.COBRO_SERVICIO;
 import static mx.com.tvch.pos.util.VentanaEnum.REIMPRESION;
 import static mx.com.tvch.pos.util.VentanaEnum.SALIDA;
+import static mx.com.tvch.pos.util.VentanaEnum.CONSULTA_CONTRATOS;
+import static mx.com.tvch.pos.util.VentanaEnum.REGISTRO_CONTRATO;
+import static mx.com.tvch.pos.util.VentanaEnum.REGISTRO_SUSCRIPTOR;
 
 /**
  *
@@ -25,6 +28,9 @@ import static mx.com.tvch.pos.util.VentanaEnum.SALIDA;
 public class PosFrame extends javax.swing.JFrame {
 
     private final LoginPanel loginPanel;
+    private final BusquedaContratosPanel busquedaContratosPanel;
+    private final RegistroSuscriptorPanel registroSuscriptorPanel;
+    private final CobrosPanel cobrosPanel;
     private final MenuPanel menuPanel;
     private final LoadingPanel loadingPanel;
     private final AperturaCajaPanel aperturaCajaPanel;
@@ -50,6 +56,9 @@ public class PosFrame extends javax.swing.JFrame {
         initComponents();
 
         loginPanel = LoginPanel.getLoginPanel(this);
+        busquedaContratosPanel = BusquedaContratosPanel.getCobroPanel(this);
+        registroSuscriptorPanel = RegistroSuscriptorPanel.getRegistroSuscriptorPanel(this);
+        cobrosPanel = CobrosPanel.getCobroPanel(this);
         menuPanel = MenuPanel.getMenuPanel(this);
         aperturaCajaPanel = AperturaCajaPanel.getAperturaCajaPanel(this);
         salidaCajaPanel = SalidaCajaPanel.getSalidaCajaPanel(this);
@@ -112,6 +121,30 @@ public class PosFrame extends javax.swing.JFrame {
         switch (nuevaVentana) {
             case LOADING:
                 this.add(loadingPanel);
+                break;
+            case CONSULTA_CONTRATOS:
+                this.add(busquedaContratosPanel);
+                busquedaContratosPanel.cargarDatosSesion();
+                break;
+            case CONSULTA_CONTRATOS_NUEVO_CONTRATO:
+                this.add(busquedaContratosPanel);
+                busquedaContratosPanel.cargarDatosSesion();
+                break;
+            case REGISTRO_SUSCRIPTOR:
+                this.add(registroSuscriptorPanel);
+                registroSuscriptorPanel.cargarDatosSesionNuevoSuscriptor();
+                break;
+            case REGISTRO_CONTRATO:
+                this.add(registroSuscriptorPanel);
+                registroSuscriptorPanel.cargarDatosSesionNuevoContrato();
+                break;
+            case EDICION_CONTRATO:
+                this.add(registroSuscriptorPanel);
+                registroSuscriptorPanel.cargarDatosSesionEdicionContrato();
+                break;
+            case COBROS:
+                this.add(cobrosPanel);
+                cobrosPanel.cargarDatosSesion();
                 break;
             case MENU:
                 this.add(menuPanel);

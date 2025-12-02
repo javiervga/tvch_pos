@@ -10,13 +10,13 @@ import java.util.Date;
  *
  * @author fvega
  */
-public class ContratoxSuscriptorEntity {
+public class ContratoxSuscriptorDetalleEntity {
 
     private Long contratoId;
 
     private Long folioContrato;
 
-    private Integer estatusContratoId;
+    private Long estatusContratoId;
     
     private String estatusContrato;
 
@@ -34,7 +34,7 @@ public class ContratoxSuscriptorEntity {
 
     private String telefono;
 
-    private Integer estatusSuscriptorId;
+    private Long estatusSuscriptorId;
 
     private Long domicilioId;
 
@@ -55,7 +55,23 @@ public class ContratoxSuscriptorEntity {
     private Integer mesesGratis;
     
     private Integer mesesPorPagar;
-
+    
+    private Long tipoServicioInternet;
+    
+    private Long folioPlaca;
+    
+    private String colorPlaca;
+    
+    private String onu;
+    
+    private String ciudad;
+    
+    private String calle1;
+    
+    private String calle2;
+    
+    private Long estatusDomicilioId;
+    
     public Long getContratoId() {
         return contratoId;
     }
@@ -72,11 +88,11 @@ public class ContratoxSuscriptorEntity {
         this.folioContrato = folioContrato;
     }
 
-    public Integer getEstatusContratoId() {
+    public Long getEstatusContratoId() {
         return estatusContratoId;
     }
 
-    public void setEstatusContratoId(Integer estatusContratoId) {
+    public void setEstatusContratoId(Long estatusContratoId) {
         this.estatusContratoId = estatusContratoId;
     }
 
@@ -144,11 +160,11 @@ public class ContratoxSuscriptorEntity {
         this.telefono = telefono;
     }
 
-    public Integer getEstatusSuscriptorId() {
+    public Long getEstatusSuscriptorId() {
         return estatusSuscriptorId;
     }
 
-    public void setEstatusSuscriptorId(Integer estatusSuscriptorId) {
+    public void setEstatusSuscriptorId(Long estatusSuscriptorId) {
         this.estatusSuscriptorId = estatusSuscriptorId;
     }
 
@@ -231,4 +247,69 @@ public class ContratoxSuscriptorEntity {
     public void setMesesPorPagar(Integer mesesPorPagar) {
         this.mesesPorPagar = mesesPorPagar;
     }
+
+    public Long getTipoServicioInternet() {
+        return tipoServicioInternet;
+    }
+
+    public void setTipoServicioInternet(Long tipoServicioInternet) {
+        this.tipoServicioInternet = tipoServicioInternet;
+    }
+
+    public Long getFolioPlaca() {
+        return folioPlaca;
+    }
+
+    public void setFolioPlaca(Long folioPlaca) {
+        this.folioPlaca = folioPlaca;
+    }
+
+    public String getColorPlaca() {
+        return colorPlaca;
+    }
+
+    public void setColorPlaca(String colorPlaca) {
+        this.colorPlaca = colorPlaca;
+    }
+
+    public String getOnu() {
+        return onu;
+    }
+
+    public void setOnu(String onu) {
+        this.onu = onu;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public String getCalle1() {
+        return calle1;
+    }
+
+    public void setCalle1(String calle1) {
+        this.calle1 = calle1;
+    }
+
+    public String getCalle2() {
+        return calle2;
+    }
+
+    public void setCalle2(String calle2) {
+        this.calle2 = calle2;
+    }
+
+    public Long getEstatusDomicilioId() {
+        return estatusDomicilioId;
+    }
+
+    public void setEstatusDomicilioId(Long estatusDomicilioId) {
+        this.estatusDomicilioId = estatusDomicilioId;
+    }
+
 }
