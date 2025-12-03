@@ -19,6 +19,7 @@ import mx.com.tvch.pos.util.VentanaEnum;
 import mx.com.tvch.pos.model.Mes;
 import mx.com.tvch.pos.model.TipoServicioInternet;
 import mx.com.tvch.pos.entity.ServicioEntity;
+import mx.com.tvch.pos.util.Constantes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -497,6 +498,8 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         etiquetaMes.setText("Mes Primer Pago");
         etiquetaAnio.setText("Año Primer Pago");        
         campoFolioContrato.setEnabled(true);
+        campoEstatus.setEnabled(false);
+        campoEstatus.setText("NUEVO");
         comboServicios.setEnabled(true);
         campoTvs.setEnabled(true);
         etiquetaMes.setText("Mes Primer Pago");
@@ -561,6 +564,8 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
             
             //informacion del contrato
             campoFolioContrato.setEnabled(true);
+            campoEstatus.setEnabled(false);
+            campoEstatus.setText("NUEVO");
             comboServicios.setEnabled(true);
             campoTvs.setEnabled(true);
             etiquetaMes.setText("Mes Primer Pago");
@@ -581,6 +586,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
             areaReferencia.setEnabled(true);
             areaReferencia.setLineWrap(true);
             areaReferencia.setRows(4);
+            
 
             cargarComboTiposInternet();
             cargarComboMeses();
@@ -659,6 +665,25 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
             comboTiposInternet.setSelectedIndex(1);
         comboTiposInternet.setEnabled(true);
         
+        campoEstatus.setEnabled(false);
+        
+        if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_NUEVO){
+            campoEstatus.setText("NUEVO");
+        }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_PENDIENTE_INSTALAR){
+            campoEstatus.setText("PENDIENTE DE INSTALAR");
+        }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_ACTIVO){
+            campoEstatus.setText("ACTIVO");
+        }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_CORTESIA){
+            campoEstatus.setText("CORTESIA");
+        }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_CORTE){
+            campoEstatus.setText("CORTE");
+        }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_RECONEXION){
+            campoEstatus.setText("RECONEXION");
+        }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO){
+            campoEstatus.setText("CANCELADO PENDIENTE DE RETIRO");
+        }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO){
+            campoEstatus.setText("CANCELADO RETIRADO");
+        }
         
         campoFolioPlaca.setEnabled(true);
         campoFolioPlaca.setText(String.valueOf(sesion.getContratoSeleccionado().getFolioPlaca()));
@@ -767,6 +792,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
      * 
      */
     private void deshbilitarCamposContrato(){
+        campoEstatus.setEnabled(false);
         campoFolioContrato.setEnabled(false);
         comboServicios.setEnabled(false);
         campoTvs.setEnabled(false);
@@ -842,6 +868,8 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         campoOnu = new javax.swing.JTextField();
         etiquetaNap = new javax.swing.JLabel();
         campoNap = new javax.swing.JTextField();
+        etiquetaEstatus = new javax.swing.JLabel();
+        campoEstatus = new javax.swing.JTextField();
         panelDatosContrato2 = new javax.swing.JPanel();
         etiquetaCalle = new javax.swing.JLabel();
         campoCalle = new javax.swing.JTextField();
@@ -1149,16 +1177,17 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         campoNap.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
         campoNap.setToolTipText("Capture el color de la placa");
 
+        etiquetaEstatus.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
+        etiquetaEstatus.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        etiquetaEstatus.setText("Estatus:");
+
+        campoEstatus.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
+        campoEstatus.setToolTipText("Capture Folio del Nuevo Contrato");
+
         javax.swing.GroupLayout panelDatosContrato1Layout = new javax.swing.GroupLayout(panelDatosContrato1);
         panelDatosContrato1.setLayout(panelDatosContrato1Layout);
         panelDatosContrato1Layout.setHorizontalGroup(
             panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelDatosContrato1Layout.createSequentialGroup()
-                .addGap(114, 114, 114)
-                .addComponent(etiquetaTvs, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(campoTvs, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(panelDatosContrato1Layout.createSequentialGroup()
                 .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelDatosContrato1Layout.createSequentialGroup()
@@ -1168,10 +1197,13 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                             .addComponent(etiquetaServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(comboServicios, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(panelDatosContrato1Layout.createSequentialGroup()
-                                .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(comboServicios, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(etiquetaTvs, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(campoTvs, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(panelDatosContrato1Layout.createSequentialGroup()
                         .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(etiquetaFolioPlaca)
@@ -1187,7 +1219,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                                 .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(etiquetaAvisoFolioPlaca)
                                     .addComponent(comboAnios, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(campoFolioPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(campoFolioPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(panelDatosContrato1Layout.createSequentialGroup()
                                 .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -1199,9 +1231,15 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                                 .addComponent(campoNap))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDatosContrato1Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(etiquetaMes, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
+                        .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(panelDatosContrato1Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(etiquetaEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(etiquetaMes, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
-                        .addComponent(comboMeses, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(comboMeses, 0, 322, Short.MAX_VALUE)
+                            .addComponent(campoEstatus))))
                 .addContainerGap())
         );
         panelDatosContrato1Layout.setVerticalGroup(
@@ -1210,24 +1248,26 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(etiquetaFolioContrato))
+                    .addComponent(etiquetaFolioContrato)
+                    .addComponent(etiquetaTvs)
+                    .addComponent(campoTvs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(etiquetaServicio)
                     .addComponent(comboServicios, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(etiquetaTvs)
-                    .addComponent(campoTvs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(etiquetaEstatus)
+                    .addComponent(campoEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(etiquetaMes)
                     .addComponent(comboMeses, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(etiquetaAnio)
-                    .addComponent(comboAnios, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(comboAnios, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(etiquetaAnio))
+                .addGap(9, 9, 9)
                 .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(etiquetaAnio1)
                     .addComponent(comboTiposInternet, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1237,17 +1277,16 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                     .addComponent(campoFolioPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(etiquetaAvisoFolioPlaca)
+                .addGap(4, 4, 4)
+                .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(campoNap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(etiquetaNap)
+                    .addComponent(campoColorPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(etiquetaColorPlaca))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(etiquetaColorPlaca)
-                    .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(campoColorPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(etiquetaNap)
-                        .addComponent(campoNap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(etiquetaOnu)
-                    .addComponent(campoOnu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(campoOnu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(etiquetaOnu))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1397,7 +1436,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                 .addGroup(panelContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelDatosContrato1, javax.swing.GroupLayout.PREFERRED_SIZE, 389, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(panelDatosContrato2, javax.swing.GroupLayout.PREFERRED_SIZE, 389, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(9, Short.MAX_VALUE))
         );
 
         botonActualizar.setBackground(new java.awt.Color(163, 73, 164));
@@ -1431,7 +1470,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(botonActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(58, 58, 58)
+                        .addGap(59, 59, 59)
                         .addComponent(botonRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(51, 51, 51)
                         .addComponent(botonRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1450,8 +1489,8 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(panelSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(panelContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 432, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addComponent(panelContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(19, 19, 19)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(botonRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(botonRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1481,6 +1520,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
     private javax.swing.JTextField campoColorPlaca;
     private javax.swing.JTextField campoEntreCalle1;
     private javax.swing.JTextField campoEntreCalle2;
+    private javax.swing.JTextField campoEstatus;
     private javax.swing.JTextField campoFolioContrato;
     private javax.swing.JTextField campoFolioPlaca;
     private javax.swing.JTextField campoNap;
@@ -1510,6 +1550,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
     private javax.swing.JLabel etiquetaDescPanel;
     private javax.swing.JLabel etiquetaDescSucursal;
     private javax.swing.JLabel etiquetaDescUsuario;
+    private javax.swing.JLabel etiquetaEstatus;
     private javax.swing.JLabel etiquetaFolioContrato;
     private javax.swing.JLabel etiquetaFolioPlaca;
     private javax.swing.JLabel etiquetaLogo;
