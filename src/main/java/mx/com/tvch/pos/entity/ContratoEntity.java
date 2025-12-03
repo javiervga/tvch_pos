@@ -22,6 +22,9 @@ public class ContratoEntity {
     private String fechaRegistro;
     private Long usuarioId;
     private String onu;
+    private Integer primerDiaPago;
+    private Integer primerMesPago;
+    private Integer primerAnioPago;
 
     public Long getId() {
         return id;
@@ -117,6 +120,30 @@ public class ContratoEntity {
 
     public void setOnu(String onu) {
         this.onu = onu;
+    }
+
+    public Integer getPrimerDiaPago() {
+        return primerDiaPago;
+    }
+
+    public void setPrimerDiaPago(Integer primerDiaPago) {
+        this.primerDiaPago = primerDiaPago;
+    }
+
+    public Integer getPrimerMesPago() {
+        return primerMesPago;
+    }
+
+    public void setPrimerMesPago(Integer primerMesPago) {
+        this.primerMesPago = primerMesPago;
+    }
+
+    public Integer getPrimerAnioPago() {
+        return primerAnioPago;
+    }
+
+    public void setPrimerAnioPago(Integer primerAnioPago) {
+        this.primerAnioPago = primerAnioPago;
     }
 
 }

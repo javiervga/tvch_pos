@@ -235,6 +235,9 @@ public class RegistroSuscriptorController {
         contratoEntity.setUsuarioId(sesion.getUsuarioId());
         if(onu != null)
             contratoEntity.setOnu(utilerias.limpiarAcentos(onu.toUpperCase()));
+        contratoEntity.setPrimerDiaPago(sesion.getDiaCorte());
+        contratoEntity.setPrimerMesPago(mesPago.getNumero());
+        contratoEntity.setPrimerAnioPago(anioPago);
 
         ContratoPorSuscriptorEntity entity = new ContratoPorSuscriptorEntity();
         entity.setIdContrato(contratoEntity.getId());

@@ -176,7 +176,9 @@ public class ContratoDao {
             stmt = conn.createStatement();
 
             StringBuilder query = new StringBuilder();
-            query.append("insert into contratos (id_contrato, folio_contrato, id_estatus, tvs_contratadas, fecha_proximo_pago, id_tipo_servicio, folio_placa, color_placa, onu, id_usuario ) values (");
+            query.append("insert into contratos (id_contrato, folio_contrato, id_estatus, tvs_contratadas, fecha_proximo_pago, "
+                    + "id_tipo_servicio, folio_placa, color_placa, onu, id_usuario, "
+                    + "dia_primer_pago, mes_primer_pago, anio_primer_pago ) values (");
             query.append(entity.getId()).append(",");
             query.append(entity.getFolioContrato()).append(",");
             query.append(entity.getEstatus()).append(",");
@@ -186,7 +188,10 @@ public class ContratoDao {
             query.append(entity.getFolioPlaca()).append(",'");
             query.append(entity.getColorPlaca()).append("','");
             query.append(entity.getOnu()).append("',");
-            query.append(entity.getUsuarioId()).append(")");
+            query.append(entity.getUsuarioId()).append(",");
+            query.append(entity.getPrimerDiaPago()).append(",");
+            query.append(entity.getPrimerMesPago()).append(",");
+            query.append(entity.getPrimerAnioPago()).append(")");
    
             logger.info("query insert contrato: "+query);
             stmt.executeUpdate(query.toString());
