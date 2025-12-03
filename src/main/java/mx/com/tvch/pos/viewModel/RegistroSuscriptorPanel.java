@@ -776,6 +776,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         campoFolioPlaca.setEnabled(false);
         campoColorPlaca.setEnabled(false);
         campoOnu.setEnabled(false);
+        campoNap.setEnabled(false);
         campoCalle.setEnabled(false);
         campoNumeroExt.setEnabled(false);
         campoColonia.setEnabled(false);
