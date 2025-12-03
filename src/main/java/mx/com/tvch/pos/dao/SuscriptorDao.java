@@ -165,12 +165,13 @@ public class SuscriptorDao {
                 //validar q no exista el suscriptor esdsadsadsadsadsa
                 if(!existeSuscriptor(entity.getId(), stmt)){
                 
-                    query.append("insert into suscriptores (id_suscriptor, nombre, apellido_paterno, apellido_materno, telefono, id_estatus) values (");
+                    query.append("insert into suscriptores (id_suscriptor, nombre, apellido_paterno, apellido_materno, telefono, id_usuario, id_estatus) values (");
                     query.append(entity.getId()).append(",'");
                     query.append(entity.getNombre()).append("','");
                     query.append(entity.getApellidoPaterno()).append("','");
                     query.append(entity.getApellidoMaterno()).append("','");
                     query.append(entity.getTelefono()).append("',");
+                    query.append(entity.getUsuarioId()).append(",");
                     query.append(entity.getEstatus()).append(")");
                     System.out.println("insert suscriptor: "+query.toString());
                     stmt.executeUpdate(query.toString());

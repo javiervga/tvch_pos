@@ -4,6 +4,8 @@
  */
 package mx.com.tvch.pos.entity;
 
+import java.util.Date;
+
 /**
  *
  * @author fvega
@@ -11,11 +13,13 @@ package mx.com.tvch.pos.entity;
 public class SuscriptorEntity {
 
     private Long id;
-    private Long idServer;
+    private Long serverId;
     private String nombre;
     private String apellidoPaterno;
     private String apellidoMaterno;
     private String telefono;
+    private Date fechaRegistro;
+    private Long usuarioId;
     private Long estatus;
 
     public SuscriptorEntity() {
@@ -29,12 +33,12 @@ public class SuscriptorEntity {
         this.id = id;
     }
 
-    public Long getIdServer() {
-        return idServer;
+    public Long getServerId() {
+        return serverId;
     }
 
-    public void setIdServer(Long idServer) {
-        this.idServer = idServer;
+    public void setServerId(Long serverId) {
+        this.serverId = serverId;
     }
 
     public String getNombre() {
@@ -67,6 +71,22 @@ public class SuscriptorEntity {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public Date getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(Date fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     public Long getEstatus() {

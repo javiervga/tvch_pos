@@ -176,7 +176,7 @@ public class ContratoDao {
             stmt = conn.createStatement();
 
             StringBuilder query = new StringBuilder();
-            query.append("insert into contratos (id_contrato, folio_contrato, id_estatus, tvs_contratadas, fecha_proximo_pago, id_tipo_servicio, folio_placa, color_placa, onu) values (");
+            query.append("insert into contratos (id_contrato, folio_contrato, id_estatus, tvs_contratadas, fecha_proximo_pago, id_tipo_servicio, folio_placa, color_placa, onu, id_usuario ) values (");
             query.append(entity.getId()).append(",");
             query.append(entity.getFolioContrato()).append(",");
             query.append(entity.getEstatus()).append(",");
@@ -185,7 +185,8 @@ public class ContratoDao {
             query.append(entity.getTipoServicioId()).append(",");
             query.append(entity.getFolioPlaca()).append(",'");
             query.append(entity.getColorPlaca()).append("','");
-            query.append(entity.getOnu()).append("')");
+            query.append(entity.getOnu()).append("',");
+            query.append(entity.getUsuarioId()).append(")");
    
             logger.info("query insert contrato: "+query);
             stmt.executeUpdate(query.toString());

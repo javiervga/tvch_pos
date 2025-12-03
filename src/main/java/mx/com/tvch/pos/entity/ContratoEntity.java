@@ -11,7 +11,7 @@ package mx.com.tvch.pos.entity;
 public class ContratoEntity {
 
     private Long id;
-    private Long idServer;
+    private Long serverId;
     private Long folioContrato;
     private Long estatus;
     private Integer tvs;
@@ -19,6 +19,8 @@ public class ContratoEntity {
     private Long tipoServicioId;
     private Long folioPlaca;
     private String colorPlaca;
+    private String fechaRegistro;
+    private Long usuarioId;
     private String onu;
 
     public Long getId() {
@@ -29,12 +31,12 @@ public class ContratoEntity {
         this.id = id;
     }
 
-    public Long getIdServer() {
-        return idServer;
+    public Long getServerId() {
+        return serverId;
     }
 
-    public void setIdServer(Long idServer) {
-        this.idServer = idServer;
+    public void setServerId(Long serverId) {
+        this.serverId = serverId;
     }
 
     public Long getFolioContrato() {
@@ -91,6 +93,22 @@ public class ContratoEntity {
 
     public void setColorPlaca(String colorPlaca) {
         this.colorPlaca = colorPlaca;
+    }
+
+    public String getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(String fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public Long getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
     }
 
     public String getOnu() {

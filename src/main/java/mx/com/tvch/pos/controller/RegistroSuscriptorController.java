@@ -216,6 +216,7 @@ public class RegistroSuscriptorController {
             suscriptorEntity.setApellidoPaterno(utilerias.limpiarAcentos(apellidoPaterno.toUpperCase()));
             suscriptorEntity.setApellidoMaterno(utilerias.limpiarAcentos(apellidoMaterno.toUpperCase()));
             suscriptorEntity.setTelefono(telefono);
+            suscriptorEntity.setUsuarioId(sesion.getUsuarioId());
             suscriptorEntity.setEstatus(Constantes.ESTATUS_CONTRATO_ACTIVO);
         }
 
@@ -231,6 +232,7 @@ public class RegistroSuscriptorController {
             contratoEntity.setFolioPlaca(Long.parseLong(folioPlaca));
         else
             contratoEntity.setFolioPlaca(Long.parseLong(folioContrato));
+        contratoEntity.setUsuarioId(sesion.getUsuarioId());
         if(onu != null)
             contratoEntity.setOnu(utilerias.limpiarAcentos(onu.toUpperCase()));
 
