@@ -17,7 +17,7 @@ public class ContratoxSuscriptorDetalleEntity {
     private Long folioContrato;
 
     private Long estatusContratoId;
-    
+
     private String estatusContrato;
 
     private Integer tvsContratadas;
@@ -45,33 +45,35 @@ public class ContratoxSuscriptorDetalleEntity {
     private String numeroCalle;
 
     private String referencia;
-    
+
     private Long servicioId;
-    
+
     private String servicio;
-    
+
     private Double costoServicio;
-    
+
     private Integer mesesGratis;
-    
+
     private Integer mesesPorPagar;
-    
+
     private Long tipoServicioInternet;
-    
+
     private Long folioPlaca;
-    
+
     private String colorPlaca;
-    
+
     private String onu;
-    
+
     private String ciudad;
-    
+
     private String calle1;
-    
+
     private String calle2;
-    
+
     private Long estatusDomicilioId;
-    
+
+    private String nap;
+
     public Long getContratoId() {
         return contratoId;
     }
@@ -223,7 +225,7 @@ public class ContratoxSuscriptorDetalleEntity {
     public void setServicio(String servicio) {
         this.servicio = servicio;
     }
-    
+
     public Double getCostoServicio() {
         return costoServicio;
     }
@@ -310,6 +312,14 @@ public class ContratoxSuscriptorDetalleEntity {
 
     public void setEstatusDomicilioId(Long estatusDomicilioId) {
         this.estatusDomicilioId = estatusDomicilioId;
+    }
+
+    public String getNap() {
+        return nap;
+    }
+
+    public void setNap(String nap) {
+        this.nap = nap;
     }
 
 }

@@ -578,10 +578,18 @@
                                           <Component id="etiquetaAvisoFolioPlaca" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="comboAnios" alignment="0" min="-2" pref="145" max="-2" attributes="0"/>
                                           <Component id="campoFolioPlaca" alignment="0" min="-2" pref="138" max="-2" attributes="0"/>
-                                          <Component id="campoColorPlaca" min="-2" pref="138" max="-2" attributes="0"/>
-                                          <Component id="campoOnu" min="-2" pref="138" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                          <Component id="campoOnu" alignment="0" pref="110" max="32767" attributes="0"/>
+                                          <Component id="campoColorPlaca" alignment="0" max="32767" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
+                                      <Component id="etiquetaNap" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="campoNap" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -639,7 +647,11 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="etiquetaColorPlaca" min="-2" max="-2" attributes="0"/>
-                          <Component id="campoColorPlaca" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="campoColorPlaca" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="etiquetaNap" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="campoNap" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -838,6 +850,23 @@
                   <Font name="Segoe UI" size="17" style="0"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" value="Capture Datos de la Onu"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="etiquetaNap">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Segoe UI" size="17" style="0"/>
+                </Property>
+                <Property name="horizontalAlignment" type="int" value="4"/>
+                <Property name="text" type="java.lang.String" value="Nap:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="campoNap">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                  <Font name="Segoe UI" size="17" style="0"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" value="Capture el color de la placa"/>
               </Properties>
             </Component>
           </SubComponents>

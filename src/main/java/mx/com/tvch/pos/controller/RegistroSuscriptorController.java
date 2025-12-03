@@ -83,6 +83,7 @@ public class RegistroSuscriptorController {
      * @param folioPlaca
      * @param colorPlaca
      * @param onu
+     * @param nap
      * @param calle
      * @param numeroCalle
      * @param colonia
@@ -102,6 +103,7 @@ public class RegistroSuscriptorController {
             String folioPlaca,
             String colorPlaca,
             String onu,
+            String nap,
             String calle,
             String numeroCalle,
             String colonia,
@@ -139,6 +141,8 @@ public class RegistroSuscriptorController {
         
         if(onu != null)
             contratoEntity.setOnu(utilerias.limpiarAcentos(onu.toUpperCase()));
+        if(nap != null)
+            contratoEntity.setNap(utilerias.limpiarAcentos(nap.toUpperCase()));
 
         // actualizar domicilio
         DomicilioEntity domicilioEntity = new DomicilioEntity();
@@ -174,6 +178,7 @@ public class RegistroSuscriptorController {
      * @param folioPlaca
      * @param colorPlaca
      * @param onu
+     * @param nap
      * @param calle
      * @param numeroCalle
      * @param colonia
@@ -198,6 +203,7 @@ public class RegistroSuscriptorController {
             String folioPlaca,
             String colorPlaca,
             String onu,
+            String nap,
             String calle,
             String numeroCalle,
             String colonia,
@@ -238,6 +244,8 @@ public class RegistroSuscriptorController {
         contratoEntity.setPrimerDiaPago(sesion.getDiaCorte());
         contratoEntity.setPrimerMesPago(mesPago.getNumero());
         contratoEntity.setPrimerAnioPago(anioPago);
+        if(nap != null)
+            contratoEntity.setNap(utilerias.limpiarAcentos(nap.toUpperCase()));
 
         ContratoPorSuscriptorEntity entity = new ContratoPorSuscriptorEntity();
         entity.setIdContrato(contratoEntity.getId());

@@ -126,6 +126,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                                         campoFolioPlaca.getText().trim(),
                                         campoColorPlaca.getText().trim(),
                                         campoOnu.getText().trim(),
+                                        campoNap.getText().trim(),
                                         campoCalle.getText().trim(), 
                                         campoNumeroExt.getText().trim(), 
                                         campoColonia.getText().trim(), 
@@ -220,6 +221,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                                     campoFolioPlaca.getText().trim(),
                                     campoColorPlaca.getText().trim(),
                                     campoOnu.getText().trim(),
+                                    campoNap.getText().trim(),
                                     campoCalle.getText().trim(), 
                                     campoNumeroExt.getText().trim(), 
                                     campoColonia.getText().trim(), 
@@ -328,6 +330,9 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         if( campoOnu.getText().trim().isEmpty() || campoOnu.getText().length() > 50)
             errores.add("La ONU debe tener una longitud de entre 1 y 50 caracteres  \n ");
         
+        if( campoNap.getText().trim().isEmpty() || campoNap.getText().length() > 50)
+            errores.add("La Nap debe tener una longitud de entre 1 y 50 caracteres  \n ");
+        
         if( campoCalle.getText().trim().isEmpty() || campoCalle.getText().length() > 120)
             errores.add("La calle debe tener una longitud de entre 1 y 120 caracteres  \n ");
         
@@ -405,6 +410,9 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         if( campoOnu.getText().trim().isEmpty() || campoOnu.getText().length() > 50)
             errores.add("La ONU debe tener una longitud de entre 1 y 50 caracteres  \n ");
         
+        if( campoNap.getText().trim().isEmpty() || campoNap.getText().length() > 50)
+            errores.add("La Nap debe tener una longitud de entre 1 y 50 caracteres  \n ");
+        
         if( campoCalle.getText().trim().isEmpty() || campoCalle.getText().length() > 120)
             errores.add("La calle debe tener una longitud de entre 1 y 120 caracteres  \n ");
         
@@ -444,6 +452,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         campoFolioPlaca.setText("");
         campoColorPlaca.setText("");
         campoOnu.setText("");
+        campoNap.setText("");
         campoCalle.setText("");
         campoNumeroExt.setText("");
         campoColonia.setText("");
@@ -498,6 +507,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         campoFolioPlaca.setEnabled(true);
         campoColorPlaca.setEnabled(true);
         campoOnu.setEnabled(true);
+        campoNap.setEnabled(true);
         campoCalle.setEnabled(true);
         campoNumeroExt.setEnabled(true);
         campoColonia.setEnabled(true);
@@ -561,6 +571,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
             campoFolioPlaca.setEnabled(true);
             campoColorPlaca.setEnabled(true);
             campoOnu.setEnabled(true);
+            campoNap.setEnabled(true);
             campoCalle.setEnabled(true);
             campoNumeroExt.setEnabled(true);
             campoColonia.setEnabled(true);
@@ -657,6 +668,9 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         
         campoOnu.setEnabled(true);
         campoOnu.setText(sesion.getContratoSeleccionado().getOnu());
+        
+        campoNap.setEnabled(true);
+        campoNap.setText(sesion.getContratoSeleccionado().getNap());
         
         campoCalle.setEnabled(true);
         campoCalle.setText(sesion.getContratoSeleccionado().getCalle());
@@ -825,6 +839,8 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         campoColorPlaca = new javax.swing.JTextField();
         etiquetaOnu = new javax.swing.JLabel();
         campoOnu = new javax.swing.JTextField();
+        etiquetaNap = new javax.swing.JLabel();
+        campoNap = new javax.swing.JTextField();
         panelDatosContrato2 = new javax.swing.JPanel();
         etiquetaCalle = new javax.swing.JLabel();
         campoCalle = new javax.swing.JTextField();
@@ -1125,6 +1141,13 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         campoOnu.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
         campoOnu.setToolTipText("Capture Datos de la Onu");
 
+        etiquetaNap.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
+        etiquetaNap.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        etiquetaNap.setText("Nap:");
+
+        campoNap.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
+        campoNap.setToolTipText("Capture el color de la placa");
+
         javax.swing.GroupLayout panelDatosContrato1Layout = new javax.swing.GroupLayout(panelDatosContrato1);
         panelDatosContrato1.setLayout(panelDatosContrato1Layout);
         panelDatosContrato1Layout.setHorizontalGroup(
@@ -1163,10 +1186,16 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                                 .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(etiquetaAvisoFolioPlaca)
                                     .addComponent(comboAnios, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(campoFolioPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(campoColorPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(campoOnu, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 0, Short.MAX_VALUE))))
+                                    .addComponent(campoFolioPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(panelDatosContrato1Layout.createSequentialGroup()
+                                .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(campoOnu, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+                                    .addComponent(campoColorPlaca, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addGap(38, 38, 38)
+                                .addComponent(etiquetaNap)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(campoNap))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDatosContrato1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(etiquetaMes, javax.swing.GroupLayout.DEFAULT_SIZE, 148, Short.MAX_VALUE)
@@ -1210,7 +1239,10 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(etiquetaColorPlaca)
-                    .addComponent(campoColorPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(campoColorPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(etiquetaNap)
+                        .addComponent(campoNap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(etiquetaOnu)
@@ -1450,6 +1482,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
     private javax.swing.JTextField campoEntreCalle2;
     private javax.swing.JTextField campoFolioContrato;
     private javax.swing.JTextField campoFolioPlaca;
+    private javax.swing.JTextField campoNap;
     private javax.swing.JTextField campoNombre;
     private javax.swing.JTextField campoNumeroExt;
     private javax.swing.JTextField campoOnu;
@@ -1480,6 +1513,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
     private javax.swing.JLabel etiquetaFolioPlaca;
     private javax.swing.JLabel etiquetaLogo;
     private javax.swing.JLabel etiquetaMes;
+    private javax.swing.JLabel etiquetaNap;
     private javax.swing.JLabel etiquetaNombreSuscriptor;
     private javax.swing.JLabel etiquetaNuevoSuscriptor;
     private javax.swing.JLabel etiquetaNuevoSuscriptor1;

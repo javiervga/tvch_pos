@@ -25,6 +25,7 @@ public class ContratoEntity {
     private Integer primerDiaPago;
     private Integer primerMesPago;
     private Integer primerAnioPago;
+    private String nap;
 
     public Long getId() {
         return id;
@@ -144,6 +145,14 @@ public class ContratoEntity {
 
     public void setPrimerAnioPago(Integer primerAnioPago) {
         this.primerAnioPago = primerAnioPago;
+    }
+
+    public String getNap() {
+        return nap;
+    }
+
+    public void setNap(String nap) {
+        this.nap = nap;
     }
 
 }

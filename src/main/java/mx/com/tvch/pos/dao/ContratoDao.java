@@ -131,6 +131,10 @@ public class ContratoDao {
                 query.append("onu = '").append(entity.getOnu()).append("', ");
             else
                 query.append("onu = null, ");
+            if(entity.getNap() != null)
+                query.append("nap = '").append(entity.getNap()).append("', ");
+            else
+                query.append("nap = null, ");
             query.append("actualizacion = 1 ");
             query.append("where id_contrato = ").append(entity.getId());
             System.out.println("update contrato: "+query.toString());
@@ -178,7 +182,7 @@ public class ContratoDao {
             StringBuilder query = new StringBuilder();
             query.append("insert into contratos (id_contrato, folio_contrato, id_estatus, tvs_contratadas, fecha_proximo_pago, "
                     + "id_tipo_servicio, folio_placa, color_placa, onu, id_usuario, "
-                    + "dia_primer_pago, mes_primer_pago, anio_primer_pago ) values (");
+                    + "dia_primer_pago, mes_primer_pago, anio_primer_pago, nap ) values (");
             query.append(entity.getId()).append(",");
             query.append(entity.getFolioContrato()).append(",");
             query.append(entity.getEstatus()).append(",");
@@ -191,7 +195,11 @@ public class ContratoDao {
             query.append(entity.getUsuarioId()).append(",");
             query.append(entity.getPrimerDiaPago()).append(",");
             query.append(entity.getPrimerMesPago()).append(",");
-            query.append(entity.getPrimerAnioPago()).append(")");
+            query.append(entity.getPrimerAnioPago()).append(",");
+            if(entity.getNap() != null)
+                query.append("'").append(entity.getNap()).append("')");
+            else
+                query.append("null)");
    
             logger.info("query insert contrato: "+query);
             stmt.executeUpdate(query.toString());
