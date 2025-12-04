@@ -155,6 +155,7 @@ public class Constantes {
     public static final int ESTATUS_COBRO_PROVISIONAL_NUEVO = 0;
     public static final int ESTATUS_COBRO_PROVISIONAL_APLICADO = 1;
     
+    public static final int OPERACION_NUEVO_CONTRATO = 0;
     public static final int OPERACION_COBRO_SERVICIO = 1;
     public static final int OPERACION_CANCELACION = 2;
     public static final int OPERACION_COBRO_PROVISIONAL = 3;

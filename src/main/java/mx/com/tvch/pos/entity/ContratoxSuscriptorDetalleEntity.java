@@ -23,6 +23,8 @@ public class ContratoxSuscriptorDetalleEntity {
     private Integer tvsContratadas;
 
     private Date fechaProximoPago;
+    
+    private Date fechaRegistroContrato;
 
     private Long susucriptorId;
 
@@ -120,6 +122,14 @@ public class ContratoxSuscriptorDetalleEntity {
 
     public void setFechaProximoPago(Date fechaProximoPago) {
         this.fechaProximoPago = fechaProximoPago;
+    }
+
+    public Date getFechaRegistroContrato() {
+        return fechaRegistroContrato;
+    }
+
+    public void setFechaRegistroContrato(Date fechaRegistroContrato) {
+        this.fechaRegistroContrato = fechaRegistroContrato;
     }
 
     public Long getSusucriptorId() {

@@ -12,6 +12,7 @@ import java.util.Map;
 import mx.com.tvch.pos.entity.AperturaCajaEntity;
 import mx.com.tvch.pos.entity.CancelacionEntity;
 import mx.com.tvch.pos.entity.CobroProvisionalEntity;
+import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.entity.CorteCajaEntity;
 import mx.com.tvch.pos.entity.IngresoCajaEntity;
 import mx.com.tvch.pos.entity.SalidaCajaEntity;
@@ -71,6 +72,23 @@ public class PosMapper {
         return objectMapper
                 .convertValue(object, new TypeReference<Map<String,Object>>(){});
     }
+    
+    public List<OperacionPendiente> contratos2OperacionPendientes(List<ContratoxSuscriptorDetalleEntity> entities, TipoOperacion tipo){
+        List<OperacionPendiente> list = new ArrayList<>();
+        entities.forEach(t -> list.add(contratoxSuscriptor2OperacionPendiente(t, tipo)));
+        return list;
+    }
+    
+    private OperacionPendiente contratoxSuscriptor2OperacionPendiente(ContratoxSuscriptorDetalleEntity entity, TipoOperacion tipo){
+        OperacionPendiente op = new OperacionPendiente();
+        op.setDescripcion("NUEVO CONTRATO");
+        op.setEstatus("PENDIENTE");
+        op.setFecha(util.convertirDateTime2String(entity.getFechaRegistroContrato(), Constantes.FORMATO_FECHA_HORA_WEB_SERVICE));
+        op.setFolio(String.valueOf(entity.getFolioContrato()));
+        op.setTipo(tipo);
+        op.setMonto(0d);
+        return op;
+    } 
     
     public List<OperacionPendiente> transacciones2OperacionPendientes(List<TransaccionEntity> entities, TipoOperacion tipo){
         List<OperacionPendiente> list = new ArrayList<>();
