@@ -182,7 +182,7 @@ public class ContratoDao {
             StringBuilder query = new StringBuilder();
             query.append("insert into contratos (id_contrato, folio_contrato, id_estatus, tvs_contratadas, fecha_proximo_pago, "
                     + "id_tipo_servicio, folio_placa, color_placa, onu, id_usuario, "
-                    + "dia_primer_pago, mes_primer_pago, anio_primer_pago, nap ) values (");
+                    + "dia_primer_pago, mes_primer_pago, anio_primer_pago, nap, numero_caja ) values (");
             query.append(entity.getId()).append(",");
             query.append(entity.getFolioContrato()).append(",");
             query.append(entity.getEstatus()).append(",");
@@ -197,9 +197,10 @@ public class ContratoDao {
             query.append(entity.getPrimerMesPago()).append(",");
             query.append(entity.getPrimerAnioPago()).append(",");
             if(entity.getNap() != null)
-                query.append("'").append(entity.getNap()).append("')");
+                query.append("'").append(entity.getNap()).append("', ");
             else
-                query.append("null)");
+                query.append("null, ");
+            query.append(entity.getNumeroCaja()).append(")");
    
             logger.info("query insert contrato: "+query);
             stmt.executeUpdate(query.toString());

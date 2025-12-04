@@ -246,6 +246,7 @@ public class RegistroSuscriptorController {
         contratoEntity.setPrimerAnioPago(anioPago);
         if(nap != null)
             contratoEntity.setNap(utilerias.limpiarAcentos(nap.toUpperCase()));
+        contratoEntity.setNumeroCaja(sesion.getNumeroCaja());
 
         ContratoPorSuscriptorEntity entity = new ContratoPorSuscriptorEntity();
         entity.setIdContrato(contratoEntity.getId());

@@ -19,13 +19,14 @@ public class ContratoEntity {
     private Long tipoServicioId;
     private Long folioPlaca;
     private String colorPlaca;
-    private String fechaRegistro;
-    private Long usuarioId;
     private String onu;
+    private String fechaRegistro;
     private Integer primerDiaPago;
     private Integer primerMesPago;
     private Integer primerAnioPago;
     private String nap;
+    private Long usuarioId;
+    private Integer numeroCaja;
 
     public Long getId() {
         return id;
@@ -153,6 +154,14 @@ public class ContratoEntity {
 
     public void setNap(String nap) {
         this.nap = nap;
+    }
+
+    public Integer getNumeroCaja() {
+        return numeroCaja;
+    }
+
+    public void setNumeroCaja(Integer numeroCaja) {
+        this.numeroCaja = numeroCaja;
     }
 
 }
