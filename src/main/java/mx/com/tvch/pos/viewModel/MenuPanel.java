@@ -261,9 +261,21 @@ public class MenuPanel extends javax.swing.JPanel {
         ActionListener botonBusquedaContratosListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                posFrame.cambiarPantalla(menuPanel, VentanaEnum.CONSULTA_CONTRATOS);
-
+                
+                try{
+                    AperturaCajaEntity entity = aperturaCajaController.obtenerAperturaCajaActiva();
+                    if(entity != null){
+                        if(entity.getUsuarioId().longValue() == sesion.getUsuarioId().longValue()){
+                            sesion.setAperturaCajaId(entity.getAperturaCajaId());
+                            posFrame.cambiarPantalla(menuPanel, VentanaEnum.CONSULTA_CONTRATOS);
+                        }else{
+                            JOptionPane.showMessageDialog(menuPanel, "Se encontro una apertura de caja realizada por un usuario diferente, para ingresar a pantalla de contratos debe hacerlo con el usuario que realizo la apertura","", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }else
+                        JOptionPane.showMessageDialog(menuPanel, "No se encontro una apertura de caja activa, para ingresar a pantalla de contratos primero debe abrir caja","", JOptionPane.WARNING_MESSAGE);
+                }catch(Exception ex){
+                    JOptionPane.showMessageDialog(menuPanel, ex.getMessage(),"", JOptionPane.ERROR_MESSAGE);
+                }
             }
         };
         botonBusquedaContratos.addActionListener(botonBusquedaContratosListener);
