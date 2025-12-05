@@ -275,6 +275,52 @@ public class ContratoDao {
         }
 
     }
+    
+    /**
+     * 
+     * @param contratoId
+     * @param estatus 
+     */
+    public void actualizarNumeroTvs(Long contratoId, Integer tvs) {
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            query.append("update contratos set tvs_contratadas = ").append(tvs).append(", ");
+            query.append("actualizacion = 1 ");
+            query.append(" where id_contrato = ");
+            query.append(contratoId);
+            stmt.executeUpdate(query.toString());
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al actualizar tvs en contrato: " + sw.toString());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+    }
 
     /**
      * 

@@ -588,9 +588,9 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
         campoObservaciones = new javax.swing.JTextField();
 
         setBackground(new java.awt.Color(204, 204, 204));
-        setMaximumSize(new java.awt.Dimension(1500, 1900));
-        setMinimumSize(new java.awt.Dimension(1500, 1900));
-        setPreferredSize(new java.awt.Dimension(1500, 1900));
+        setMaximumSize(new java.awt.Dimension(1500, 800));
+        setMinimumSize(new java.awt.Dimension(1500, 800));
+        setPreferredSize(new java.awt.Dimension(1500, 800));
 
         panelCabecero.setBackground(new java.awt.Color(255, 255, 255));
         panelCabecero.setMaximumSize(new java.awt.Dimension(1500, 30));
@@ -1157,7 +1157,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                 .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(9, 9, 9)
                 .addComponent(panelInfoPago, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(1102, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 

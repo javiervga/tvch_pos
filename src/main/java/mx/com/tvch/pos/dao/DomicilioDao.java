@@ -35,6 +35,54 @@ public class DomicilioDao {
     
     /**
      * 
+     * @param domicilioId 
+     * @param estatus 
+     */
+    public void actualizarEstatusDomicilio(
+            Long domicilioId, 
+            Integer estatus) {
+        
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            query.append("update domicilios set estatus = ");
+            query.append(estatus);
+            query.append(" where id_domicilio = ");
+            query.append(domicilioId);
+            stmt.executeUpdate(query.toString());
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al actualizar estatus de domicilio: " + sw.toString());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        
+    }
+    
+    /**
+     * 
      * @param entity 
      */
     public void actualizarDomicilio(DomicilioEntity entity) {

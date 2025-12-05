@@ -35,6 +35,7 @@ import mx.com.tvch.pos.model.CorteCaja;
 import mx.com.tvch.pos.model.DetalleCorte;
 import mx.com.tvch.pos.model.DetallePagoServicio;
 import mx.com.tvch.pos.model.Orden;
+import mx.com.tvch.pos.model.OrdenAgregadaPago;
 import mx.com.tvch.pos.model.client.Suscriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -574,6 +575,10 @@ public class Impresora {
         
         if(cobro.getDescuento() != null || cobro.getPromocion() != null || cobro.isSeCobraRecargo())
             cantidadLineas = cantidadLineas + 4;
+        
+        if( cobro.getOrdenesPago() != null && !cobro.getOrdenesPago().isEmpty()){
+            cantidadLineas = cantidadLineas + (cobro.getOrdenesPago().size()*2);
+        }
 
         pm.setOutSize(cantidadLineas, 47);
 
@@ -611,16 +616,40 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, String.valueOf(transaccionId));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Tipo Pago:");
-        if(suscriptor.getMesesPorPagar() == 1)
-            pm.printTextLinCol(linea, 14, "Pago de Mensualidad");
-        else{
-            StringBuilder descripcionPago = new StringBuilder();
-            descripcionPago.append("Pago de ").append(suscriptor.getMesesPorPagar()).append(" mensualidades");
-            pm.printTextLinCol(linea, 14, descripcionPago.toString());
+        
+        if(cobro.isSeCobraServicio()){
+            
+            if(cobro.getOrdenesPago() == null || cobro.getOrdenesPago().isEmpty()){
+                
+                if(suscriptor.getMesesPorPagar() == 1)
+                    pm.printTextLinCol(linea, 14, "Pago de Mensualidad");
+                else{
+                    StringBuilder descripcionPago = new StringBuilder();
+                    descripcionPago.append("Pago de ").append(suscriptor.getMesesPorPagar()).append(" mensualidades");
+                    pm.printTextLinCol(linea, 14, descripcionPago.toString());
+                }
+                
+            }else{
+                pm.printTextLinCol(linea, 14, "Pago de Mensualidad/Orden");
+            }
+
+        }else{
+            pm.printTextLinCol(linea, 14, "Pago de Orden(es) de Servicio");
         }
-        linea = linea + 2;
-        pm.printTextLinCol(linea, 1, "Periodo:");
-        pm.printTextLinCol(linea, 14, String.valueOf(cobro.getConcepto().replace("Pago", "").toUpperCase()));
+        
+        if(cobro.isSeCobraServicio()){
+            linea = linea + 2;
+            pm.printTextLinCol(linea, 1, "Periodo:");
+            pm.printTextLinCol(linea, 14, String.valueOf(cobro.getConcepto().replace("Pago", "").toUpperCase()));
+        }
+        
+        /*for(OrdenAgregadaPago orden : cobro.getOrdenesPago()){
+            linea = linea + 2;
+            pm.printTextLinCol(linea, 1, "Tipo:");
+            pm.printTextLinCol(linea, 14, String.valueOf(cobro.getConcepto().replace("Pago", "").toUpperCase()));
+        }*/
+        
+        
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Contrato:");
         pm.printTextLinCol(linea, 14, contrato);
@@ -640,25 +669,42 @@ public class Impresora {
         double montoRecargo = 0;
         if(cobro.isSeCobraRecargo())
             montoRecargo = cobro.getMontoRecargo();
+           
+        if(cobro.isSeCobraServicio()){
             
-        linea = linea + 2;
-        pm.printTextLinCol(linea, 1, "Costo Mensualidad(es):");
-        pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoSugerido())));
-        if (cobro.isSeCobraRecargo()) {
-            linea++;
-            pm.printTextLinCol(linea, 1, "Pago tardio:");
-            pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoRecargo())));
-        }
-        if (cobro.getPromocion() != null) {
-            linea++;
-            pm.printTextLinCol(linea, 1, "Costo Promoción:");
-            pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getPromocion().getCostoPromocion())));
-        } else {
-            if (cobro.getDescuento() != null) {
-                linea++;
-                pm.printTextLinCol(linea, 1, "Descuento:");
-                pm.printTextLinCol(linea, 39, "-$ ".concat(String.valueOf(cobro.getMontoSugerido() - cobro.getMontoTotal())));
+            if( cobro.getOrdenesPago() == null || cobro.getOrdenesPago().isEmpty()){
+                
+                linea = linea + 2;
+                pm.printTextLinCol(linea, 1, "Costo Mensualidad(es):");
+                pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoSugerido())));
+                
+            }else{
+                
+                linea = linea + 2;
+                pm.printTextLinCol(linea, 1, "Costo Mensualidades/Ordenes:");
+                pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoSugerido())));
             }
+
+            if (cobro.isSeCobraRecargo()) {
+                linea++;
+                pm.printTextLinCol(linea, 1, "Pago tardio:");
+                pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoRecargo())));
+            }
+            if (cobro.getPromocion() != null) {
+                linea++;
+                pm.printTextLinCol(linea, 1, "Costo Promoción:");
+                pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getPromocion().getCostoPromocion())));
+            } else {
+                if (cobro.getDescuento() != null) {
+                    linea++;
+                    pm.printTextLinCol(linea, 1, "Descuento:");
+                    pm.printTextLinCol(linea, 39, "-$ ".concat(String.valueOf(cobro.getMontoSugerido() - cobro.getMontoTotal())));
+                }
+            }
+        }else{
+            linea = linea + 2;
+            pm.printTextLinCol(linea, 1, "Costo Orden(es):");
+            pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoSugerido())));
         }
 
         linea = linea + 2;

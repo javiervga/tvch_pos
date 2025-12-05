@@ -591,9 +591,9 @@ public class CobroProvisionalPanel extends javax.swing.JPanel {
         campoObservaciones = new javax.swing.JTextArea();
 
         setBackground(new java.awt.Color(204, 204, 204));
-        setMaximumSize(new java.awt.Dimension(1500, 950));
-        setMinimumSize(new java.awt.Dimension(1500, 950));
-        setPreferredSize(new java.awt.Dimension(1500, 950));
+        setMaximumSize(new java.awt.Dimension(1500, 800));
+        setMinimumSize(new java.awt.Dimension(1500, 800));
+        setPreferredSize(new java.awt.Dimension(1500, 800));
 
         panelCabecero.setBackground(new java.awt.Color(255, 255, 255));
         panelCabecero.setMaximumSize(new java.awt.Dimension(1500, 30));

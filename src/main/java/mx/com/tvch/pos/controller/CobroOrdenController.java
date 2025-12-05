@@ -197,11 +197,13 @@ public class CobroOrdenController {
         Long transaccionId = null;
 
         try {
+            
+            int tipoOrden = orden.getTipoOrdenId().intValue(); 
 
             //paso 1 -> generar peticion de actualizacion de orden y enviarla a central
-            switch (orden.getTipoOrdenId()) {
+            switch (tipoOrden) {
 
-                case Constantes.TIPO_ORDEN_INSTALACION:
+                case 1:  //orden de instalacion
                     
                     //segundo actualizar estatus de contrato y orden de instalacion en server
                     UpdateEstatusPagadaOrdenInstalacionRequest instalacionPagadaRequest = new UpdateEstatusPagadaOrdenInstalacionRequest();
@@ -233,7 +235,7 @@ public class CobroOrdenController {
                             throw new Exception(responseInstalacion.getMessage());
                     }
                     break;
-                case Constantes.TIPO_ORDEN_SERVICIO:
+                case 2: // tipo orden de servicios
                     
                     //segundo actualizar orden de instalacion en server
                     UpdateEstatusPagadaOrdenServicioRequest servicioPagadoRequest = new UpdateEstatusPagadaOrdenServicioRequest();
@@ -256,7 +258,7 @@ public class CobroOrdenController {
                             throw new Exception(responseServicio.getMessage());
                     }
                     break;
-                case Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO:
+                case  4 : //cambio de domicilio
                     
                     //segundo actualizar orden de cambio en server
                     UpdateEstatusPagadaOrdenCambioDomicilioRequest cambioDomicilioPagadoRequest = new UpdateEstatusPagadaOrdenCambioDomicilioRequest();
@@ -373,8 +375,10 @@ public class CobroOrdenController {
      */
     public List<Orden> consultarOrdenes(Suscriptor suscriptor, TipoOrden tipoOrden) throws Exception {
 
-        switch (tipoOrden.getTipoOrdenId()) {
-            case Constantes.TIPO_ORDEN_INSTALACION:
+        int tipo = tipoOrden.getTipoOrdenId().intValue(); 
+        
+        switch (tipo) {
+            case 1 :  //orden de instalacion
                 ListOrdenesInstalacionPosRequest listOrdenesInstalacionRequest = new ListOrdenesInstalacionPosRequest();
                 listOrdenesInstalacionRequest.setContratoId(suscriptor.getContratoId());
                 //ordenesRequest.setFechaInicio(util.convertirDateTime2String(fechaInicio, "dd/MM/yyyy"));
@@ -393,7 +397,7 @@ public class CobroOrdenController {
                         throw new Exception(responseOrdenesInstalacion.getMessage());
                 }
 
-            case Constantes.TIPO_ORDEN_SERVICIO:
+            case 2 :  //orden de servicio
                 ListOrdenesServicioPosRequest listOrdenesServicioRequest = new ListOrdenesServicioPosRequest();
                 listOrdenesServicioRequest.setContratoId(suscriptor.getContratoId());
                 Request<ListOrdenesServicioPosRequest> ordenesServicioRequest = new Request<>();
@@ -410,7 +414,7 @@ public class CobroOrdenController {
                         throw new Exception(responseOrdenesServicio.getMessage());
                 }
                 
-            case Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO:
+            case 4 : //orden de cambio de domicilio
                 ListOrdenesCambioDomicilioPosRequest listOrdenesCambioDomicilioRequest = new ListOrdenesCambioDomicilioPosRequest();
                 listOrdenesCambioDomicilioRequest.setContratoId(suscriptor.getContratoId());
                 Request<ListOrdenesCambioDomicilioPosRequest> ordenesCambioDomicilioRequest = new Request<>();

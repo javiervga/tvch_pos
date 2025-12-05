@@ -1040,9 +1040,9 @@ public class CobroServicioPanel extends javax.swing.JPanel {
         campoMotivoDescuento = new javax.swing.JTextField();
 
         setBackground(new java.awt.Color(204, 204, 204));
-        setMaximumSize(new java.awt.Dimension(1500, 950));
-        setMinimumSize(new java.awt.Dimension(1500, 950));
-        setPreferredSize(new java.awt.Dimension(1500, 950));
+        setMaximumSize(new java.awt.Dimension(1500, 800));
+        setMinimumSize(new java.awt.Dimension(1500, 800));
+        setPreferredSize(new java.awt.Dimension(1500, 800));
 
         panelCabecero.setBackground(new java.awt.Color(255, 255, 255));
         panelCabecero.setMaximumSize(new java.awt.Dimension(1500, 30));
@@ -1729,7 +1729,7 @@ public class CobroServicioPanel extends javax.swing.JPanel {
                 .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelInfoPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(187, Short.MAX_VALUE))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 

@@ -113,9 +113,10 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                     
                     try{
                         Long transaccionId = controller.cobrarOrden(ordenSeleccionada);
+                        int tipoId = ordenSeleccionada.getTipoOrdenId().intValue(); 
                         try{
-                            switch (ordenSeleccionada.getTipoOrdenId()) {
-                                case Constantes.TIPO_ORDEN_INSTALACION:
+                            switch (tipoId) {
+                                case 1:  //orde de instalacion
                                     String fechaProximoPago = util
                                             .obtenerNuevaFechaProximoPagoOrdenInstalacion(
                                                     sesion.getDiaCorte(), 
@@ -128,10 +129,10 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                                             sesion.getSucursal(),
                                             fechaProximoPago);
                                     break;
-                                case Constantes.TIPO_ORDEN_SERVICIO:
+                                case 2: // orden de servicio
                                     impresora.imprimirTicketOrdenServicio(transaccionId, ordenSeleccionada, suscriptorSeleccionado, sesion.getSucursal());
                                     break;
-                                case Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO:
+                                case 4: //orden de cambio de domicilio
                                     impresora.imprimirTicketOrdenCambioDomicilio(transaccionId, ordenSeleccionada, suscriptorSeleccionado, sesion.getSucursal());
                                     break;
                             }
@@ -336,8 +337,9 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                             DefaultTableModel model = (DefaultTableModel) tablaOrdenes.getModel();
                             model.getDataVector().clear();
                             //consultar promociones
-                            switch (tipoOrden.getTipoOrdenId()) {
-                                case Constantes.TIPO_ORDEN_INSTALACION:
+                            int tipoId = tipoOrden.getTipoOrdenId().intValue(); 
+                            switch (tipoId) {
+                                case 1: //orden de instalacion
                                     cargarTablaOrdenesInstalacion(model, ordenes);
                                     if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
                                         ordenSeleccionada.setCosto(0.0);
@@ -349,7 +351,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                                     }
                                     etiquetaImporte.setText(String.valueOf(ordenSeleccionada.getCosto()));
                                     break;
-                                case Constantes.TIPO_ORDEN_SERVICIO:
+                                case 2: //orden de servicio
                                     cargarTablaOrdenesServicio(model, ordenes);
                                     if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
                                         ordenSeleccionada.setCosto(0.0);
@@ -360,7 +362,7 @@ public class CobroOrdenPanel extends javax.swing.JPanel {
                                     }
                                     etiquetaImporte.setText(String.valueOf(ordenSeleccionada.getCosto()));
                                     break;
-                                case Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO:
+                                case 4: //orden de cambio de domicilio
                                     cargarTablaOrdenesCambioDomicilio(model, ordenes);
                                     if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
                                         ordenSeleccionada.setCosto(0.0);

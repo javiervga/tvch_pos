@@ -5,6 +5,8 @@
 package mx.com.tvch.pos.entity;
 
 import java.util.Date;
+import java.util.List;
+import mx.com.tvch.pos.model.OrdenAgregadaPago;
 
 /**
  *
@@ -75,6 +77,8 @@ public class ContratoxSuscriptorDetalleEntity {
     private Long estatusDomicilioId;
 
     private String nap;
+    
+    private List<OrdenAgregadaPago> ordenesPago;
 
     public Long getContratoId() {
         return contratoId;
@@ -330,6 +334,14 @@ public class ContratoxSuscriptorDetalleEntity {
 
     public void setNap(String nap) {
         this.nap = nap;
+    }
+
+    public List<OrdenAgregadaPago> getOrdenesPago() {
+        return ordenesPago;
+    }
+
+    public void setOrdenesPago(List<OrdenAgregadaPago> ordenesPago) {
+        this.ordenesPago = ordenesPago;
     }
 
 }

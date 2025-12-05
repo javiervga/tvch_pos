@@ -5,6 +5,7 @@
 package mx.com.tvch.pos.model;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -37,6 +38,10 @@ public class CobroServicio {
     private DescuentoCobro descuento;
 
     private PromocionCobro promocion;
+    
+    private boolean seCobraServicio;
+    
+    private List<OrdenAgregadaPago> ordenesPago;
 
     public String getConcepto() {
         return concepto;
@@ -140,6 +145,22 @@ public class CobroServicio {
 
     public void setPromocion(PromocionCobro promocion) {
         this.promocion = promocion;
+    }
+
+    public boolean isSeCobraServicio() {
+        return seCobraServicio;
+    }
+
+    public void setSeCobraServicio(boolean seCobraServicio) {
+        this.seCobraServicio = seCobraServicio;
+    }
+
+    public List<OrdenAgregadaPago> getOrdenesPago() {
+        return ordenesPago;
+    }
+
+    public void setOrdenesPago(List<OrdenAgregadaPago> ordenesPago) {
+        this.ordenesPago = ordenesPago;
     }
 
 }

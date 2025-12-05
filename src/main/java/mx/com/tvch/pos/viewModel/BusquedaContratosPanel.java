@@ -211,6 +211,24 @@ public class BusquedaContratosPanel extends javax.swing.JPanel {
             }
         };
         botonEditarContrato.addActionListener(botonEdicionContratoActionListener);
+        
+        /**
+         * 
+         */
+        ActionListener botonCobroActionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(suscriptorSeleccionado != null){
+                    sesion.setTipoBusquedaAlmacenada((TipoBusquedaCobro) comboTiposBusqueda.getSelectedItem());
+                    sesion.setTextoBusquedaAlmacenada(campoBusqueda.getText());
+                    sesion.setContratoSeleccionado(suscriptorSeleccionado);
+                    posFrame.cambiarPantalla(contratosPanel, VentanaEnum.COBROS);
+                }else{
+                    JOptionPane.showMessageDialog(contratosPanel, "Para editar un contrato o suscriptor existente, por favor seleccionelo de la lista.","", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        };
+        botonCobro.addActionListener(botonCobroActionListener);
 
     }
 
@@ -598,9 +616,9 @@ public class BusquedaContratosPanel extends javax.swing.JPanel {
         botonEditarContrato = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
-        setMaximumSize(new java.awt.Dimension(1500, 950));
-        setMinimumSize(new java.awt.Dimension(1500, 950));
-        setPreferredSize(new java.awt.Dimension(1500, 950));
+        setMaximumSize(new java.awt.Dimension(1500, 800));
+        setMinimumSize(new java.awt.Dimension(1500, 800));
+        setPreferredSize(new java.awt.Dimension(1500, 800));
 
         panelCabecero.setBackground(new java.awt.Color(255, 255, 255));
         panelCabecero.setMaximumSize(new java.awt.Dimension(1500, 30));
@@ -1069,7 +1087,8 @@ public class BusquedaContratosPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 541, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelInferior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(panelInferior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(17, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 

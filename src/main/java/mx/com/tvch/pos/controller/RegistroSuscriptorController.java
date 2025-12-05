@@ -229,7 +229,7 @@ public class RegistroSuscriptorController {
         ContratoEntity contratoEntity = new ContratoEntity();
         contratoEntity.setId(utilerias.generarIdSucursal(sesion.getSucursalId()));
         contratoEntity.setFolioContrato(Long.parseLong(folioContrato));
-        contratoEntity.setEstatus(Constantes.ESTATUS_CONTRATO_NUEVO);
+        contratoEntity.setEstatus(Constantes.ESTATUS_CONTRATO_PENDIENTE_INSTALAR);
         contratoEntity.setTvs(Integer.parseInt(tvs));
         contratoEntity.setFechaProximoPago(fechaPagoMySql);
         contratoEntity.setTipoServicioId(tipoServicioInternet.getTipoServicioInternetId());
