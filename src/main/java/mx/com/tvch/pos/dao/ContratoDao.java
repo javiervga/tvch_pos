@@ -247,7 +247,8 @@ public class ContratoDao {
 
             StringBuilder query = new StringBuilder();
             query.append("update contratos set id_estatus = ");
-            query.append(estatus);
+            query.append(estatus).append(", ");
+            query.append("actualizacion = 1 ");
             query.append(" where id_contrato = ");
             query.append(contratoId);
             stmt.executeUpdate(query.toString());
@@ -340,7 +341,7 @@ public class ContratoDao {
             StringBuilder query = new StringBuilder();
             query.append("update contratos set fecha_proximo_pago = '");
             query.append(fechaPago);
-            query.append("' where id_contrato = ");
+            query.append("', actualizacion = 1  where id_contrato = ");
             query.append(contratoId);
             stmt.executeUpdate(query.toString());
 
