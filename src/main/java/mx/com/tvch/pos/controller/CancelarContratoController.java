@@ -19,14 +19,17 @@ import mx.com.tvch.pos.dao.ContratoxSuscriptorDao;
 import mx.com.tvch.pos.dao.DetalleCobroTransaccionDao;
 import mx.com.tvch.pos.dao.EstatusSuscriptorDao;
 import mx.com.tvch.pos.dao.MotivoCancelacionDao;
+import mx.com.tvch.pos.dao.OrdenServicioDao;
 import mx.com.tvch.pos.dao.TransaccionDao;
 import mx.com.tvch.pos.entity.CancelacionEntity;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
 import mx.com.tvch.pos.entity.MotivoCancelacionEntity;
+import mx.com.tvch.pos.entity.OrdenServicioEntity;
 import mx.com.tvch.pos.entity.TransaccionEntity;
 import mx.com.tvch.pos.model.DetallePagoServicio;
+import mx.com.tvch.pos.model.client.OrdenServicio;
 import mx.com.tvch.pos.model.client.Request;
 import mx.com.tvch.pos.model.client.UpdateContratoEstatusCanceladoPosRequest;
 import mx.com.tvch.pos.util.Constantes;
@@ -137,6 +140,21 @@ public class CancelarContratoController {
             }catch(Exception exception){
                 
             }
+            
+            //por ultimo registrar orden de servicio de returo por cancelacion
+            OrdenServicioDao ordenServicioDao = OrdenServicioDao.getOrdenServicioDao();
+            OrdenServicioEntity entity = new OrdenServicioEntity();
+            entity.setContratoId(suscriptor.getContratoId());
+            entity.setCosto(importePagar);
+            entity.setDomicilioId(suscriptor.getDomicilioId());
+            entity.setEstatusId(Constantes.ESTATUS_ORDEN_PAGADA);
+            entity.setObservacionesRegistro(util.limpiarAcentos(observaciones).toUpperCase());
+            entity.setOrdenId(util.generarIdLocal());
+            entity.setServicioId(suscriptor.getServicioId());
+            entity.setSuscriptorId(suscriptor.getSusucriptorId());
+            entity.setTipoOrdenServicioId(Constantes.TIPO_ORDEN_SERVICIO_RETIRO_EQUIPO_CANCELACION);
+            entity.setUsuarioId(sesion.getUsuarioId());
+            ordenServicioDao.registrarOrdenServicio(entity);
             
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();

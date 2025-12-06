@@ -53,7 +53,6 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
     private final Utilerias util;
     private final Impresora impresora;
 
-    List<ContratoxSuscriptorDetalleEntity> suscriptoresConsultaList;
     private ContratoxSuscriptorDetalleEntity suscriptorSeleccionado;
     private List<DetallePagoServicio> listaDetallesPago;
 
@@ -77,12 +76,9 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
         controller = CancelarContratoController.getCancelarContratoController();
         util = Utilerias.getUtilerias();
         impresora = Impresora.getImpresora();
-        suscriptoresConsultaList = new ArrayList<>();
         listaDetallesPago = new ArrayList<>();
 
         crearEventos();
-        cargarComboTiposBusqueda();
-        cargarComboEstatusSuscriptor();
         cargarComboMotivosCancelacion();
     }
 
@@ -97,12 +93,12 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                 if (suscriptorSeleccionado != null && !listaDetallesPago.isEmpty()) {
                  
                     //if(!campoObservaciones.getText().isEmpty()){
-                        if(!campoObservaciones.getText().isEmpty()){
+                        if(!areaObservaciones.getText().isEmpty()){
                             try {
                             
                                 MotivoCancelacionEntity motivoCancelacionEntity = (MotivoCancelacionEntity) comboMotivosCancelacion.getModel().getSelectedItem();
                             
-                                Long transaccionId = controller.cobrarCancelacion(suscriptorSeleccionado, listaDetallesPago, motivoCancelacionEntity.getMotivoId(), campoObservaciones.getText());
+                                Long transaccionId = controller.cobrarCancelacion(suscriptorSeleccionado, listaDetallesPago, motivoCancelacionEntity.getMotivoId(), areaObservaciones.getText());
                                 try {
                                     impresora.imprimirTicketCancelacion(transaccionId, listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal());
                                 } catch (Exception ex) {
@@ -114,6 +110,8 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                                 }
                                 System.out.println("transaccionId: " + transaccionId);
                                 limpiarPantalla();
+                                
+                                posFrame.cambiarPantalla(cancelacionPanel, VentanaEnum.CONSULTA_CONTRATOS);
                             } catch (Exception ex) {
                                 StringWriter sw = new StringWriter();
                                 PrintWriter pw = new PrintWriter(sw);
@@ -136,21 +134,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
         ActionListener botonReestablecerMontoActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (suscriptorSeleccionado != null &&
-                        listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_CANCELACION).findAny().isPresent()) {
-
-                    Double montoPorDia = controller.calcularMontoPorDia(suscriptorSeleccionado);
-                    Double montoTotalCancelacion = util.redondearMonto(controller.obtenerMontoCancelacion(suscriptorSeleccionado, montoPorDia));
-                    
-                    listaDetallesPago
-                                .stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_CANCELACION)
-                                .findFirst()
-                                .get()
-                                .setMonto(montoTotalCancelacion);
-                    actualizarTablaDetallesPago();
-                    etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
-
-                }
+                reestablecerMontoSugerido();
             }
         };
         botonRestablecerMonto.addActionListener(botonReestablecerMontoActionListener);
@@ -191,129 +175,38 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
         botonAplicarMonto.addActionListener(botonAplicarMontoActionListener);
 
 
-        KeyListener enterTablaSuscriptoresListener = new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    int selectedRow = tablaSuscriptores.getSelectedRow();
-                    if (selectedRow >= 0) {
-                        Long contratoId = (Long) tablaSuscriptores.getModel().getValueAt(selectedRow, 0);
-                        System.out.println("contrato seleccionado: " + contratoId);
-                        if (!suscriptoresConsultaList.isEmpty()) {
-                            if (suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
-                                ContratoxSuscriptorDetalleEntity entity = suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
-                                cargarDatosSuscriptor(entity);
-                            }
-                        }
-                    }
-                }
-            }
-        };
-        tablaSuscriptores.addKeyListener(enterTablaSuscriptoresListener);
-
-        MouseListener dobleClickTablaSuscriptoresListener = new MouseAdapter() {
-            public void mousePressed(MouseEvent mouseEvent) {
-                JTable table = (JTable) mouseEvent.getSource();
-                Point point = mouseEvent.getPoint();
-                int row = table.rowAtPoint(point);
-                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    // your valueChanged overridden method
-                    Long contratoId = (Long) tablaSuscriptores.getModel().getValueAt(row, 0);
-                    System.out.println("contrato seleccionado: " + contratoId);
-                    if (!suscriptoresConsultaList.isEmpty()) {
-                        if (suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findAny().isPresent()) {
-                            ContratoxSuscriptorDetalleEntity entity = suscriptoresConsultaList.stream().filter(cs -> cs.getContratoId() == contratoId.longValue()).findFirst().get();
-                            cargarDatosSuscriptor(entity);
-                        }
-                    }
-                    mouseEvent.consume();
-                }
-            }
-        };
-        tablaSuscriptores.addMouseListener(dobleClickTablaSuscriptoresListener);
+      
 
         ActionListener botonRegresarActionListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 limpiarPantalla();
-                posFrame.cambiarPantalla(cancelacionPanel, VentanaEnum.MENU);
+                posFrame.cambiarPantalla(cancelacionPanel, VentanaEnum.CONSULTA_CONTRATOS);
             }
         };
         botonRegresar.addActionListener(botonRegresarActionListener);
 
-        KeyListener keyListenerBuscarSuscriptor = new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    buscarSuscriptor();
-                }
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-            }
-        };
-        campoBusqueda.addKeyListener(keyListenerBuscarSuscriptor);
-        
-        ActionListener botonBusquedaActionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                buscarSuscriptor();
-            }
-        };
-        botonBusqueda.addActionListener(botonBusquedaActionListener);
+      
+  
 
     }
+    
+    private void reestablecerMontoSugerido(){
+        if (suscriptorSeleccionado != null &&
+                        listaDetallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_CANCELACION).findAny().isPresent()) {
 
-    private void buscarSuscriptor() {
-
-        if (!campoBusqueda.getText().isEmpty()) {
-
-            TipoBusquedaCobro tipoBusquedaCobro = (TipoBusquedaCobro) comboTiposBusqueda.getModel().getSelectedItem();
-
-            try {
-
-                Long contrato = null;
-                DefaultTableModel model = (DefaultTableModel) tablaSuscriptores.getModel();
-                model.getDataVector().clear();
-                //model.fireTableStructureChanged();
-
-                if (tipoBusquedaCobro.getTipoCobroId() == Constantes.TIPO_BUSQUEDA_FOLIO_CONTRATO) {
-                    try {
-
-                        contrato = Long.parseLong(campoBusqueda.getText().trim());
-                        cargarTablaSuscriptores(model, contrato, tipoBusquedaCobro.getTipoCobroId(), "");
-                        limpiarDatosSuscriptor();
-
-                    } catch (NumberFormatException ex) {
-                        JOptionPane.showMessageDialog(cancelacionPanel, "Formato de contrato incorrecto. Por favor ingrese un contrato numérico", "", JOptionPane.WARNING_MESSAGE);
-                    }
-                } else {
-
-                    if (!campoBusqueda.getText().trim().isEmpty()) {
-
-                        cargarTablaSuscriptores(model, contrato, tipoBusquedaCobro.getTipoCobroId(), campoBusqueda.getText().trim().toUpperCase());
-                        limpiarDatosSuscriptor();
-
-                    } else {
-                        JOptionPane.showMessageDialog(cancelacionPanel, "Por favor ingrese ingrese un texto a buscar válido.", "", JOptionPane.WARNING_MESSAGE);
-                    }
+                    Double montoPorDia = controller.calcularMontoPorDia(suscriptorSeleccionado);
+                    Double montoTotalCancelacion = util.redondearMonto(controller.obtenerMontoCancelacion(suscriptorSeleccionado, montoPorDia));
+                    
+                    listaDetallesPago
+                                .stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_CANCELACION)
+                                .findFirst()
+                                .get()
+                                .setMonto(montoTotalCancelacion);
+                    actualizarTablaDetallesPago();
+                    etiquetaImporte.setText(controller.obtenerImporteActualizado(listaDetallesPago));
 
                 }
-
-            } catch (NoSuchElementException ex) {
-                JOptionPane.showMessageDialog(cancelacionPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(cancelacionPanel, ex.getMessage(), "", JOptionPane.ERROR_MESSAGE);
-            }
-
-        } else {
-            JOptionPane.showMessageDialog(cancelacionPanel, "Por favor ingrese información para realizar la busqueda.", "", JOptionPane.WARNING_MESSAGE);
-        }
-
     }
 
     /**
@@ -406,106 +299,39 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
         etiquetaImporte.setText("0.00");
     }
 
-    /**
-     *
-     * @param model
-     * @param contrato
-     * @param tipoBusquedaCobro
-     * @param cadenaBusqueda
-     * @throws Exception
-     */
-    private void cargarTablaSuscriptores(DefaultTableModel model, Long contrato, int tipoBusquedaCobro, String cadenaBusqueda) throws Exception {
-
-        suscriptoresConsultaList = controller.consultarSuscriptores(contrato, tipoBusquedaCobro, cadenaBusqueda);
-
-        if (!suscriptoresConsultaList.isEmpty()) {
-
-            model.getDataVector().clear();
-            model.fireTableDataChanged();
-            for (ContratoxSuscriptorDetalleEntity c : suscriptoresConsultaList) {
-                model.addRow(new Object[]{c.getContratoId(),
-                    c.getFolioContrato() == null ? "" : c.getFolioContrato(),
-                    c.getNombre().concat(" ").concat(c.getApellidoPaterno()).concat(" ").concat(c.getApellidoMaterno()),
-                    c.getServicio(),
-                    c.getCalle().concat(" ").concat(c.getNumeroCalle()).concat(" ").concat(c.getColonia()),
-                    c.getEstatusContrato()});
-            }
-        } else {
-            JOptionPane.showMessageDialog(cancelacionPanel, "No se encontraron suscriptores con la información solicitada", "", JOptionPane.WARNING_MESSAGE);
-        }
-
-    }
-
-    private void cargarComboTiposBusqueda() {
-
-        List<TipoBusquedaCobro> list = new ArrayList<>();
-        //list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_CONTRATO, "Por Contrato"));
-        list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_FOLIO_CONTRATO, "Por Contrato"));
-        list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_NOMBRE, "Por Nombre"));
-        list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_APELLIDO_PATERNO, "Por Apellido Paterno"));
-        list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_APELLIDO_MATERNO, "Por Apellido Materno"));
-        list.add(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_DOMICILIO, "Por Domicilio"));
-        list.forEach(tb -> comboTiposBusqueda.addItem(tb));
-
-    }
-
 
     private void limpiarPantalla() {
         limpiarDatosSuscriptor();
 
-        DefaultTableModel model = (DefaultTableModel) tablaSuscriptores.getModel();
-        model.getDataVector().clear();
-        model.fireTableDataChanged();
-
-        campoBusqueda.setText("");
         etiquetaImporte.setText("0.00");
-        campoObservaciones.setText("");
+        areaObservaciones.setText("");
         limpiarDatosSuscriptor();
     }
 
     public void cargarDatosSesion() {
+        
+        cargarDatosSuscriptor(sesion.getContratoSeleccionado());
 
         etiquetaNumeroCaja.setText(sesion.getNumeroCaja().toString());
         etiquetaUsuario.setText(sesion.getUsuario());
         etiquetaSucursal.setText(sesion.getSucursal());
-
-        //JScrollPane scrollPane = new JScrollPane();
-        //scrollPane.setViewportView(tablaSuscriptores);
-        //scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        //tablaSuscriptores.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        tablaSuscriptores.getColumnModel().getColumn(0).setPreferredWidth(30);
-        tablaSuscriptores.getColumnModel().getColumn(1).setPreferredWidth(100);
-        tablaSuscriptores.getColumnModel().getColumn(2).setPreferredWidth(300);
-        tablaSuscriptores.getColumnModel().getColumn(3).setPreferredWidth(190);
-        tablaSuscriptores.getColumnModel().getColumn(4).setPreferredWidth(450);
-        tablaSuscriptores.getColumnModel().getColumn(5).setPreferredWidth(130);
         
         tablaDetallesPago.getColumnModel().getColumn(0).setPreferredWidth(750);
         //tablaSuscriptores.gets
 
-        ImageIcon imagen = new ImageIcon("src/main/resources/logo_grande.jpg");
-        Icon icono = new ImageIcon(imagen.getImage().getScaledInstance(/*etiquetaLogo.getWidth(), etiquetaLogo.getHeight()*/320, 130, Image.SCALE_DEFAULT));
-        etiquetaLogo.setIcon(icono);
+        //ImageIcon imagen = new ImageIcon("src/main/resources/logo_grande.jpg");
+        //Icon icono = new ImageIcon(imagen.getImage().getScaledInstance(/*etiquetaLogo.getWidth(), etiquetaLogo.getHeight()*/320, 130, Image.SCALE_DEFAULT));
+        //etiquetaLogo.setIcon(icono);
+        
+        areaObservaciones.setLineWrap(true);
+        areaObservaciones.setRows(4);
 
         etiquetaImporte.setText("0.00");
+        
+        reestablecerMontoSugerido();
     }
 
-    /**
-     *
-     */
-    private void cargarComboEstatusSuscriptor() {
 
-        try {
-
-            List<EstatusSuscriptorEntity> list = controller.consultarEstatusSuscriptor();
-            list = list.stream().filter(e -> e.getEstatusId() == Constantes.ESTATUS_SUSCRIPTOR_ACTIVO).collect(Collectors.toList());
-            list.forEach(e -> comboEstatusSuscriptor.addItem(e));
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(cancelacionPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
-        }
-
-    }
     
     private void cargarComboMotivosCancelacion() {
 
@@ -537,18 +363,6 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
         etiquetaNumeroCaja = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
-        panelBusqueda = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        tablaSuscriptores = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        comboTiposBusqueda = new javax.swing.JComboBox<>();
-        jLabel3 = new javax.swing.JLabel();
-        campoBusqueda = new javax.swing.JTextField();
-        botonBusqueda = new javax.swing.JButton();
-        etiquetaLogo = new javax.swing.JLabel();
-        comboEstatusSuscriptor = new javax.swing.JComboBox<>();
-        jLabel4 = new javax.swing.JLabel();
         panelInfoContrato = new javax.swing.JPanel();
         jLabel21 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -567,15 +381,6 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
         jLabel14 = new javax.swing.JLabel();
         campoFechaPago = new javax.swing.JTextField();
         campoTelefono = new javax.swing.JTextField();
-        panelInfoPago = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tablaDetallesPago = new javax.swing.JTable();
-        panelImportes = new javax.swing.JPanel();
-        etiquetaPesos = new javax.swing.JLabel();
-        etiquetaImporte = new javax.swing.JLabel();
-        botonCobrar = new javax.swing.JButton();
-        botonRegresar = new javax.swing.JButton();
-        panelBotones = new javax.swing.JPanel();
         panelPromociones = new javax.swing.JPanel();
         jLabel16 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
@@ -585,9 +390,19 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
         comboMotivosCancelacion = new javax.swing.JComboBox<>();
         jLabel15 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
-        campoObservaciones = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        areaObservaciones = new javax.swing.JTextArea();
+        panelInfoPago = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tablaDetallesPago = new javax.swing.JTable();
+        panelImportes = new javax.swing.JPanel();
+        etiquetaPesos = new javax.swing.JLabel();
+        etiquetaImporte = new javax.swing.JLabel();
+        botonCobrar = new javax.swing.JButton();
+        botonRegresar = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
-        setBackground(new java.awt.Color(204, 204, 204));
+        setBackground(new java.awt.Color(255, 255, 255));
         setMaximumSize(new java.awt.Dimension(1500, 800));
         setMinimumSize(new java.awt.Dimension(1500, 800));
         setPreferredSize(new java.awt.Dimension(1500, 800));
@@ -653,142 +468,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                 .addGap(0, 5, Short.MAX_VALUE))
         );
 
-        panelBusqueda.setBackground(new java.awt.Color(255, 255, 255));
-        panelBusqueda.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(163, 73, 164), null, null));
-        panelBusqueda.setMaximumSize(new java.awt.Dimension(1499, 300));
-        panelBusqueda.setMinimumSize(new java.awt.Dimension(1499, 300));
-        panelBusqueda.setPreferredSize(new java.awt.Dimension(1499, 300));
-
-        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        tablaSuscriptores.setBackground(new java.awt.Color(204, 204, 204));
-        tablaSuscriptores.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
-            },
-            new String [] {
-                "ID Sistema", "Número de  Contrato", "Nombre", "Servicio Contratado", "Domicilio Contrato", "Estatus Contrato"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Long.class, java.lang.Long.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tablaSuscriptores.setMaximumSize(new java.awt.Dimension(1438, 750));
-        tablaSuscriptores.setMinimumSize(new java.awt.Dimension(1438, 750));
-        tablaSuscriptores.setPreferredSize(new java.awt.Dimension(1438, 750));
-        tablaSuscriptores.setRowHeight(15);
-        tablaSuscriptores.setShowGrid(false);
-        jScrollPane1.setViewportView(tablaSuscriptores);
-        if (tablaSuscriptores.getColumnModel().getColumnCount() > 0) {
-            tablaSuscriptores.getColumnModel().getColumn(0).setResizable(false);
-            tablaSuscriptores.getColumnModel().getColumn(1).setResizable(false);
-            tablaSuscriptores.getColumnModel().getColumn(2).setResizable(false);
-            tablaSuscriptores.getColumnModel().getColumn(3).setResizable(false);
-            tablaSuscriptores.getColumnModel().getColumn(4).setResizable(false);
-            tablaSuscriptores.getColumnModel().getColumn(5).setResizable(false);
-        }
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 0, 0));
-        jLabel1.setText("Busqueda de Suscriptor");
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel2.setText("Tipo de Búsqueda:");
-
-        comboTiposBusqueda.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        comboTiposBusqueda.setFocusCycleRoot(true);
-
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel3.setText("Texto a buscar:");
-
-        campoBusqueda.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-
-        botonBusqueda.setBackground(new java.awt.Color(227, 126, 75));
-        botonBusqueda.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        botonBusqueda.setForeground(new java.awt.Color(255, 255, 255));
-        botonBusqueda.setText("Buscar Suscriptor");
-
-        etiquetaLogo.setBackground(new java.awt.Color(255, 255, 255));
-        etiquetaLogo.setInheritsPopupMenu(false);
-        etiquetaLogo.setMaximumSize(new java.awt.Dimension(410, 88));
-        etiquetaLogo.setMinimumSize(new java.awt.Dimension(410, 88));
-        etiquetaLogo.setPreferredSize(new java.awt.Dimension(410, 88));
-
-        comboEstatusSuscriptor.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel4.setText("Estatus Suscriptor:");
-
-        javax.swing.GroupLayout panelBusquedaLayout = new javax.swing.GroupLayout(panelBusqueda);
-        panelBusqueda.setLayout(panelBusquedaLayout);
-        panelBusquedaLayout.setHorizontalGroup(
-            panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelBusquedaLayout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1431, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(panelBusquedaLayout.createSequentialGroup()
-                        .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(panelBusquedaLayout.createSequentialGroup()
-                                .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(panelBusquedaLayout.createSequentialGroup()
-                                        .addComponent(comboTiposBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(comboEstatusSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(campoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 529, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(78, 78, 78)
-                                .addComponent(botonBusqueda)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(etiquetaLogo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        panelBusquedaLayout.setVerticalGroup(
-            panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelBusquedaLayout.createSequentialGroup()
-                .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(panelBusquedaLayout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(botonBusqueda)
-                            .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel2)
-                                .addComponent(comboTiposBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel4)
-                                .addComponent(comboEstatusSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelBusquedaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(campoBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3)))
-                    .addGroup(panelBusquedaLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(etiquetaLogo, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
+        panelInfoContrato.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel21.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel21.setForeground(new java.awt.Color(255, 0, 0));
@@ -808,6 +488,7 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
         jLabel6.setText("Número de Contrato:");
 
         campoFolioContrato.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        campoFolioContrato.setForeground(java.awt.Color.red);
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel7.setText("Servicio Contratado:");
@@ -842,73 +523,168 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
             panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelInfoContratoLayout.createSequentialGroup()
                 .addGap(29, 29, 29)
-                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(campoSuscriptor)
-                    .addComponent(campoServicioContratado, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE))
+                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel5))
                 .addGap(18, 18, 18)
                 .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(campoServicioContratado, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
+                    .addComponent(campoSuscriptor))
                 .addGap(18, 18, 18)
-                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(campoDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelInfoContratoLayout.createSequentialGroup()
-                        .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel22)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(31, 31, 31)
                         .addComponent(jLabel6)
-                        .addGap(18, 18, 18)
-                        .addComponent(campoFolioContrato, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(campoFolioContrato, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                        .addGap(52, 52, 52)
                         .addComponent(jLabel9)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(campoEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelInfoContratoLayout.createSequentialGroup()
+                        .addGap(43, 43, 43)
+                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(53, 53, 53))
+                    .addGroup(panelInfoContratoLayout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addGap(18, 18, 18)
+                        .addComponent(campoDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(99, 99, 99)
                         .addComponent(jLabel14)
                         .addGap(55, 55, 55)
-                        .addComponent(campoTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelInfoContratoLayout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(jLabel13)
-                        .addGap(18, 18, 18)
-                        .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(campoTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(55, Short.MAX_VALUE))))
         );
         panelInfoContratoLayout.setVerticalGroup(
             panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelInfoContratoLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel22)
-                        .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel6)
-                        .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel9)
-                        .addComponent(campoEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel13)
-                        .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(38, 38, 38)
+                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(campoSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5)
-                    .addComponent(campoSuscriptor))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jLabel22)
+                    .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6)
+                    .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9)
+                    .addComponent(campoEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel13)
+                    .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
                 .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel8)
-                        .addComponent(campoDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel14)
                         .addComponent(campoTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(campoServicioContratado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7))
+                    .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel7)
+                        .addComponent(campoServicioContratado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel8)
+                        .addComponent(campoDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(31, 31, 31))
+        );
+
+        panelPromociones.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel16.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 51, 51));
+        jLabel16.setText("Captura de Monto");
+
+        jLabel17.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel17.setText("Ingrese monto a cobrar:");
+
+        botonAplicarMonto.setBackground(new java.awt.Color(227, 126, 75));
+        botonAplicarMonto.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        botonAplicarMonto.setForeground(new java.awt.Color(255, 255, 255));
+        botonAplicarMonto.setText("Aplicar Monto");
+
+        botonRestablecerMonto.setBackground(java.awt.Color.red);
+        botonRestablecerMonto.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        botonRestablecerMonto.setForeground(new java.awt.Color(255, 255, 255));
+        botonRestablecerMonto.setText("Reestablecer Monto Sugerido");
+        botonRestablecerMonto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonRestablecerMontoActionPerformed(evt);
+            }
+        });
+
+        campoMontoCancelacion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        comboMotivosCancelacion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+
+        jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel15.setText("Seleccione Motivo:");
+
+        jLabel18.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel18.setText("Observaciones Orden Cancelacion:");
+
+        areaObservaciones.setColumns(20);
+        areaObservaciones.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        areaObservaciones.setRows(5);
+        jScrollPane1.setViewportView(areaObservaciones);
+
+        javax.swing.GroupLayout panelPromocionesLayout = new javax.swing.GroupLayout(panelPromociones);
+        panelPromociones.setLayout(panelPromocionesLayout);
+        panelPromocionesLayout.setHorizontalGroup(
+            panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelPromocionesLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelPromocionesLayout.createSequentialGroup()
+                        .addComponent(jLabel16)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(panelPromocionesLayout.createSequentialGroup()
+                        .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(campoMontoCancelacion)
+                            .addComponent(comboMotivosCancelacion, 0, 300, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelPromocionesLayout.createSequentialGroup()
+                                .addComponent(botonAplicarMonto)
+                                .addGap(47, 47, 47)
+                                .addComponent(botonRestablecerMonto))
+                            .addGroup(panelPromocionesLayout.createSequentialGroup()
+                                .addComponent(jLabel18)
+                                .addGap(35, 35, 35)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 515, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(300, 300, 300))))
+        );
+        panelPromocionesLayout.setVerticalGroup(
+            panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPromocionesLayout.createSequentialGroup()
+                .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel17)
+                        .addComponent(campoMontoCancelacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(botonAplicarMonto)
+                        .addComponent(botonRestablecerMonto)))
+                .addGap(34, 34, 34)
+                .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelPromocionesLayout.createSequentialGroup()
+                        .addGap(2, 2, 2)
+                        .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(comboMotivosCancelacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel15)))
+                    .addComponent(jLabel18)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        panelInfoPago.setBackground(new java.awt.Color(255, 255, 255));
 
         jScrollPane2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
@@ -951,6 +727,8 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
             tablaDetallesPago.getColumnModel().getColumn(0).setPreferredWidth(120);
             tablaDetallesPago.getColumnModel().getColumn(1).setResizable(false);
         }
+
+        panelImportes.setBackground(new java.awt.Color(255, 255, 255));
 
         etiquetaPesos.setFont(new java.awt.Font("Segoe UI", 0, 80)); // NOI18N
         etiquetaPesos.setForeground(new java.awt.Color(255, 51, 51));
@@ -1001,17 +779,6 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                 .addGap(18, 18, 18))
         );
 
-        javax.swing.GroupLayout panelBotonesLayout = new javax.swing.GroupLayout(panelBotones);
-        panelBotones.setLayout(panelBotonesLayout);
-        panelBotonesLayout.setHorizontalGroup(
-            panelBotonesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 410, Short.MAX_VALUE)
-        );
-        panelBotonesLayout.setVerticalGroup(
-            panelBotonesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 137, Short.MAX_VALUE)
-        );
-
         javax.swing.GroupLayout panelInfoPagoLayout = new javax.swing.GroupLayout(panelInfoPago);
         panelInfoPago.setLayout(panelInfoPagoLayout);
         panelInfoPagoLayout.setHorizontalGroup(
@@ -1021,10 +788,6 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1023, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(31, 31, 31)
                 .addComponent(panelImportes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(panelInfoPagoLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(panelBotones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(59, 59, 59))
         );
         panelInfoPagoLayout.setVerticalGroup(
             panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1033,131 +796,39 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                 .addGroup(panelInfoPagoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelImportes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelBotones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(143, 143, 143))
         );
 
-        panelPromociones.setBackground(new java.awt.Color(255, 255, 255));
-
-        jLabel16.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel16.setForeground(new java.awt.Color(255, 51, 51));
-        jLabel16.setText("Captura de Monto");
-
-        jLabel17.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        jLabel17.setText("Ingrese monto a cobrar:");
-
-        botonAplicarMonto.setBackground(new java.awt.Color(227, 126, 75));
-        botonAplicarMonto.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        botonAplicarMonto.setForeground(new java.awt.Color(255, 255, 255));
-        botonAplicarMonto.setText("Aplicar Monto");
-
-        botonRestablecerMonto.setBackground(java.awt.Color.red);
-        botonRestablecerMonto.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        botonRestablecerMonto.setForeground(new java.awt.Color(255, 255, 255));
-        botonRestablecerMonto.setText("Reestablecer Monto Sugerido");
-        botonRestablecerMonto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonRestablecerMontoActionPerformed(evt);
-            }
-        });
-
-        campoMontoCancelacion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-
-        comboMotivosCancelacion.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-
-        jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        jLabel15.setText("Seleccione Motivo:");
-
-        jLabel18.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        jLabel18.setText("Observaciones:");
-
-        campoObservaciones.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-
-        javax.swing.GroupLayout panelPromocionesLayout = new javax.swing.GroupLayout(panelPromociones);
-        panelPromociones.setLayout(panelPromocionesLayout);
-        panelPromocionesLayout.setHorizontalGroup(
-            panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelPromocionesLayout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelPromocionesLayout.createSequentialGroup()
-                        .addComponent(jLabel16)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(panelPromocionesLayout.createSequentialGroup()
-                        .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(campoMontoCancelacion)
-                            .addComponent(comboMotivosCancelacion, 0, 300, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelPromocionesLayout.createSequentialGroup()
-                                .addComponent(botonAplicarMonto)
-                                .addGap(47, 47, 47)
-                                .addComponent(botonRestablecerMonto))
-                            .addGroup(panelPromocionesLayout.createSequentialGroup()
-                                .addComponent(jLabel18)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(campoObservaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 812, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(26, 26, 26))))
-        );
-        panelPromocionesLayout.setVerticalGroup(
-            panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPromocionesLayout.createSequentialGroup()
-                .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelPromocionesLayout.createSequentialGroup()
-                        .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel17)
-                            .addComponent(campoMontoCancelacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel15)
-                            .addComponent(comboMotivosCancelacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(panelPromocionesLayout.createSequentialGroup()
-                        .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(botonAplicarMonto)
-                            .addComponent(botonRestablecerMonto))
-                        .addGap(9, 9, 9)
-                        .addGroup(panelPromocionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel18)
-                            .addComponent(campoObservaciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(14, Short.MAX_VALUE))
-        );
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel1.setForeground(java.awt.Color.red);
+        jLabel1.setText("Monto Sugerido por sistema:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panelInfoPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(panelBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 1487, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(panelCabecero, javax.swing.GroupLayout.PREFERRED_SIZE, 1487, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(panelInfoContrato, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(panelInfoPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(7, 7, 7))
+                    .addComponent(panelCabecero, javax.swing.GroupLayout.PREFERRED_SIZE, 1487, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(panelInfoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(panelCabecero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(panelBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(26, 26, 26)
                 .addComponent(panelInfoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(panelPromociones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(9, 9, 9)
+                .addGap(33, 33, 33)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelInfoPago, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(45, 45, 45))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -1167,27 +838,22 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea areaObservaciones;
     private javax.swing.JButton botonAplicarMonto;
-    private javax.swing.JButton botonBusqueda;
     private javax.swing.JButton botonCobrar;
     private javax.swing.JButton botonRegresar;
     private javax.swing.JButton botonRestablecerMonto;
-    private javax.swing.JTextField campoBusqueda;
     private javax.swing.JTextField campoContrato;
     private javax.swing.JTextField campoDomicilio;
     private javax.swing.JTextField campoEstatus;
     private javax.swing.JTextField campoFechaPago;
     private javax.swing.JTextField campoFolioContrato;
     private javax.swing.JTextField campoMontoCancelacion;
-    private javax.swing.JTextField campoObservaciones;
     private javax.swing.JTextField campoServicioContratado;
     private javax.swing.JTextField campoSuscriptor;
     private javax.swing.JTextField campoTelefono;
-    private javax.swing.JComboBox<EstatusSuscriptorEntity> comboEstatusSuscriptor;
     private javax.swing.JComboBox<MotivoCancelacionEntity> comboMotivosCancelacion;
-    private javax.swing.JComboBox<TipoBusquedaCobro> comboTiposBusqueda;
     private javax.swing.JLabel etiquetaImporte;
-    private javax.swing.JLabel etiquetaLogo;
     private javax.swing.JLabel etiquetaNumeroCaja;
     private javax.swing.JLabel etiquetaPesos;
     private javax.swing.JLabel etiquetaSucursal;
@@ -1203,11 +869,8 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -1215,14 +878,11 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JPanel panelBotones;
-    private javax.swing.JPanel panelBusqueda;
     private javax.swing.JPanel panelCabecero;
     private javax.swing.JPanel panelImportes;
     private javax.swing.JPanel panelInfoContrato;
     private javax.swing.JPanel panelInfoPago;
     private javax.swing.JPanel panelPromociones;
     private javax.swing.JTable tablaDetallesPago;
-    private javax.swing.JTable tablaSuscriptores;
     // End of variables declaration//GEN-END:variables
 }

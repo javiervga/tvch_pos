@@ -169,6 +169,15 @@ public class BusquedaContratosPanel extends javax.swing.JPanel {
         };
         botonBusqueda.addActionListener(botonBusquedaActionListener);
         
+        ActionListener botonCancelarActionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                sesion.setContratoSeleccionado(suscriptorSeleccionado);
+                posFrame.cambiarPantalla(contratosPanel, VentanaEnum.CANCELACION_CONTRATO);
+            }
+        };
+        botonCancelar.addActionListener(botonCancelarActionListener);
+        
         /**
          * 
          */
