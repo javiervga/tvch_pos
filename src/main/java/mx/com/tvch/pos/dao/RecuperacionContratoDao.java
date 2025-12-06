@@ -53,13 +53,12 @@ public class RecuperacionContratoDao {
 
             StringBuilder query = new StringBuilder();
             query.append("insert into recuperaciones_contrato (id_recuperacion , id_usuario , id_contrato, "
-                    + "id_sucursal , costo , id_orden_servicio ) values (");
+                    + "id_sucursal , costo ) values (");
             query.append(entity.getRecuperacionId()).append(",");
             query.append(entity.getUsuarioId()).append(",");
             query.append(entity.getContratoId()).append(",");
             query.append(entity.getSucursalId()).append(",");
-            query.append(entity.getCosto()).append(",'");
-            query.append(entity.getObservaciones()).append("')");
+            query.append(entity.getCosto()).append(")");
    
             logger.info("query insert recuperacion de contrato: "+query);
             stmt.executeUpdate(query.toString());

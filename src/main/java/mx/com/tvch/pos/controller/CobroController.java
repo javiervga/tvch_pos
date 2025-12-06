@@ -6,8 +6,11 @@ package mx.com.tvch.pos.controller;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 import mx.com.tvch.pos.client.TvchApiClient;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.dao.CambioServicioDao;
@@ -23,20 +26,24 @@ import mx.com.tvch.pos.dao.OrdenCambioDomicilioDao;
 import mx.com.tvch.pos.dao.OrdenInstalacionDao;
 import mx.com.tvch.pos.dao.OrdenServicioDao;
 import mx.com.tvch.pos.dao.PromocionDao;
+import mx.com.tvch.pos.dao.RecuperacionContratoDao;
 import mx.com.tvch.pos.dao.ServicioPorContratoDao;
 import mx.com.tvch.pos.dao.TipoDescuentoDao;
 import mx.com.tvch.pos.dao.TransaccionDao;
 import mx.com.tvch.pos.entity.CambioServicioEntity;
+import mx.com.tvch.pos.entity.ContratoEntity;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import mx.com.tvch.pos.entity.DetalleDescuentoTransaccionEntity;
 import mx.com.tvch.pos.entity.DetallePromocionTransaccionEntity;
 import mx.com.tvch.pos.entity.DomicilioEntity;
 import mx.com.tvch.pos.entity.DomicilioPorContratoEntity;
+import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
 import mx.com.tvch.pos.entity.OrdenCambioDomicilioEntity;
 import mx.com.tvch.pos.entity.OrdenInstalacionEntity;
 import mx.com.tvch.pos.entity.OrdenServicioEntity;
 import mx.com.tvch.pos.entity.PromocionEntity;
+import mx.com.tvch.pos.entity.RecuperacionContratoEntity;
 import mx.com.tvch.pos.entity.ServicioPorContratoEntity;
 import mx.com.tvch.pos.entity.TipoDescuentoEntity;
 import mx.com.tvch.pos.entity.TransaccionEntity;
@@ -71,6 +78,7 @@ public class CobroController {
     private final ServicioPorContratoDao servicioPorContratoDao;
     private final CambioServicioDao cambioServicioDao;
     private final DomicilioDao domicilioDao;
+    private final RecuperacionContratoDao recuperacionContratoDao;
     private final Utilerias util;
     private final Sesion sesion;
     private final TvchApiClient client;
@@ -94,6 +102,7 @@ public class CobroController {
         detalleCobroTransaccionDao = DetalleCobroTransaccionDao.getDetalleCobroTransaccionDao();
         detalleDescuentoTransaccionDao = DetalleDescuentoTransaccionDao.getDetalleDescuentoTransaccionDao();
         detallePromocionTransaccionDao = DetallePromocionTransaccionDao.getDetallePromocionTransaccionDao();
+        recuperacionContratoDao = RecuperacionContratoDao.getRecuperacionContratoDao();
         ordenInstalacionDao = OrdenInstalacionDao.getOrdenInstalacionDao();
         ordenServicioDao = OrdenServicioDao.getOrdenServicioDao();
         ordenCambioDomicilioDao = OrdenCambioDomicilioDao.getOrdenCambioDomicilioDao();
@@ -106,7 +115,25 @@ public class CobroController {
         client = TvchApiClient.getTvchApiClient();
     }
     
-    
+    /**
+     * 
+     */
+    public void recuperarContrato(ContratoxSuscriptorDetalleEntity suscriptor) throws Exception{
+        
+                contratoDao.actualizarEstatus(suscriptor.getContratoId(), Constantes.ESTATUS_CONTRATO_ACTIVO);
+                RecuperacionContratoEntity entity = new RecuperacionContratoEntity();
+                entity.setContratoId(suscriptor.getContratoId());
+                entity.setCosto(0d);
+                entity.setFechaRecuperacion(new Date());
+                entity.setObservaciones("");
+                entity.setRecuperacionId(util.generarIdLocal());
+                entity.setSucursalId(sesion.getSucursalId());
+                entity.setUsuarioId(sesion.getUsuarioId());
+                recuperacionContratoDao.registrarRecuperacionContrato(entity);
+            
+
+        
+    }
     
     /**
      * 
@@ -479,7 +506,7 @@ public class CobroController {
 
     }
 
-    /*public List<ContratoxSuscriptorDetalleEntity> consultarSuscriptores(Long contratoId, int tipoBusquedaCobro, String cadenaBusqueda, boolean seBuscanCancelados) throws Exception {
+    public List<ContratoxSuscriptorDetalleEntity> consultarSuscriptores(Long contratoId, int tipoBusquedaCobro, String cadenaBusqueda, boolean seBuscanCancelados) throws Exception {
 
         try {
 
@@ -512,9 +539,9 @@ public class CobroController {
             throw new Exception("Error al consultar suscriptores. Por favor vuelva a intentar, si el problema persiste contacte a soporte.");
         }
 
-    }*/
+    }
 
-    /*public List<EstatusSuscriptorEntity> consultarEstatusSuscriptor() throws Exception {
+    public List<EstatusSuscriptorEntity> consultarEstatusSuscriptor() throws Exception {
 
         try {
 
@@ -528,7 +555,7 @@ public class CobroController {
             throw new Exception("Error al consultar tipos de salida. Por favor contacte a soporte.");
         }
 
-    }*/
+    }
 
     /**
      *

@@ -37,6 +37,8 @@ public class ContratoDao {
         this.util = Utilerias.getUtilerias();
     }
     
+    
+    
     /**
      * 
      * @param folioCOntrato

@@ -14,6 +14,7 @@ import mx.com.tvch.pos.controller.LoginController;
 import mx.com.tvch.pos.entity.CajaEntity;
 import mx.com.tvch.pos.entity.SucursalEntity;
 import mx.com.tvch.pos.entity.UsuarioEntity;
+import mx.com.tvch.pos.util.LectorProperties;
 import mx.com.tvch.pos.util.VentanaEnum;
 
 /**
@@ -27,6 +28,7 @@ public class LoginPanel extends javax.swing.JPanel {
 
     private final LoginController controller;
     private final Sesion sesion;
+    private final LectorProperties properties;
 
     public static LoginPanel getLoginPanel(PosFrame frame) {
         if (loginPanel == null) {
@@ -42,6 +44,7 @@ public class LoginPanel extends javax.swing.JPanel {
     public LoginPanel() {
         controller = LoginController.getLoginController();
         sesion = Sesion.getSesion();
+        properties = LectorProperties.getLectorProperties();
         initComponents();
         crearEventos();
     }

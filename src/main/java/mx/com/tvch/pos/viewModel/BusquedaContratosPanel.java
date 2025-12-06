@@ -17,6 +17,8 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -24,10 +26,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import mx.com.tvch.pos.config.Sesion;
+import mx.com.tvch.pos.controller.CobroController;
 import mx.com.tvch.pos.controller.CobroServicioController;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
-import mx.com.tvch.pos.entity.PromocionEntity;
 import mx.com.tvch.pos.model.TipoBusquedaCobro;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Utilerias;
@@ -44,7 +46,7 @@ public class BusquedaContratosPanel extends javax.swing.JPanel {
     private static PosFrame posFrame;
 
     private final Sesion sesion;
-    private final CobroServicioController controller;
+    private final CobroController controller;
     private final Utilerias util;
 
     List<ContratoxSuscriptorDetalleEntity> suscriptoresConsultaList;
@@ -67,7 +69,7 @@ public class BusquedaContratosPanel extends javax.swing.JPanel {
         initComponents();
 
         sesion = Sesion.getSesion();
-        controller = CobroServicioController.getContratoxSuscriptorController();
+        controller = CobroController.getCobroController();
         util = Utilerias.getUtilerias();
         suscriptoresConsultaList = new ArrayList<>();
         crearEventos();
@@ -229,6 +231,50 @@ public class BusquedaContratosPanel extends javax.swing.JPanel {
             }
         };
         botonCobro.addActionListener(botonCobroActionListener);
+        
+        
+        ActionListener botonRecuperarActionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              
+                if(suscriptorSeleccionado != null){
+                    
+                    boolean seAceptoRecuperacion = false;
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Se realizará el cambio a estatus ACTIVO al contrato: ").append(suscriptorSeleccionado.getFolioContrato());
+                    sb.append("\n¿Está de acuerdo? \n");
+                    int input = JOptionPane.showConfirmDialog(null, sb.toString());
+                    if (input == 0) {
+                        seAceptoRecuperacion = true;
+                    }
+                    
+                    if(seAceptoRecuperacion){
+                        
+                        try {
+                            controller.recuperarContrato(suscriptorSeleccionado);
+                            Long folioCOntrato = suscriptorSeleccionado.getFolioContrato();
+                            limpiarPantalla();
+                            checkCancelados.setSelected(false);
+                            campoBusqueda.setText(String.valueOf(folioCOntrato));
+                            comboTiposBusqueda.setSelectedIndex(0);
+                            buscarSuscriptor();
+                            
+                            JOptionPane.showMessageDialog(contratosPanel, 
+                                    "La recuperacion ha sido exitosa", "", JOptionPane.INFORMATION_MESSAGE);
+                            
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(contratosPanel, 
+                                    "Ocurrió un erro al recuperar el contrato. Por favor reintente, de persistir el problema llame a soporte", "", JOptionPane.WARNING_MESSAGE);
+                        }
+                        
+                    }
+                    
+                }
+                
+                
+            }
+        };
+        botonRecuperar.addActionListener(botonRecuperarActionListener);
 
     }
 
