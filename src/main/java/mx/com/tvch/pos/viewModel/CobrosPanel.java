@@ -810,7 +810,7 @@ public class CobrosPanel extends javax.swing.JPanel {
         //validar si se cobra el servicio
         if(checkServicio.isSelected()){
             if(contratosuscriptor.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
-                comboMeses.setEnabled(false);
+                //comboMeses.setEnabled(false);
                 montoTotalMeses = suscriptorSeleccionado.getCostoServicio() * numeroMeses;
             }else if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
                 montoTotalMeses = 0.0;

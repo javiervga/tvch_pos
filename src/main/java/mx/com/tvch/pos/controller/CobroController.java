@@ -120,16 +120,30 @@ public class CobroController {
      */
     public void recuperarContrato(ContratoxSuscriptorDetalleEntity suscriptor) throws Exception{
         
-                contratoDao.actualizarEstatus(suscriptor.getContratoId(), Constantes.ESTATUS_CONTRATO_ACTIVO);
-                RecuperacionContratoEntity entity = new RecuperacionContratoEntity();
-                entity.setContratoId(suscriptor.getContratoId());
-                entity.setCosto(0d);
-                entity.setFechaRecuperacion(new Date());
-                entity.setObservaciones("");
-                entity.setRecuperacionId(util.generarIdLocal());
-                entity.setSucursalId(sesion.getSucursalId());
-                entity.setUsuarioId(sesion.getUsuarioId());
-                recuperacionContratoDao.registrarRecuperacionContrato(entity);
+        contratoDao.actualizarEstatus(suscriptor.getContratoId(), Constantes.ESTATUS_CONTRATO_ACTIVO);
+        RecuperacionContratoEntity entity = new RecuperacionContratoEntity();
+        entity.setContratoId(suscriptor.getContratoId());
+        entity.setCosto(0d);
+        entity.setFechaRecuperacion(new Date());
+        entity.setObservaciones("");
+        entity.setRecuperacionId(util.generarIdLocal());
+        entity.setSucursalId(sesion.getSucursalId());
+        entity.setUsuarioId(sesion.getUsuarioId());
+        recuperacionContratoDao.registrarRecuperacionContrato(entity);
+
+        //generar orden de instalacion
+        OrdenInstalacionEntity ordenInstalacionEntity = new OrdenInstalacionEntity();
+        ordenInstalacionEntity.setContratoId(suscriptor.getContratoId());
+        ordenInstalacionEntity.setCosto(0d);
+        ordenInstalacionEntity.setDomicilioId(suscriptor.getDomicilioId());
+        ordenInstalacionEntity.setEstatusId(Constantes.ESTATUS_ORDEN_PAGADA);
+        ordenInstalacionEntity.setObservacionesRegistro("RECUPERACION DE CONTRATO");
+        ordenInstalacionEntity.setOrdenId(util.generarIdLocal());
+        ordenInstalacionEntity.setServicioId(suscriptor.getServicioId());
+        ordenInstalacionEntity.setSuscriptorId(suscriptor.getSusucriptorId());
+        ordenInstalacionEntity.setTvs(suscriptor.getTvsContratadas());
+        ordenInstalacionEntity.setUsuarioId(sesion.getUsuarioId());
+        ordenInstalacionDao.registrarOrdenInstalacion(ordenInstalacionEntity);
             
 
         
@@ -287,6 +301,9 @@ public class CobroController {
                             //aca actualizar las tvs
                             Integer nuevoNumeroTvs = orden.getTvs() + orden.getTvsAdicionales();
                             contratoDao.actualizarNumeroTvs(orden.getContratoId(), nuevoNumeroTvs);
+                        }else if(orden.getTipoOrdenServicio() == Constantes.TIPO_ORDEN_SERVICIO_RECONEXION_SERVICIO){
+                            //aca actualizar el estatus del contrato
+                            contratoDao.actualizarEstatus(orden.getContratoId(), Constantes.ESTATUS_CONTRATO_ACTIVO);
                         }
                     }
                     
