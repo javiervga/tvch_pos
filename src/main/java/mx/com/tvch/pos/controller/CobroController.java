@@ -286,9 +286,11 @@ public class CobroController {
                         
                     }else if(orden.getTipoOrden() == Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO){
                         
-                        registrarOrdenCambioDomicilio(orden, ordenId);
                         deshabilitarDomiciliosAnteriores(orden.getContratoId());
-                        registrarNuevoDomicilio(orden);
+                        Long nuevoDOmicilioId = util.generarIdLocal();
+                        registrarNuevoDomicilio(orden, nuevoDOmicilioId);
+                        registrarOrdenCambioDomicilio(orden, ordenId, nuevoDOmicilioId);
+                        
                       
                     }else if(orden.getTipoOrden() == Constantes.TIPO_ORDEN_SERVICIO){
                         
@@ -367,7 +369,7 @@ public class CobroController {
      * 
      * @param orden 
      */
-    private void registrarNuevoDomicilio(OrdenAgregadaPago orden){
+    private void registrarNuevoDomicilio(OrdenAgregadaPago orden, Long domicilioId){
         DomicilioEntity entity = new DomicilioEntity();
         entity.setCalle(orden.getCalle().toUpperCase());
         entity.setCalle1(orden.getCalle1().toUpperCase());
@@ -375,7 +377,7 @@ public class CobroController {
         entity.setCiudad(orden.getCiudad().toUpperCase());
         entity.setColonia(orden.getColonia().toUpperCase());
         entity.setEstatus(1L);
-        entity.setId(util.generarIdLocal());
+        entity.setId(domicilioId);
         entity.setNumeroCalle(orden.getNumeroCalle().toUpperCase());
         entity.setReferencia(orden.getReferencia().toUpperCase());
         domicilioDao.registrarDomicilio(entity);
@@ -430,7 +432,7 @@ public class CobroController {
      * @param orden
      * @param ordenId 
      */
-    private void registrarOrdenCambioDomicilio (OrdenAgregadaPago orden, Long ordenId){
+    private void registrarOrdenCambioDomicilio (OrdenAgregadaPago orden, Long ordenId, Long nuevoDomicilioId){
         OrdenCambioDomicilioEntity entity = new OrdenCambioDomicilioEntity();
         entity.setCalle(orden.getCalle());
         entity.setCalle1(orden.getCalle1());
@@ -440,6 +442,7 @@ public class CobroController {
         entity.setContratoId(orden.getContratoId());
         entity.setCosto(orden.getCosto());
         entity.setDomicilioId(orden.getDomicilioId());
+        entity.setDomicilioNuevoId(nuevoDomicilioId);
         entity.setEstatusId(Constantes.ESTATUS_ORDEN_PAGADA);
         entity.setNumeroCalle(orden.getNumeroCalle());
         entity.setObservacionesRegistro(orden.getObservaciones());

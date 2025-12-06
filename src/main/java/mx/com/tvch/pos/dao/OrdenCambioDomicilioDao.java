@@ -53,7 +53,7 @@ public class OrdenCambioDomicilioDao {
 
             StringBuilder query = new StringBuilder();
             query.append("insert into ordenes_cambio_domicilio (id_orden_cambio_domicilio , id_contrato , id_usuario , id_suscriptor , costo, "
-                    + "observaciones_registro, id_domicilio, id_servicio, id_estatus, colonia, calle, ciudad, calle1, "
+                    + "observaciones_registro, id_domicilio, id_domicilio_sucursal_nuevo, id_servicio, id_estatus, colonia, calle, ciudad, calle1, "
                     + "calle2, numero_calle, referencia ) values (");
             query.append(entity.getOrdenId()).append(",");
             query.append(entity.getContratoId()).append(",");
@@ -62,6 +62,7 @@ public class OrdenCambioDomicilioDao {
             query.append(entity.getCosto()).append(",'");
             query.append(entity.getObservacionesRegistro()).append("',");
             query.append(entity.getDomicilioId()).append(",");
+            query.append(entity.getDomicilioNuevoId()).append(",");
             query.append(entity.getServicioId()).append(",");
             query.append(entity.getEstatusId()).append(",'");
             query.append(entity.getColonia()).append("','");

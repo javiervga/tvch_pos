@@ -29,6 +29,8 @@ public class OrdenCambioDomicilioEntity {
     private String observacionesRegistro;
 
     private Long domicilioId;
+    
+    private Long domicilioNuevoId;
 
     private Long servicioId;
 
@@ -126,6 +128,14 @@ public class OrdenCambioDomicilioEntity {
 
     public void setDomicilioId(Long domicilioId) {
         this.domicilioId = domicilioId;
+    }
+
+    public Long getDomicilioNuevoId() {
+        return domicilioNuevoId;
+    }
+
+    public void setDomicilioNuevoId(Long domicilioNuevoId) {
+        this.domicilioNuevoId = domicilioNuevoId;
     }
 
     public Long getServicioId() {
