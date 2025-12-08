@@ -130,7 +130,7 @@ public class CancelarContratoController {
             
             contratoDao.actualizarEstatus(suscriptor.getContratoId(), Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO);
             
-            try{
+            /*try{
                 UpdateContratoEstatusCanceladoPosRequest updateContratoEstatusCanceladoPosRequest = new UpdateContratoEstatusCanceladoPosRequest();
                 updateContratoEstatusCanceladoPosRequest.setContratoId(suscriptor.getContratoId());
                 updateContratoEstatusCanceladoPosRequest.setUsuarioId(sesion.getUsuarioId());
@@ -139,7 +139,7 @@ public class CancelarContratoController {
                 client.updateEstatusContrato(request);
             }catch(Exception exception){
                 
-            }
+            }*/
             
             //por ultimo registrar orden de servicio de returo por cancelacion
             OrdenServicioDao ordenServicioDao = OrdenServicioDao.getOrdenServicioDao();

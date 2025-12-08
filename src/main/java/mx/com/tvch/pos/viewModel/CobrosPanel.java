@@ -901,14 +901,18 @@ public class CobrosPanel extends javax.swing.JPanel {
         }
         
         cobroCapturado.setMesesPagados(numeroMeses);
-        if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
-            montoTotalMeses = montoTotalMeses + 50;
-             campoMontoSugerido.setText(String.valueOf(montoTotalMeses));
-            campoMonto.setText(String.valueOf(montoTotalMeses));
-            etiquetaImporte.setText(String.valueOf(montoTotalMeses));
-            cobroCapturado.setMontoRecargo(50.0);
-            cobroCapturado.setSeCobraRecargo(true);
-            etiquetaRecargoPagoTardio.setVisible(true);
+        if(checkServicio.isSelected()){
+            if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
+                montoTotalMeses = montoTotalMeses + 50;
+                campoMontoSugerido.setText(String.valueOf(montoTotalMeses));
+                campoMonto.setText(String.valueOf(montoTotalMeses));
+                etiquetaImporte.setText(String.valueOf(montoTotalMeses));
+                cobroCapturado.setMontoRecargo(50.0);
+                cobroCapturado.setSeCobraRecargo(true);
+                etiquetaRecargoPagoTardio.setVisible(true);
+            }else{
+                etiquetaRecargoPagoTardio.setVisible(false);
+            }
         }else{
             etiquetaRecargoPagoTardio.setVisible(false);
         }
