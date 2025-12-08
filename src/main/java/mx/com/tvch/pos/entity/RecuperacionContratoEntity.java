@@ -28,6 +28,8 @@ public class RecuperacionContratoEntity {
 
     private String observaciones;
 
+    private String nuevaFechaPago;
+
     public Long getRecuperacionId() {
         return recuperacionId;
     }
@@ -90,6 +92,14 @@ public class RecuperacionContratoEntity {
 
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
+    }
+
+    public String getNuevaFechaPago() {
+        return nuevaFechaPago;
+    }
+
+    public void setNuevaFechaPago(String nuevaFechaPago) {
+        this.nuevaFechaPago = nuevaFechaPago;
     }
 
 }

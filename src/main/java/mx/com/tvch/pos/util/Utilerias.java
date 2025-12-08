@@ -516,5 +516,20 @@ public class Utilerias {
         }
         return cadenaLimpia;
     }
+    
+    /**
+     * 
+     * @return
+     * @throws ParseException 
+     */
+    public Date obtenerFechaCorteDelMesEnCurso() throws ParseException {
+        Calendar nuevaFechaCorte = Calendar.getInstance();
+        nuevaFechaCorte.setTime(new Date());// se setea la fecha en curso
+        nuevaFechaCorte.set(Calendar.DAY_OF_MONTH, 10);  // se le pone el dia de corte
+        nuevaFechaCorte.set(Calendar.HOUR_OF_DAY, 0);
+        nuevaFechaCorte.set(Calendar.MINUTE, 0);
+        nuevaFechaCorte.set(Calendar.SECOND, 0);
+        return nuevaFechaCorte.getTime();
+    }
 
 }

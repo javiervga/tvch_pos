@@ -120,7 +120,15 @@ public class CobroController {
      */
     public void recuperarContrato(ContratoxSuscriptorDetalleEntity suscriptor) throws Exception{
         
+        //primero actualizar la fecha de pago al mes en curso
+        Date nuevaFechaCorte = util.obtenerFechaCorteDelMesEnCurso();
+        String nuevaFechaPagoMySql = util.convertirDateTime2String(nuevaFechaCorte, Constantes.FORMATO_FECHA_MYSQL);
+        contratoDao.actualizarFechaPagoContrato(suscriptor.getContratoId(), nuevaFechaPagoMySql);
+        
+        //despues se actualiza el estatus del contrato a activo
         contratoDao.actualizarEstatus(suscriptor.getContratoId(), Constantes.ESTATUS_CONTRATO_ACTIVO);
+        
+        //se genera un registro de la recuperacion
         RecuperacionContratoEntity entity = new RecuperacionContratoEntity();
         entity.setContratoId(suscriptor.getContratoId());
         entity.setCosto(0d);
@@ -129,9 +137,10 @@ public class CobroController {
         entity.setRecuperacionId(util.generarIdLocal());
         entity.setSucursalId(sesion.getSucursalId());
         entity.setUsuarioId(sesion.getUsuarioId());
+        entity.setNuevaFechaPago(nuevaFechaPagoMySql);
         recuperacionContratoDao.registrarRecuperacionContrato(entity);
 
-        //generar orden de instalacion
+        //se genera la orden de instalacion
         OrdenInstalacionEntity ordenInstalacionEntity = new OrdenInstalacionEntity();
         ordenInstalacionEntity.setContratoId(suscriptor.getContratoId());
         ordenInstalacionEntity.setCosto(0d);

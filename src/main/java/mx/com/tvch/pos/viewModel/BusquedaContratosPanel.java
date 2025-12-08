@@ -27,7 +27,6 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.controller.CobroController;
-import mx.com.tvch.pos.controller.CobroServicioController;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
 import mx.com.tvch.pos.model.TipoBusquedaCobro;
@@ -248,34 +247,65 @@ public class BusquedaContratosPanel extends javax.swing.JPanel {
               
                 if(suscriptorSeleccionado != null){
                     
-                    boolean seAceptoRecuperacion = false;
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("Se realizará el cambio a estatus ACTIVO al contrato: ").append(suscriptorSeleccionado.getFolioContrato());
-                    sb.append("\n¿Está de acuerdo? \n");
-                    int input = JOptionPane.showConfirmDialog(null, sb.toString());
-                    if (input == 0) {
-                        seAceptoRecuperacion = true;
-                    }
+                    if(suscriptorSeleccionado.getTvsContratadas() != null &&
+                            suscriptorSeleccionado.getTvsContratadas() > 0){
                     
-                    if(seAceptoRecuperacion){
-                        
-                        try {
-                            controller.recuperarContrato(suscriptorSeleccionado);
-                            Long folioCOntrato = suscriptorSeleccionado.getFolioContrato();
-                            limpiarPantalla();
-                            checkCancelados.setSelected(false);
-                            campoBusqueda.setText(String.valueOf(folioCOntrato));
-                            comboTiposBusqueda.setSelectedIndex(0);
-                            buscarSuscriptor();
-                            
-                            JOptionPane.showMessageDialog(contratosPanel, 
-                                    "La recuperacion ha sido exitosa", "", JOptionPane.INFORMATION_MESSAGE);
-                            
-                        } catch (Exception ex) {
-                            JOptionPane.showMessageDialog(contratosPanel, 
-                                    "Ocurrió un erro al recuperar el contrato. Por favor reintente, de persistir el problema llame a soporte", "", JOptionPane.WARNING_MESSAGE);
+                        boolean seAceptoRecuperacion = false;
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("Se realizará la recuperación del contrato: ").append(suscriptorSeleccionado.getFolioContrato());
+                        sb.append(", \n  el estatus cambiará a ACTIVO");
+                        sb.append("\n¿Está de acuerdo? \n");
+
+                        //JFrame frame = new JFrame("Example");
+                        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        //frame.setSize(300, 200);
+                        //frame.setVisible(true);
+
+                        Object[] options = {"SI", "NO"};
+
+                        int result = JOptionPane.showOptionDialog(
+                            contratosPanel,
+                            sb.toString(),
+                            "CONFIRMACION DE RECUPERACION",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            options[1] 
+                        );
+
+
+                        //int input = JOptionPane.showConfirmDialog(null, sb.toString());
+                        if (result == 0) {
+                            seAceptoRecuperacion = true;
                         }
-                        
+                    
+                        if(seAceptoRecuperacion){
+
+                            try {
+                                controller.recuperarContrato(suscriptorSeleccionado);
+                                Long folioCOntrato = suscriptorSeleccionado.getFolioContrato();
+                                limpiarPantalla();
+                                checkCancelados.setSelected(false);
+                                campoBusqueda.setText(String.valueOf(folioCOntrato));
+                                comboTiposBusqueda.setSelectedIndex(0);
+                                buscarSuscriptor();
+
+                                JOptionPane.showMessageDialog(contratosPanel, 
+                                        "La recuperacion ha sido exitosa y su orden de instalación se ha registrado de forma automática."
+                                                + "\n Por vafor verifique.", "", JOptionPane.INFORMATION_MESSAGE);
+
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(contratosPanel, 
+                                        "Ocurrió un erro al recuperar el contrato. Por favor reintente, de persistir el problema llame a soporte", "", JOptionPane.WARNING_MESSAGE);
+                            }
+
+                        }
+                    
+                    }else{
+                        JOptionPane.showMessageDialog(contratosPanel, 
+                                    "No se cuenta con información sobre el número de TV's del cliente, \n "
+                                            + "para hacer la recuperación actualice la información del contrato", "", JOptionPane.WARNING_MESSAGE);
                     }
                     
                 }
