@@ -1166,6 +1166,7 @@ public class CobrosPanel extends javax.swing.JPanel {
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_CAMBIO_UBICACION_TV, "Cambio de ubicación de TV"));
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_VISITA_TECNICA, "Visita Técnica"));
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_CAMBIO_PLAN, "Cambio de Plan"));
+                listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_RECONEXION_SERVICIO, "Reconexión de Servicio"));
             } else if (estatusContratoId == Constantes.ESTATUS_CONTRATO_ACTIVO) {
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_CAMBIO_CABLE_ACOMETIDA, "Cambio de Cable por acometida"));
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_TV_ADICIONAL, "TV Adicional"));
@@ -1174,6 +1175,7 @@ public class CobrosPanel extends javax.swing.JPanel {
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_CAMBIO_UBICACION_TV, "Cambio de ubicación de TV"));
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_VISITA_TECNICA, "Visita Técnica"));
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_CAMBIO_PLAN, "Cambio de Plan"));
+                listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_RECONEXION_SERVICIO, "Reconexión de Servicio"));
             } else if (estatusContratoId == Constantes.ESTATUS_CONTRATO_CORTE) {
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_CAMBIO_CABLE_ACOMETIDA, "Cambio de Cable por acometida"));
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_TV_ADICIONAL, "TV Adicional"));
@@ -1199,6 +1201,7 @@ public class CobrosPanel extends javax.swing.JPanel {
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_CAMBIO_UBICACION_TV, "Cambio de ubicación de TV"));
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_VISITA_TECNICA, "Visita Técnica"));
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_CAMBIO_PLAN, "Cambio de Plan"));
+                listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_RECONEXION_SERVICIO, "Reconexión de Servicio"));
             } else if (estatusContratoId == Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO) {
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_VISITA_TECNICA, "Visita Técnica"));
                 listTiposOrdenServicio.add(new TipoOrden(Constantes.TIPO_ORDEN_SERVICIO_RETIRO_EQUIPO_CANCELACION, "Retiro de equipo por cancelación"));
