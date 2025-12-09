@@ -263,7 +263,7 @@ public class CobroController {
                 if (cobro.getDescuento() != null) {
                     DetalleDescuentoTransaccionEntity detalleDescuentoTransaccionEntity = new DetalleDescuentoTransaccionEntity();
                     detalleDescuentoTransaccionEntity.setMonto(cobro.getDescuento().getMontoDescuento());
-                    detalleDescuentoTransaccionEntity.setObservaciones(cobro.getDescuento().getMotivoDescuento());
+                    detalleDescuentoTransaccionEntity.setObservaciones(util.limpiarAcentos(cobro.getDescuento().getMotivoDescuento()).toUpperCase());
                     detalleDescuentoTransaccionEntity.setTipoDescuentoId(cobro.getDescuento().getTipoDescuentoId());
                     detalleDescuentoTransaccionEntity.setTransaccionId(transaccionId);
                     Long detalleDescuentoId = detalleDescuentoTransaccionDao.registrarDetalleDescuento(detalleDescuentoTransaccionEntity);
@@ -271,6 +271,11 @@ public class CobroController {
                 
                 //actualizar la fecha de pago en el contrato
                 contratoDao.actualizarFechaPagoContrato(suscriptor.getContratoId(), nuevaFechaPagoMySql);
+                
+                //si traia recargo (contrato en corte) actualizar el estatus a reconexion
+                if(cobro.isSeCobraServicio() && cobro.isSeCobraRecargo() 
+                        && suscriptor.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE)
+                    contratoDao.actualizarEstatus(suscriptor.getContratoId(), Constantes.ESTATUS_CONTRATO_RECONEXION);
             }
 
             if(cobro.getOrdenesPago() != null && !cobro.getOrdenesPago().isEmpty()){

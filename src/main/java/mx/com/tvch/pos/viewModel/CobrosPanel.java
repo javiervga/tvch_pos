@@ -256,6 +256,13 @@ public class CobrosPanel extends javax.swing.JPanel {
 
                                 transaccionId = controller.cobrarServicio(suscriptorSeleccionado, cobroCapturado);
                                 System.out.println("transaccionId: " + transaccionId);
+                                
+                                if(cobroCapturado.isSeCobraServicio() && cobroCapturado.isSeCobraRecargo() 
+                                    && suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
+                                    JOptionPane.showMessageDialog(cobroPanel, "El cobro se realizó correctamente y el estatus de su contrato "
+                                            + "ha sido actualizado a RECONEXION \n"
+                                            + "Por favor verifique.", "", JOptionPane.WARNING_MESSAGE);
+                                }
 
                                 try {
                                     impresora.imprimirTicketServicio(transaccionId, cobroCapturado, suscriptorSeleccionado, sesion.getSucursal()/*, numeroMeses*/);
@@ -1315,8 +1322,6 @@ public class CobrosPanel extends javax.swing.JPanel {
         Mes mesSeleccionado = (Mes) comboMeses.getModel().getSelectedItem();
         int anioSeleccionado = (int) comboAnios.getModel().getSelectedItem();
         
-        actualizarInformacionPago(null, mesSeleccionado, anioSeleccionado, suscriptorSeleccionado, true);
-        
         cargarComboTiposOrden(sesion.getContratoSeleccionado().getEstatusContratoId());
         cargarComboServicios();
         
@@ -1343,6 +1348,8 @@ public class CobrosPanel extends javax.swing.JPanel {
         tablaOrdenes.getColumnModel().getColumn(1).setPreferredWidth(180);
         tablaOrdenes.getColumnModel().getColumn(2).setPreferredWidth(580);
         tablaOrdenes.getColumnModel().getColumn(3).setPreferredWidth(90);
+        
+        actualizarInformacionPago(null, mesSeleccionado, anioSeleccionado, suscriptorSeleccionado, true);
 
     }
     
