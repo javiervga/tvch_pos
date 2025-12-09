@@ -5,10 +5,14 @@
 package mx.com.tvch.pos.util;
 
 import br.com.adilson.util.PrinterMatrix;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -21,6 +25,8 @@ import javax.print.PrintServiceLookup;
 import javax.print.SimpleDoc;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.event.PrintJobAdapter;
+import javax.print.event.PrintJobEvent;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.entity.AperturaCajaEntity;
 import mx.com.tvch.pos.entity.CobroProvisionalEntity;
@@ -75,15 +81,14 @@ public class Impresora {
             java.util.logging.Logger.getLogger(Impresora.class.getName()).log(Level.SEVERE, null, ex);
         }
     }*/
-    
     /**
-     * 
+     *
      * @param sesion
      * @param entity
-     * @throws Exception 
+     * @throws Exception
      */
-    public void imprimirTicketCobroProvisional(Sesion sesion, CobroProvisionalEntity entity) throws Exception{
-        
+    public void imprimirTicketCobroProvisional(Sesion sesion, CobroProvisionalEntity entity) throws Exception {
+
         PrinterMatrix pm = new PrinterMatrix();
 
         int cantidadLineas = 51;
@@ -98,20 +103,20 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCiudadRfc().intValue(),
                 47, sesion.getTicketLineaCiudadRfc());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCalle().intValue() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCalle().intValue(),
                 47, sesion.getTicketLineaCalle());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaColonia() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaColonia(),
                 47, sesion.getTicketLineaColonia());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaSucursal() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaSucursal(),
                 47, "Sucursal ".concat(sesion.getSucursal()));
         linea = linea + 3;
 
@@ -126,7 +131,7 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Tipo Orden:");
         pm.printTextLinCol(linea, 16, entity.getTipoOrden());
-        if(entity.getTipoOrdenServicio() != null){
+        if (entity.getTipoOrdenServicio() != null) {
             linea = linea + 2;
             pm.printTextLinCol(linea, 1, "Orden Servicio:");
             pm.printTextLinCol(linea, 16, entity.getTipoOrdenServicio());
@@ -159,35 +164,35 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        
-        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+
+        if (sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()) {
             pm.printTextLinCol(linea, 10, "Telefono Oficina:");
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
-                !sesion.getTelefonoSoporte().contains("null")){
+        if (sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()
+                && !sesion.getTelefonoSoporte().contains("null")) {
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte());
         }
 
         String nombreArchivo = ("impresion.txt");
         pm.toFile(nombreArchivo);
 
         imprimirArchivo(nombreArchivo);
-        
+
     }
-    
+
     /**
-     * 
+     *
      * @param entity
      * @param detallesPago
      * @param nombreSucursal
-     * @throws Exception 
+     * @throws Exception
      */
     public void reimprimirTicketCancelacion(
-            TransaccionTicketEntity entity, 
-            List<DetallePagoServicio> detallesPago, 
+            TransaccionTicketEntity entity,
+            List<DetallePagoServicio> detallesPago,
             String nombreSucursal) throws Exception {
 
         StringBuilder nombre = new StringBuilder();
@@ -223,20 +228,20 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCiudadRfc().intValue(),
                 47, sesion.getTicketLineaCiudadRfc());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCalle().intValue() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCalle().intValue(),
                 47, sesion.getTicketLineaCalle());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaColonia() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaColonia(),
                 47, sesion.getTicketLineaColonia());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaSucursal() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaSucursal(),
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -280,16 +285,16 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        
-        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+
+        if (sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()) {
             pm.printTextLinCol(linea, 10, "Telefono Oficina:");
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
-                !sesion.getTelefonoSoporte().contains("null")){
+        if (sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()
+                && !sesion.getTelefonoSoporte().contains("null")) {
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte());
         }
 
         String nombreArchivo = ("impresion.txt");
@@ -298,7 +303,7 @@ public class Impresora {
         imprimirArchivo(nombreArchivo);
 
     }
-    
+
     /**
      *
      * @param transaccionId
@@ -308,9 +313,9 @@ public class Impresora {
      * @throws Exception
      */
     public void imprimirTicketCancelacion(
-            Long transaccionId, 
-            List<DetallePagoServicio> detallesPago, 
-            ContratoxSuscriptorDetalleEntity suscriptor, 
+            Long transaccionId,
+            List<DetallePagoServicio> detallesPago,
+            ContratoxSuscriptorDetalleEntity suscriptor,
             String nombreSucursal) throws Exception {
 
         StringBuilder nombre = new StringBuilder();
@@ -346,20 +351,20 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCiudadRfc().intValue(),
                 47, sesion.getTicketLineaCiudadRfc());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCalle().intValue() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCalle().intValue(),
                 47, sesion.getTicketLineaCalle());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaColonia() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaColonia(),
                 47, sesion.getTicketLineaColonia());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaSucursal() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaSucursal(),
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -374,7 +379,7 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Tipo Pago:");
         pm.printTextLinCol(linea, 14, "Cancelación de Contrato");
- 
+
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Contrato:");
         pm.printTextLinCol(linea, 14, contrato);
@@ -404,16 +409,16 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        
-        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+
+        if (sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()) {
             pm.printTextLinCol(linea, 10, "Telefono Oficina:");
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
-                !sesion.getTelefonoSoporte().contains("null")){
+        if (sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()
+                && !sesion.getTelefonoSoporte().contains("null")) {
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte());
         }
 
         String nombreArchivo = ("impresion.txt");
@@ -422,15 +427,15 @@ public class Impresora {
         imprimirArchivo(nombreArchivo);
 
     }
-    
+
     public void imprimirTicketSalidaExtraordinaria(SalidaExtraordinariaEntity entity) throws Exception {
-        
+
         PrinterMatrix pm = new PrinterMatrix();
-        
+
         pm.setOutSize(25, 47);
         pm.printCharAtCol(1, 1, 47, "=");
         pm.printTextWrap(1, 1, 13, 47, "Egreso Extraordinario");
-        
+
         pm.printTextLinCol(4, 1, "Sucursal:");
         pm.printTextLinCol(4, 27, sesion.getSucursal());
         pm.printTextLinCol(5, 1, "Folio Salida:");
@@ -447,19 +452,19 @@ public class Impresora {
         pm.printTextLinCol(8, 27, entity.getUsuario());
         pm.printTextLinCol(9, 1, "Monto:");
         pm.printTextLinCol(9, 27, String.valueOf(entity.getMonto()));
-        
+
         pm.printTextLinCol(11, 1, "Fecha:");
         pm.printTextLinCol(11, 27, utilerias.convertirDateTime2String(entity.getFechaSalida(), Constantes.FORMATO_FECHA_TICKET));
         pm.printTextLinCol(12, 1, "Hora:");
         pm.printTextLinCol(12, 27, utilerias.convertirDateTime2String(entity.getFechaSalida(), Constantes.FORMATO_HORA_TICKET));
-        
+
         String nombreArchivo = ("impresion.txt");
         pm.toFile(nombreArchivo);
 
         imprimirArchivo(nombreArchivo);
     }
-    
-    public void imprimirTicketCorteCaja(List<DetalleCorte> list, CorteCaja corteCaja) throws Exception{
+
+    public void imprimirTicketCorteCaja(List<DetalleCorte> list, CorteCaja corteCaja) throws Exception {
 
         DetalleCorte detalleId = list.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_CORTE_ID).findFirst().get();
 
@@ -497,7 +502,7 @@ public class Impresora {
         pm.printTextLinCol(13, 27, String.valueOf(corteCaja.getEntity().getCantidadCobros()));
         pm.printTextLinCol(14, 1, "Monto Total Cobrado:");
         pm.printTextLinCol(14, 27, String.valueOf(corteCaja.getEntity().getTotalCobros()));
-        
+
         pm.printTextLinCol(16, 1, "Descuentos otorgados:");
         pm.printTextLinCol(16, 27, String.valueOf(corteCaja.getEntity().getCantidadDescuentos()));
         pm.printTextLinCol(17, 1, "Monto de los descuentos:");
@@ -507,31 +512,31 @@ public class Impresora {
         pm.printTextLinCol(19, 27, String.valueOf(corteCaja.getEntity().getCantidadSalidas()));
         pm.printTextLinCol(20, 1, "Monto de los salidas:");
         pm.printTextLinCol(20, 27, String.valueOf(corteCaja.getEntity().getTotalSalidas()));
-        
+
         pm.printTextLinCol(22, 1, "Ingresos de caja:");
-        if(corteCaja.getEntity().getCantidadIngresos() != null){
+        if (corteCaja.getEntity().getCantidadIngresos() != null) {
             pm.printTextLinCol(22, 27, String.valueOf(corteCaja.getEntity().getCantidadIngresos()));
             pm.printTextLinCol(23, 1, "Monto de los ingresos:");
             pm.printTextLinCol(23, 27, String.valueOf(corteCaja.getEntity().getTotalIngresos()));
-        }else{
+        } else {
             pm.printTextLinCol(22, 27, "0");
             pm.printTextLinCol(23, 1, "Monto de los ingresos:");
             pm.printTextLinCol(23, 27, "0.0");
         }
-        
+
         pm.printTextLinCol(25, 1, "Efectivo calculado:");
         pm.printTextLinCol(25, 27, String.valueOf(corteCaja.getEntity().getTotalSolicitado()));
         pm.printTextLinCol(26, 1, "Efectivo entegado:");
         pm.printTextLinCol(26, 27, String.valueOf(corteCaja.getEntity().getTotalEntregado()));
-        
-        if(corteCaja.getFaltanteEntity() != null){
+
+        if (corteCaja.getFaltanteEntity() != null) {
             pm.printTextLinCol(27, 1, "Faltante registrado:");
             pm.printTextLinCol(27, 27, String.valueOf(corteCaja.getFaltanteEntity().getMonto()));
-        }else if(corteCaja.getSobranteEntity() != null){
+        } else if (corteCaja.getSobranteEntity() != null) {
             pm.printTextLinCol(27, 1, "Sobrante registrado:");
             pm.printTextLinCol(27, 27, String.valueOf(corteCaja.getSobranteEntity().getMonto()));
         }
-        
+
         String nombreArchivo = ("impresion.txt");
         pm.toFile(nombreArchivo);
 
@@ -548,9 +553,9 @@ public class Impresora {
      * @throws Exception
      */
     public void imprimirTicketServicio(
-            Long transaccionId, 
-            CobroServicio cobro, 
-            ContratoxSuscriptorDetalleEntity suscriptor, 
+            Long transaccionId,
+            CobroServicio cobro,
+            ContratoxSuscriptorDetalleEntity suscriptor,
             String nombreSucursal) throws Exception {
 
         StringBuilder nombre = new StringBuilder();
@@ -572,12 +577,13 @@ public class Impresora {
         PrinterMatrix pm = new PrinterMatrix();
 
         int cantidadLineas = 55;
-        
-        if(cobro.getDescuento() != null || cobro.getPromocion() != null || cobro.isSeCobraRecargo())
+
+        if (cobro.getDescuento() != null || cobro.getPromocion() != null || cobro.isSeCobraRecargo()) {
             cantidadLineas = cantidadLineas + 4;
-        
-        if( cobro.getOrdenesPago() != null && !cobro.getOrdenesPago().isEmpty()){
-            cantidadLineas = cantidadLineas + (cobro.getOrdenesPago().size()*2);
+        }
+
+        if (cobro.getOrdenesPago() != null && !cobro.getOrdenesPago().isEmpty()) {
+            cantidadLineas = cantidadLineas + (cobro.getOrdenesPago().size() * 2);
         }
 
         pm.setOutSize(cantidadLineas, 47);
@@ -589,20 +595,20 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCiudadRfc().intValue(),
                 47, sesion.getTicketLineaCiudadRfc());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCalle().intValue() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCalle().intValue(),
                 47, sesion.getTicketLineaCalle());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaColonia() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaColonia(),
                 47, sesion.getTicketLineaColonia());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaSucursal() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaSucursal(),
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -616,40 +622,38 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, String.valueOf(transaccionId));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Tipo Pago:");
-        
-        if(cobro.isSeCobraServicio()){
-            
-            if(cobro.getOrdenesPago() == null || cobro.getOrdenesPago().isEmpty()){
-                
-                if(suscriptor.getMesesPorPagar() == 1)
+
+        if (cobro.isSeCobraServicio()) {
+
+            if (cobro.getOrdenesPago() == null || cobro.getOrdenesPago().isEmpty()) {
+
+                if (suscriptor.getMesesPorPagar() == 1) {
                     pm.printTextLinCol(linea, 14, "Pago de Mensualidad");
-                else{
+                } else {
                     StringBuilder descripcionPago = new StringBuilder();
                     descripcionPago.append("Pago de ").append(suscriptor.getMesesPorPagar()).append(" mensualidades");
                     pm.printTextLinCol(linea, 14, descripcionPago.toString());
                 }
-                
-            }else{
+
+            } else {
                 pm.printTextLinCol(linea, 14, "Pago de Mensualidad/Orden");
             }
 
-        }else{
+        } else {
             pm.printTextLinCol(linea, 14, "Pago de Orden(es) de Servicio");
         }
-        
-        if(cobro.isSeCobraServicio()){
+
+        if (cobro.isSeCobraServicio()) {
             linea = linea + 2;
             pm.printTextLinCol(linea, 1, "Periodo:");
             pm.printTextLinCol(linea, 14, String.valueOf(cobro.getConcepto().replace("Pago", "").toUpperCase()));
         }
-        
+
         /*for(OrdenAgregadaPago orden : cobro.getOrdenesPago()){
             linea = linea + 2;
             pm.printTextLinCol(linea, 1, "Tipo:");
             pm.printTextLinCol(linea, 14, String.valueOf(cobro.getConcepto().replace("Pago", "").toUpperCase()));
         }*/
-        
-        
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Contrato:");
         pm.printTextLinCol(linea, 14, contrato);
@@ -665,21 +669,22 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Telefono:");
         pm.printTextLinCol(linea, 14, suscriptor.getTelefono());
-        
+
         double montoRecargo = 0;
-        if(cobro.isSeCobraRecargo())
+        if (cobro.isSeCobraRecargo()) {
             montoRecargo = cobro.getMontoRecargo();
-           
-        if(cobro.isSeCobraServicio()){
-            
-            if( cobro.getOrdenesPago() == null || cobro.getOrdenesPago().isEmpty()){
-                
+        }
+
+        if (cobro.isSeCobraServicio()) {
+
+            if (cobro.getOrdenesPago() == null || cobro.getOrdenesPago().isEmpty()) {
+
                 linea = linea + 2;
                 pm.printTextLinCol(linea, 1, "Costo Mensualidad(es):");
                 pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoSugerido())));
-                
-            }else{
-                
+
+            } else {
+
                 linea = linea + 2;
                 pm.printTextLinCol(linea, 1, "Costo Mensualidades/Ordenes:");
                 pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoSugerido())));
@@ -701,7 +706,7 @@ public class Impresora {
                     pm.printTextLinCol(linea, 39, "-$ ".concat(String.valueOf(cobro.getMontoSugerido() - cobro.getMontoTotal())));
                 }
             }
-        }else{
+        } else {
             linea = linea + 2;
             pm.printTextLinCol(linea, 1, "Costo Orden(es):");
             pm.printTextLinCol(linea, 40, "$ ".concat(String.valueOf(cobro.getMontoSugerido())));
@@ -722,16 +727,16 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        
-        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+
+        if (sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()) {
             pm.printTextLinCol(linea, 10, "Telefono Oficina:");
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
-                !sesion.getTelefonoSoporte().contains("null")){
+        if (sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()
+                && !sesion.getTelefonoSoporte().contains("null")) {
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte());
         }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
@@ -747,7 +752,7 @@ public class Impresora {
         //}while(impresiones<2);
 
     }
-    
+
     /**
      *
      * @param entity
@@ -756,8 +761,8 @@ public class Impresora {
      * @throws Exception
      */
     public void reimprimirTicketServicio(
-            TransaccionTicketEntity entity, 
-            List<DetallePagoServicio> detallesPago, 
+            TransaccionTicketEntity entity,
+            List<DetallePagoServicio> detallesPago,
             String nombreSucursal) throws Exception {
 
         StringBuilder nombre = new StringBuilder();
@@ -775,7 +780,6 @@ public class Impresora {
         }
 
         String contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getFolioContrato()));
-        
 
         DetallePagoServicio detalleCobro = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_SERVICIO).findAny().get();
         Double importeTotal = detalleCobro.getMonto();
@@ -800,20 +804,20 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCiudadRfc().intValue(),
                 47, sesion.getTicketLineaCiudadRfc());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCalle().intValue() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCalle().intValue(),
                 47, sesion.getTicketLineaCalle());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaColonia() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaColonia(),
                 47, sesion.getTicketLineaColonia());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaSucursal() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaSucursal(),
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -827,9 +831,9 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, String.valueOf(entity.getTransaccionId()));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Tipo Pago:");
-        if(detalleCobro.getNumeroMeses() == 1 || detalleCobro.getNumeroMeses() == 0 || detalleCobro.getNumeroMeses() == null)
+        if (detalleCobro.getNumeroMeses() == 1 || detalleCobro.getNumeroMeses() == 0 || detalleCobro.getNumeroMeses() == null) {
             pm.printTextLinCol(linea, 14, "Pago de Mensualidad");
-        else{
+        } else {
             StringBuilder descripcionPago = new StringBuilder();
             descripcionPago.append("Pago de ").append(detalleCobro.getNumeroMeses()).append(" mensualidades");
             pm.printTextLinCol(linea, 14, descripcionPago.toString());
@@ -870,7 +874,7 @@ public class Impresora {
             if (detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().isPresent()) {
                 linea++;
                 DetallePagoServicio detalleDescuento = detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findFirst().get();
-                importeTotal = importeTotal -detalleDescuento.getMonto();
+                importeTotal = importeTotal - detalleDescuento.getMonto();
                 pm.printTextLinCol(linea, 1, "Descuento:");
                 pm.printTextLinCol(linea, 38, "- $ ".concat(String.valueOf(detallesPago.stream().filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_COBRO_DESCUENTO).findAny().get().getMonto())));
             }
@@ -891,16 +895,16 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        
-        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+
+        if (sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()) {
             pm.printTextLinCol(linea, 10, "Telefono Oficina:");
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
-                !sesion.getTelefonoSoporte().contains("null")){
+        if (sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()
+                && !sesion.getTelefonoSoporte().contains("null")) {
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte());
         }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
@@ -916,7 +920,7 @@ public class Impresora {
         //}while(impresiones<2);
 
     }
-    
+
     /**
      *
      * @param orden
@@ -948,20 +952,20 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCiudadRfc().intValue(),
                 47, sesion.getTicketLineaCiudadRfc());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCalle().intValue() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCalle().intValue(),
                 47, sesion.getTicketLineaCalle());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaColonia() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaColonia(),
                 47, sesion.getTicketLineaColonia());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaSucursal() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaSucursal(),
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -1021,15 +1025,15 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+        if (sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()) {
             pm.printTextLinCol(linea, 10, "Telefono Oficina:");
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
-                !sesion.getTelefonoSoporte().contains("null")){
+        if (sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()
+                && !sesion.getTelefonoSoporte().contains("null")) {
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte());
         }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
@@ -1041,7 +1045,7 @@ public class Impresora {
         imprimirArchivo(nombreArchivo);
 
     }
-    
+
     /**
      *
      * @param orden
@@ -1049,16 +1053,16 @@ public class Impresora {
      * @throws Exception
      */
     public void reimprimirTicketOrdenServicio(
-            TransaccionTicketEntity entity, 
-            String nombreSucursal, 
+            TransaccionTicketEntity entity,
+            String nombreSucursal,
             DetalleCobroTransaccionEntity detalleTransaccion,
             DetallePromocionTransaccionEntity detallePromocion,
             DetalleDescuentoTransaccionEntity detalleDescuento
-            ) throws Exception {
+    ) throws Exception {
 
         StringBuilder nombre = new StringBuilder();
         nombre.append(entity.getNombre()).append(" ").append(entity.getApellidoPaterno()).append(" ").append(entity.getApellidoMaterno());
-        
+
         StringBuilder domicilio = new StringBuilder();
         if (entity.getCalle() != null) {
             domicilio.append(entity.getCalle()).append(" ");
@@ -1071,7 +1075,6 @@ public class Impresora {
         }
 
         String contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getFolioContrato()));
-        
 
         PrinterMatrix pm = new PrinterMatrix();
 
@@ -1091,20 +1094,20 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCiudadRfc().intValue(),
                 47, sesion.getTicketLineaCiudadRfc());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCalle().intValue() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCalle().intValue(),
                 47, sesion.getTicketLineaCalle());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaColonia() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaColonia(),
                 47, sesion.getTicketLineaColonia());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaSucursal() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaSucursal(),
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -1118,8 +1121,9 @@ public class Impresora {
         pm.printTextLinCol(linea, 14, String.valueOf(entity.getTransaccionId()));
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Servicio:");
-        if(detalleTransaccion.getDescripcionOrden() != null)
+        if (detalleTransaccion.getDescripcionOrden() != null) {
             pm.printTextLinCol(linea, 14, detalleTransaccion.getDescripcionOrden());
+        }
         linea = linea + 2;
         pm.printTextLinCol(linea, 1, "Contrato:");
         pm.printTextLinCol(linea, 14, contrato);
@@ -1165,15 +1169,15 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+        if (sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()) {
             pm.printTextLinCol(linea, 10, "Telefono Oficina:");
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
-                !sesion.getTelefonoSoporte().contains("null")){
+        if (sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()
+                && !sesion.getTelefonoSoporte().contains("null")) {
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte());
         }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
@@ -1185,7 +1189,7 @@ public class Impresora {
         imprimirArchivo(nombreArchivo);
 
     }
-    
+
     /**
      *
      * @param orden
@@ -1198,7 +1202,7 @@ public class Impresora {
         nombre.append(suscriptor.getNombre()).append(" ").append(suscriptor.getApellidoPaterno()).append(" ").append(suscriptor.getApellidoMaterno());
 
         String contrato = nombreSucursal.concat("-").concat(String.valueOf(suscriptor.getFolioContrato()));
-      
+
         PrinterMatrix pm = new PrinterMatrix();
 
         int cantidadLineas = 51;
@@ -1217,20 +1221,20 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCiudadRfc().intValue(),
                 47, sesion.getTicketLineaCiudadRfc());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCalle().intValue() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCalle().intValue(),
                 47, sesion.getTicketLineaCalle());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaColonia() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaColonia(),
                 47, sesion.getTicketLineaColonia());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaSucursal() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaSucursal(),
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -1290,15 +1294,15 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+        if (sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()) {
             pm.printTextLinCol(linea, 10, "Telefono Oficina:");
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
-                !sesion.getTelefonoSoporte().contains("null")){
+        if (sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()
+                && !sesion.getTelefonoSoporte().contains("null")) {
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte());
         }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
@@ -1310,23 +1314,23 @@ public class Impresora {
         imprimirArchivo(nombreArchivo);
 
     }
-    
+
     /**
-     * 
+     *
      * @param entity
      * @param nombreSucursal
      * @param detalleTransaccion
      * @param detallePromocion
      * @param detalleDescuento
-     * @throws Exception 
+     * @throws Exception
      */
     public void reimprimirTicketOrdenCambioDomicilio(
-            TransaccionTicketEntity entity, 
-            String nombreSucursal, 
+            TransaccionTicketEntity entity,
+            String nombreSucursal,
             DetalleCobroTransaccionEntity detalleTransaccion,
             DetallePromocionTransaccionEntity detallePromocion,
             DetalleDescuentoTransaccionEntity detalleDescuento
-            ) throws Exception{
+    ) throws Exception {
 
         StringBuilder nombre = new StringBuilder();
         nombre.append(entity.getNombre()).append(" ").append(entity.getApellidoPaterno()).append(" ").append(entity.getApellidoMaterno());
@@ -1341,9 +1345,8 @@ public class Impresora {
         if (entity.getColonia() != null) {
             domicilio.append(entity.getColonia());
         }
-        
+
         String contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getFolioContrato()));
-        
 
         PrinterMatrix pm = new PrinterMatrix();
 
@@ -1363,20 +1366,20 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCiudadRfc().intValue(),
                 47, sesion.getTicketLineaCiudadRfc());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCalle().intValue() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCalle().intValue(),
                 47, sesion.getTicketLineaCalle());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaColonia() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaColonia(),
                 47, sesion.getTicketLineaColonia());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaSucursal() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaSucursal(),
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -1436,15 +1439,15 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+        if (sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()) {
             pm.printTextLinCol(linea, 10, "Telefono Oficina:");
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
-                !sesion.getTelefonoSoporte().contains("null")){
+        if (sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()
+                && !sesion.getTelefonoSoporte().contains("null")) {
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte());
         }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
@@ -1464,9 +1467,9 @@ public class Impresora {
      * @throws Exception
      */
     public void imprimirTicketOrdenInstalacion(
-            Long transaccionId, 
-            Orden orden, 
-            Suscriptor suscriptor, 
+            Long transaccionId,
+            Orden orden,
+            Suscriptor suscriptor,
             String nombreSucursal,
             String fechaProximoPago) throws Exception {
 
@@ -1493,20 +1496,20 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCiudadRfc().intValue(),
                 47, sesion.getTicketLineaCiudadRfc());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCalle().intValue() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCalle().intValue(),
                 47, sesion.getTicketLineaCalle());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaColonia() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaColonia(),
                 47, sesion.getTicketLineaColonia());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaSucursal() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaSucursal(),
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -1566,15 +1569,15 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+        if (sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()) {
             pm.printTextLinCol(linea, 10, "Telefono Oficina:");
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
-                !sesion.getTelefonoSoporte().contains("null")){
+        if (sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()
+                && !sesion.getTelefonoSoporte().contains("null")) {
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte());
         }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
@@ -1586,7 +1589,7 @@ public class Impresora {
         imprimirArchivo(nombreArchivo);
 
     }
-    
+
     /**
      *
      * @param orden
@@ -1594,25 +1597,26 @@ public class Impresora {
      * @throws Exception
      */
     public void reimprimirTicketOrdenInstalacion(
-            TransaccionTicketEntity entity, 
-            String nombreSucursal, 
+            TransaccionTicketEntity entity,
+            String nombreSucursal,
             DetalleCobroTransaccionEntity detalleTransaccion,
             DetallePromocionTransaccionEntity detallePromocion,
             DetalleDescuentoTransaccionEntity detalleDescuento
-            ) throws Exception {
+    ) throws Exception {
 
         StringBuilder nombre = new StringBuilder();
         nombre.append(entity.getNombre()).append(" ").append(entity.getApellidoPaterno()).append(" ").append(entity.getApellidoMaterno());
 
         StringBuilder domicilio = new StringBuilder();
         domicilio.append(entity.getCalle());
-        if(entity.getNumeroCalle() != null)
+        if (entity.getNumeroCalle() != null) {
             domicilio.append(" ").append(entity.getNumeroCalle());
-        if(entity.getColonia() != null)
+        }
+        if (entity.getColonia() != null) {
             domicilio.append(" ").append(entity.getColonia());
-        
+        }
+
         String contrato = nombreSucursal.concat("-").concat(String.valueOf(entity.getFolioContrato()));
-        
 
         PrinterMatrix pm = new PrinterMatrix();
 
@@ -1632,20 +1636,20 @@ public class Impresora {
         linea = linea + 2;
         pm.printTextWrap(linea, 1, 13, 47, "TV Cable Hidalguense");
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCiudadRfc().intValue(), 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCiudadRfc().intValue(),
                 47, sesion.getTicketLineaCiudadRfc());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaCalle().intValue() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaCalle().intValue(),
                 47, sesion.getTicketLineaCalle());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaColonia() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaColonia(),
                 47, sesion.getTicketLineaColonia());
         linea++;
-        pm.printTextWrap(linea, 
-                1, sesion.getTicketSangriaSucursal() , 
+        pm.printTextWrap(linea,
+                1, sesion.getTicketSangriaSucursal(),
                 47, "Sucursal ".concat(nombreSucursal));
         linea = linea + 3;
 
@@ -1705,15 +1709,15 @@ public class Impresora {
         linea++;
         pm.printTextWrap(linea, 1, 14, 47, "SABADO DE 9AM A 2PM");
         linea = linea + 2;
-        if(sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()){
+        if (sesion.getTelefonoSucursal() != null && !sesion.getTelefonoSucursal().isEmpty()) {
             pm.printTextLinCol(linea, 10, "Telefono Oficina:");
             pm.printTextLinCol(linea, 29, sesion.getTelefonoSucursal());
             linea++;
         }
-        if(sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty() &&
-                !sesion.getTelefonoSoporte().contains("null")){
+        if (sesion.getTelefonoSoporte() != null && !sesion.getTelefonoSoporte().isEmpty()
+                && !sesion.getTelefonoSoporte().contains("null")) {
             pm.printTextLinCol(linea, 5, "Soporte Tecnico WhatsApp:");
-            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte() );
+            pm.printTextLinCol(linea, 31, sesion.getTelefonoSoporte());
         }
 
         //pm.printTextLinCol(4, 1, "Folio Caja:");
@@ -1725,7 +1729,6 @@ public class Impresora {
         imprimirArchivo(nombreArchivo);
 
     }
-    
 
     /**
      *
@@ -1768,6 +1771,7 @@ public class Impresora {
 
     }
 
+    /*
     private static void imprimirArchivo(String nombreArchivo) throws Exception {
 
         FileInputStream inputStream = null;
@@ -1801,6 +1805,114 @@ public class Impresora {
             //System.out.println("No hay impresoras instaladas");
         }
 
+    }*/
+
+    private static void imprimirArchivo(String nombreArchivo) throws Exception {
+        FileInputStream inputStream = null;
+
+        try {
+            // 1. LEER EL ARCHIVO ORIGINAL
+            String contenidoOriginal;
+            try {
+                contenidoOriginal = new String(Files.readAllBytes(Paths.get(nombreArchivo)));
+            } catch (IOException e) {
+                throw new Exception("No se pudo leer el archivo: " + nombreArchivo);
+            }
+
+            // 2. AGREGAR COMANDOS PARA CORTE DE PAPEL
+            //    Primero avanzamos varias líneas para posicionar el papel
+            //    Luego agregamos el comando ESC/POS para corte parcial
+            // Secuencia para avanzar 2 líneas (ajustable según necesidades)
+            String avanceLineas = "\n\n";
+
+            // Comando ESC/POS para corte parcial:
+            // 0x1B = ESC (27 decimal) - Carácter de escape
+            // 0x69 = 'i' (105 decimal) - Comando de corte (para muchas Epson)
+            // Algunas impresoras usan: 0x1D (GS), 0x56 (V), 0x41 (A) para corte parcial
+            String comandoCorte;
+
+            // Opción 1: ESC i (común en Epson)
+            comandoCorte = new String(new byte[]{0x1B, 0x69});
+
+            // Opción 2: GS V A (alternativa)
+            // comandoCorte = new String(new byte[]{0x1D, 0x56, 0x41});
+            // Opción 3: GS V 1 (corte parcial con 1 unidad de feed)
+            // comandoCorte = new String(new byte[]{0x1D, 0x56, 0x01});
+            // Combinar todo: contenido + avance + comando de corte
+            String contenidoConCorte = contenidoOriginal + avanceLineas + comandoCorte;
+
+            // 3. CREAR ARCHIVO TEMPORAL CON EL CORTE
+            File tempFile = null;
+            try {
+                // Crear archivo temporal
+                tempFile = File.createTempFile("ticket_con_corte_", ".txt");
+                tempFile.deleteOnExit(); // Se eliminará al cerrar la JVM
+
+                // Escribir contenido con corte
+                Files.write(tempFile.toPath(), contenidoConCorte.getBytes());
+
+                // Usar el archivo temporal para impresión
+                inputStream = new FileInputStream(tempFile);
+
+            } catch (IOException e) {
+                throw new Exception("Error al crear archivo temporal: " + e.getMessage());
+            }
+
+            // 4. CONFIGURAR E IMPRIMIR 
+            DocFlavor docFormat = DocFlavor.INPUT_STREAM.AUTOSENSE;
+            Doc document = new SimpleDoc(inputStream, docFormat, null);
+
+            PrintRequestAttributeSet requestAttributeSet = new HashPrintRequestAttributeSet();
+
+            // Opcional: forzar impresión en texto plano (para comandos ESC/POS)
+            // requestAttributeSet.add(new PrinterResolution(203, 203, PrinterResolution.DPI));
+            PrintService defaultPrintService = PrintServiceLookup.lookupDefaultPrintService();
+
+            if (defaultPrintService != null) {
+                System.out.println("Imprimiendo en: " + defaultPrintService.getName());
+
+                DocPrintJob printJob = defaultPrintService.createPrintJob();
+                try {
+                    // Agregar listener para saber cuando termina
+                    printJob.addPrintJobListener(new PrintJobAdapter() {
+                        @Override
+                        public void printJobCompleted(PrintJobEvent pje) {
+                            System.out.println("Impresión completada");
+                        }
+
+                        @Override
+                        public void printJobFailed(PrintJobEvent pje) {
+                            System.out.println("Error en impresión");
+                        }
+                    });
+
+                    // Ejecutar impresión
+                    printJob.print(document, requestAttributeSet);
+
+                } catch (PrintException ex) {
+                    throw new Exception("Error durante la impresión: " + ex.getMessage());
+                }
+            } else {
+                throw new Exception("No se detectaron impresoras instaladas");
+            }
+
+            // 5. LIMPIAR ARCHIVO TEMPORAL (opcional)
+            // Esperar un momento antes de eliminar
+            Thread.sleep(1000);
+            if (tempFile != null && tempFile.exists()) {
+                tempFile.delete();
+            }
+
+        } finally {
+            // Cerrar streams
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    // Ignorar error al cerrar
+                }
+            }
+        }
     }
 
     /*public static void main(String[] args) {
