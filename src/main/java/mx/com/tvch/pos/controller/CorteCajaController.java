@@ -277,11 +277,12 @@ public class CorteCajaController {
             DetalleCorte detalleIngresos = null;
             DetalleCorte detalleCobros = null;
 
+            Double montoOperaciones = 0.0;
             List<TransaccionEntity> transacciones = transaccionDao.obtenerTransaccionesxAperturaCaja(aperturaCaja.getAperturaCajaId());
             if (!transacciones.isEmpty()) {
                 existenTransacciones = true;
 
-                Double montoOperaciones = transacciones.stream().mapToDouble(TransaccionEntity::getMonto).sum();
+                montoOperaciones = transacciones.stream().mapToDouble(TransaccionEntity::getMonto).sum();
                 detalleNumeroTransacciones = new DetalleCorte();
                 detalleNumeroTransacciones.setCantidad(transacciones.size());
                 detalleNumeroTransacciones.setConcepto("Número de operaciones");
@@ -401,14 +402,16 @@ public class CorteCajaController {
             detalleMontoSolicitado.setCantidad(1);
             detalleMontoSolicitado.setConcepto("Efectivo esperado");
             detalleMontoSolicitado.setTipoDetalle(Constantes.TIPO_DETALLE_CORTE_MONTO_SOLICITADO);
+            
+            //primero setear al monto esperado al fondo fijo
             double montoEsperado = detalleFondoFijo.getMonto();
             if (existenTransacciones) {
-                //list.add(detalleNumeroTransacciones);
-                montoEsperado = montoEsperado + detalleCobros.getMonto();
+                //sumar el monto de las transacciones mas el fondo fijo
+                montoEsperado = montoEsperado + montoOperaciones;
             }
-            if (existenDescuentos) {
-                montoEsperado = montoEsperado - detalleDescuentos.getMonto();
-            }
+            //if (existenDescuentos) {
+                //montoEsperado = montoEsperado - detalleDescuentos.getMonto();
+            //}
             if (existenSalidas) {
                 montoEsperado = montoEsperado - detalleSalidas.getMonto();
             }
