@@ -292,12 +292,12 @@ public class BusquedaContratosPanel extends javax.swing.JPanel {
                                 buscarSuscriptor();
 
                                 JOptionPane.showMessageDialog(contratosPanel, 
-                                        "La recuperacion ha sido exitosa y su orden de instalación se ha registrado de forma automática."
+                                        "La recuperacion ha sido exitosa y su orden de reconexión se ha registrado de forma automática."
                                                 + "\n Por vafor verifique.", "", JOptionPane.INFORMATION_MESSAGE);
 
                             } catch (Exception ex) {
                                 JOptionPane.showMessageDialog(contratosPanel, 
-                                        "Ocurrió un erro al recuperar el contrato. Por favor reintente, de persistir el problema llame a soporte", "", JOptionPane.WARNING_MESSAGE);
+                                        "Ocurrió un error al recuperar el contrato. Por favor reintente, de persistir el problema llame a soporte", "", JOptionPane.WARNING_MESSAGE);
                             }
 
                         }

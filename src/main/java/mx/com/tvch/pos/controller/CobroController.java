@@ -117,6 +117,8 @@ public class CobroController {
     
     /**
      * 
+     * @param suscriptor
+     * @throws Exception 
      */
     public void recuperarContrato(ContratoxSuscriptorDetalleEntity suscriptor) throws Exception{
         
@@ -141,7 +143,7 @@ public class CobroController {
         recuperacionContratoDao.registrarRecuperacionContrato(entity);
 
         //se genera la orden de instalacion
-        OrdenInstalacionEntity ordenInstalacionEntity = new OrdenInstalacionEntity();
+        /*OrdenInstalacionEntity ordenInstalacionEntity = new OrdenInstalacionEntity();
         ordenInstalacionEntity.setContratoId(suscriptor.getContratoId());
         ordenInstalacionEntity.setCosto(0d);
         ordenInstalacionEntity.setDomicilioId(suscriptor.getDomicilioId());
@@ -152,7 +154,21 @@ public class CobroController {
         ordenInstalacionEntity.setSuscriptorId(suscriptor.getSusucriptorId());
         ordenInstalacionEntity.setTvs(suscriptor.getTvsContratadas());
         ordenInstalacionEntity.setUsuarioId(sesion.getUsuarioId());
-        ordenInstalacionDao.registrarOrdenInstalacion(ordenInstalacionEntity);
+        ordenInstalacionDao.registrarOrdenInstalacion(ordenInstalacionEntity);*/
+        
+        OrdenServicioEntity ordenServicioEntity = new OrdenServicioEntity();
+        ordenServicioEntity.setContratoId(suscriptor.getContratoId());
+        ordenServicioEntity.setCosto(0d);
+        ordenServicioEntity.setDomicilioId(suscriptor.getDomicilioId());
+        ordenServicioEntity.setEstatusId(Constantes.ESTATUS_ORDEN_PAGADA);
+        //ordenServicioEntity.setFechaRegistro(nuevaFechaCorte);
+        ordenServicioEntity.setObservacionesRegistro("RECUPERACION DE CONTRATO");
+        ordenServicioEntity.setOrdenId(util.generarIdLocal());
+        ordenServicioEntity.setServicioId(suscriptor.getServicioId());
+        ordenServicioEntity.setSuscriptorId(suscriptor.getSusucriptorId());
+        ordenServicioEntity.setTipoOrdenServicioId(Constantes.TIPO_ORDEN_SERVICIO_RECONEXION_SERVICIO);
+        ordenServicioEntity.setUsuarioId(sesion.getUsuarioId());
+        ordenServicioDao.registrarOrdenServicio(ordenServicioEntity);
             
 
         
