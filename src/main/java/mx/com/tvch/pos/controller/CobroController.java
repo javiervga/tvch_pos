@@ -272,10 +272,19 @@ public class CobroController {
                 //actualizar la fecha de pago en el contrato
                 contratoDao.actualizarFechaPagoContrato(suscriptor.getContratoId(), nuevaFechaPagoMySql);
                 
-                //si traia recargo (contrato en corte) actualizar el estatus a reconexion
+                
                 if(cobro.isSeCobraServicio() && cobro.isSeCobraRecargo() 
-                        && suscriptor.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE)
+                        && suscriptor.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
+                    
+                    //si traia recargo (contrato en corte) actualizar el estatus a reconexion
                     contratoDao.actualizarEstatus(suscriptor.getContratoId(), Constantes.ESTATUS_CONTRATO_RECONEXION);
+                    
+                }else if(suscriptor.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_RECONEXION){
+                    
+                    contratoDao.actualizarEstatus(suscriptor.getContratoId(), Constantes.ESTATUS_CONTRATO_ACTIVO);
+                    
+                }
+                
             }
 
             if(cobro.getOrdenesPago() != null && !cobro.getOrdenesPago().isEmpty()){
