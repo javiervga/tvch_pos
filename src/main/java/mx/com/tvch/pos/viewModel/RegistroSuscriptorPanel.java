@@ -120,6 +120,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                                         campoTelefono.getText().trim(),
                                         campoFolioContrato.getText().trim(),
                                         (ServicioEntity)comboServicios.getSelectedItem(),
+                                        (EstatusContrato)comboEstatus.getSelectedItem(),
                                         campoTvs.getText().trim(),
                                         (Mes)comboMeses.getSelectedItem(),
                                         (Integer)comboAnios.getSelectedItem(),
@@ -498,8 +499,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         etiquetaMes.setText("Mes Primer Pago");
         etiquetaAnio.setText("Año Primer Pago");        
         campoFolioContrato.setEnabled(true);
-        campoEstatus.setEnabled(false);
-        campoEstatus.setText("NUEVO");
+        comboEstatus.setEnabled(true);
         comboServicios.setEnabled(true);
         campoTvs.setEnabled(true);
         etiquetaMes.setText("Mes Primer Pago");
@@ -525,6 +525,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         cargarComboMeses();
         cargarComboAnios();
         cargarComboServicios();
+        cargarComboEstatusNuevoRegistro();
     }
     
     /**
@@ -564,9 +565,10 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
             
             //informacion del contrato
             campoFolioContrato.setEnabled(true);
-            campoEstatus.setEnabled(false);
-            campoEstatus.setText("NUEVO");
+            //comboEstatus.setEnabled(false);
+            
             comboServicios.setEnabled(true);
+            comboEstatus.setEnabled(true);
             campoTvs.setEnabled(true);
             etiquetaMes.setText("Mes Primer Pago");
             etiquetaAnio.setText("Año Primer Pago");
@@ -592,6 +594,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
             cargarComboMeses();
             cargarComboAnios();
             cargarComboServicios();
+            cargarComboEstatusNuevoRegistro();
              
         }
     }
@@ -665,24 +668,24 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
             comboTiposInternet.setSelectedIndex(1);
         comboTiposInternet.setEnabled(true);
         
-        campoEstatus.setEnabled(false);
-        
+        comboEstatus.setEnabled(false);
+        comboEstatus.removeAllItems();
         if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_NUEVO){
-            campoEstatus.setText("NUEVO");
+            comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_NUEVO, "NUEVO"));
         }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_PENDIENTE_INSTALAR){
-            campoEstatus.setText("PENDIENTE DE INSTALAR");
+            comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_PENDIENTE_INSTALAR, "PENDIENTE DE INSTALAR"));
         }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_ACTIVO){
-            campoEstatus.setText("ACTIVO");
+            comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_ACTIVO, "ACTIVO"));
         }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_CORTESIA){
-            campoEstatus.setText("CORTESIA");
+            comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_CORTESIA, "CORTESIA"));
         }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_CORTE){
-            campoEstatus.setText("CORTE");
+            comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_CORTE, "CORTE"));
         }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_RECONEXION){
-            campoEstatus.setText("RECONEXION");
+            comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_RECONEXION, "RECONEXION"));
         }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO){
-            campoEstatus.setText("CANCELADO PENDIENTE DE RETIRO");
+            comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO, "CANCELADO PENDIENTE DE RETIRO"));
         }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO){
-            campoEstatus.setText("CANCELADO RETIRADO");
+            comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO, "CANCELADO RETIRADO"));
         }
         
         campoFolioPlaca.setEnabled(true);
@@ -719,6 +722,15 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         areaReferencia.setLineWrap(true);
         areaReferencia.setRows(4);
         areaReferencia.setText(sesion.getContratoSeleccionado().getReferencia());
+    }
+    
+    /**
+     * 
+     */
+    private void cargarComboEstatusNuevoRegistro(){
+        comboEstatus.removeAllItems();
+        comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_PENDIENTE_INSTALAR, "PENDIENTE DE INSTALAR"));
+        comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_CORTESIA, "CORTESIA"));
     }
     
     /**
@@ -792,9 +804,10 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
      * 
      */
     private void deshbilitarCamposContrato(){
-        campoEstatus.setEnabled(false);
+        comboEstatus.setEnabled(false);
         campoFolioContrato.setEnabled(false);
         comboServicios.setEnabled(false);
+        comboEstatus.setEnabled(false);
         campoTvs.setEnabled(false);
         comboMeses.setEnabled(false);
         comboAnios.setEnabled(false);
@@ -869,7 +882,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         etiquetaNap = new javax.swing.JLabel();
         campoNap = new javax.swing.JTextField();
         etiquetaEstatus = new javax.swing.JLabel();
-        campoEstatus = new javax.swing.JTextField();
+        comboEstatus = new javax.swing.JComboBox<>();
         panelDatosContrato2 = new javax.swing.JPanel();
         etiquetaCalle = new javax.swing.JLabel();
         campoCalle = new javax.swing.JTextField();
@@ -1181,8 +1194,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         etiquetaEstatus.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         etiquetaEstatus.setText("Estatus:");
 
-        campoEstatus.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        campoEstatus.setToolTipText("Capture Folio del Nuevo Contrato");
+        comboEstatus.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
 
         javax.swing.GroupLayout panelDatosContrato1Layout = new javax.swing.GroupLayout(panelDatosContrato1);
         panelDatosContrato1.setLayout(panelDatosContrato1Layout);
@@ -1239,7 +1251,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                         .addGap(18, 18, 18)
                         .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(comboMeses, 0, 322, Short.MAX_VALUE)
-                            .addComponent(campoEstatus))))
+                            .addComponent(comboEstatus, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         panelDatosContrato1Layout.setVerticalGroup(
@@ -1258,7 +1270,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(etiquetaEstatus)
-                    .addComponent(campoEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(comboEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(etiquetaMes)
@@ -1520,7 +1532,6 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
     private javax.swing.JTextField campoColorPlaca;
     private javax.swing.JTextField campoEntreCalle1;
     private javax.swing.JTextField campoEntreCalle2;
-    private javax.swing.JTextField campoEstatus;
     private javax.swing.JTextField campoFolioContrato;
     private javax.swing.JTextField campoFolioPlaca;
     private javax.swing.JTextField campoNap;
@@ -1530,6 +1541,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
     private javax.swing.JTextField campoTelefono;
     private javax.swing.JTextField campoTvs;
     private javax.swing.JComboBox<Integer> comboAnios;
+    private javax.swing.JComboBox<EstatusContrato> comboEstatus;
     private javax.swing.JComboBox<Mes> comboMeses;
     private javax.swing.JComboBox<ServicioEntity> comboServicios;
     private javax.swing.JComboBox<TipoServicioInternet> comboTiposInternet;

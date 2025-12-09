@@ -24,6 +24,7 @@ import mx.com.tvch.pos.model.Mes;
 import mx.com.tvch.pos.model.TipoServicioInternet;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Utilerias;
+import mx.com.tvch.pos.viewModel.EstatusContrato;
 import mx.com.tvch.pos.viewModel.RegistroSuscriptorPanel;
 
 /**
@@ -171,6 +172,7 @@ public class RegistroSuscriptorController {
      * @param telefono
      * @param folioContrato
      * @param servicioEntity
+     * @param estatus
      * @param tvs
      * @param mesPago
      * @param anioPago
@@ -196,6 +198,7 @@ public class RegistroSuscriptorController {
             String telefono,
             String folioContrato,
             ServicioEntity servicioEntity,
+            EstatusContrato estatus,
             String tvs,
             Mes mesPago,
             Integer anioPago,
@@ -223,13 +226,13 @@ public class RegistroSuscriptorController {
             suscriptorEntity.setApellidoMaterno(utilerias.limpiarAcentos(apellidoMaterno.toUpperCase()));
             suscriptorEntity.setTelefono(telefono);
             suscriptorEntity.setUsuarioId(sesion.getUsuarioId());
-            suscriptorEntity.setEstatus(Constantes.ESTATUS_CONTRATO_ACTIVO);
+            suscriptorEntity.setEstatus(Constantes.ESTATUS_SUSCRIPTOR_ACTIVO);
         }
 
         ContratoEntity contratoEntity = new ContratoEntity();
         contratoEntity.setId(utilerias.generarIdSucursal(sesion.getSucursalId()));
         contratoEntity.setFolioContrato(Long.parseLong(folioContrato));
-        contratoEntity.setEstatus(Constantes.ESTATUS_CONTRATO_PENDIENTE_INSTALAR);
+        contratoEntity.setEstatus(estatus.getId());
         contratoEntity.setTvs(Integer.parseInt(tvs));
         contratoEntity.setFechaProximoPago(fechaPagoMySql);
         contratoEntity.setTipoServicioId(tipoServicioInternet.getTipoServicioInternetId());
