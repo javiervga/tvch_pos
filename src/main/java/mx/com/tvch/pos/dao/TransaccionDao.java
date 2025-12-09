@@ -95,6 +95,8 @@ public class TransaccionDao {
 "		    on d.id_domicilio = dxc.id_domicilio \n" +
 "		 where tc.id_tipo_cobro =");
             query.append(tipoCobroId);
+            query.append(" and sxc.estatus = 1");
+            query.append(" and d.estatus = 1");
             query.append(" and t.fecha_transaccion BETWEEN '");
             query.append(fechaInicio);
             query.append("' AND '");
