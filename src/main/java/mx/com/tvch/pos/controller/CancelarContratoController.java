@@ -80,7 +80,10 @@ public class CancelarContratoController {
      * 
      * @param suscriptor
      * @param detallesPago
-     * @return 
+     * @param motivoCancelacionId
+     * @param observaciones
+     * @return
+     * @throws Exception 
      */
     public Long cobrarCancelacion(
             ContratoxSuscriptorDetalleEntity suscriptor, 

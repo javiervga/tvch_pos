@@ -4,32 +4,17 @@
  */
 package mx.com.tvch.pos.viewModel;
 
-import java.awt.Image;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.controller.CancelarContratoController;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
-import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
 import mx.com.tvch.pos.entity.MotivoCancelacionEntity;
 import mx.com.tvch.pos.model.DetallePagoServicio;
 import mx.com.tvch.pos.model.TipoBusquedaCobro;
@@ -95,23 +80,43 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
                     //if(!campoObservaciones.getText().isEmpty()){
                         if(!areaObservaciones.getText().isEmpty()){
                             try {
-                            
-                                MotivoCancelacionEntity motivoCancelacionEntity = (MotivoCancelacionEntity) comboMotivosCancelacion.getModel().getSelectedItem();
-                            
-                                Long transaccionId = controller.cobrarCancelacion(suscriptorSeleccionado, listaDetallesPago, motivoCancelacionEntity.getMotivoId(), areaObservaciones.getText());
-                                try {
-                                    impresora.imprimirTicketCancelacion(transaccionId, listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal());
-                                } catch (Exception ex) {
-                                    StringWriter sw = new StringWriter();
-                                    PrintWriter pw = new PrintWriter(sw);
-                                    ex.printStackTrace(pw);
-                                    logger.error("Fallo al imprimir ticket de transaccion: \n" + sw.toString());
-                                    JOptionPane.showMessageDialog(cancelacionPanel, "El cobro se realizó correctamente pero ocurrió un error al imprimir su ticket. Si desea una rempresión vaya a sección de reimpresiones", "", JOptionPane.WARNING_MESSAGE);
-                                }
-                                System.out.println("transaccionId: " + transaccionId);
-                                limpiarPantalla();
                                 
-                                posFrame.cambiarPantalla(cancelacionPanel, VentanaEnum.CONSULTA_CONTRATOS);
+                                boolean seAceptoCancelacion = false;
+                                StringBuilder sb = new StringBuilder();
+                                sb.append("Se realizará la CANCELACION del contrato: ").append(suscriptorSeleccionado.getFolioContrato());
+                                sb.append("\nPor favor confirma para continuar \n");
+                                int input = JOptionPane.showConfirmDialog(null, sb.toString());
+                                if (input == 0) {
+                                    seAceptoCancelacion = true;
+                                }
+
+                                if(seAceptoCancelacion){
+                            
+                                    MotivoCancelacionEntity motivoCancelacionEntity = (MotivoCancelacionEntity) comboMotivosCancelacion.getModel().getSelectedItem();
+                            
+                                    Long transaccionId = controller.cobrarCancelacion(suscriptorSeleccionado, listaDetallesPago, motivoCancelacionEntity.getMotivoId(), areaObservaciones.getText());
+                                
+                                    JOptionPane.showMessageDialog(cancelacionPanel, "La cancelación se realizó correctamente. "
+                                        + "\n Se ha generado de forma automática su orden de Retiro de equipo, por favor verifique.", "", JOptionPane.INFORMATION_MESSAGE);
+                                    
+                                    try {
+                                        impresora.imprimirTicketCancelacion(transaccionId, listaDetallesPago, suscriptorSeleccionado, sesion.getSucursal());
+                                    } catch (Exception ex) {
+                                        StringWriter sw = new StringWriter();
+                                        PrintWriter pw = new PrintWriter(sw);
+                                        ex.printStackTrace(pw);
+                                        logger.error("Fallo al imprimir ticket de transaccion: \n" + sw.toString());
+                                        JOptionPane.showMessageDialog(cancelacionPanel, "El cobro se realizó correctamente pero ocurrió un error al imprimir su ticket. Si desea una rempresión vaya a sección de reimpresiones", "", JOptionPane.WARNING_MESSAGE);
+                                    }
+                                    
+                                    sesion.setTipoBusquedaAlmacenada(new TipoBusquedaCobro(Constantes.TIPO_BUSQUEDA_FOLIO_CONTRATO,"Por Contrato"));
+                                    sesion.setTextoBusquedaAlmacenada(String.valueOf(suscriptorSeleccionado.getFolioContrato()));
+                                    limpiarPantalla();
+
+                                    posFrame.cambiarPantalla(cancelacionPanel, VentanaEnum.CONSULTA_CONTRATOS_CANCELADO);
+                                }
+                                
+                                
                             } catch (Exception ex) {
                                 StringWriter sw = new StringWriter();
                                 PrintWriter pw = new PrintWriter(sw);

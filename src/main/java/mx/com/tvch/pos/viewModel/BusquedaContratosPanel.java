@@ -497,6 +497,35 @@ public class BusquedaContratosPanel extends javax.swing.JPanel {
 
     }
     
+    public void cargarDatosSesionCancelado() {
+        
+        etiquetaNumeroCaja.setText(sesion.getNumeroCaja().toString());
+        etiquetaUsuario.setText(sesion.getUsuario());
+        etiquetaSucursal.setText(sesion.getSucursal());
+
+        tablaSuscriptores.getColumnModel().getColumn(0).setPreferredWidth(130);
+        tablaSuscriptores.getColumnModel().getColumn(1).setPreferredWidth(120);
+        tablaSuscriptores.getColumnModel().getColumn(2).setPreferredWidth(310);
+        tablaSuscriptores.getColumnModel().getColumn(3).setPreferredWidth(160);
+        tablaSuscriptores.getColumnModel().getColumn(4).setPreferredWidth(380);
+        tablaSuscriptores.getColumnModel().getColumn(5).setPreferredWidth(100);
+        
+        ImageIcon imagen = new ImageIcon("src/main/resources/logo_grande.jpg");
+        Icon icono = new ImageIcon(imagen.getImage().getScaledInstance(/*etiquetaLogo.getWidth(), etiquetaLogo.getHeight()*/320, 130, Image.SCALE_DEFAULT));
+        etiquetaLogo.setIcon(icono);
+                
+        //validar si hay datos para refrescar la pantalla
+        if(suscriptorSeleccionado != null && sesion.getContratoSeleccionado() != null
+                && suscriptorSeleccionado.getContratoId() == sesion.getContratoSeleccionado().getContratoId()
+                && sesion.getTipoBusquedaAlmacenada() != null
+                && sesion.getTextoBusquedaAlmacenada() != null ){
+            checkCancelados.setSelected(true);
+            campoBusqueda.setText(sesion.getTextoBusquedaAlmacenada());
+            comboTiposBusqueda.setSelectedIndex(0);
+            buscarSuscriptor();
+        }
+ 
+    }
     
     /**
      * 

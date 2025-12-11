@@ -126,6 +126,10 @@ public class PosFrame extends javax.swing.JFrame {
                 this.add(busquedaContratosPanel);
                 busquedaContratosPanel.cargarDatosSesion();
                 break;
+            case CONSULTA_CONTRATOS_CANCELADO:
+                this.add(busquedaContratosPanel);
+                busquedaContratosPanel.cargarDatosSesionCancelado();
+                break;
             case CONSULTA_CONTRATOS_NUEVO_CONTRATO:
                 this.add(busquedaContratosPanel);
                 busquedaContratosPanel.cargarDatosSesion();
