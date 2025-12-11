@@ -345,6 +345,9 @@ public class CobroController {
                         }else if(orden.getTipoOrdenServicio() == Constantes.TIPO_ORDEN_SERVICIO_RECONEXION_SERVICIO){
                             //aca actualizar el estatus del contrato
                             contratoDao.actualizarEstatus(orden.getContratoId(), Constantes.ESTATUS_CONTRATO_ACTIVO);
+                        }else if(orden.getTipoOrdenServicio() == Constantes.TIPO_ORDEN_SERVICIO_RETIRO_EQUIPO_CANCELACION){
+                            //aca actualizar el estatus del contrato
+                            contratoDao.actualizarEstatus(orden.getContratoId(), Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO);
                         }
                     }
                     
