@@ -460,7 +460,7 @@ public class CobroController {
         entity.setCosto(orden.getCosto());
         entity.setDomicilioId(orden.getDomicilioId());
         entity.setEstatusId(Constantes.ESTATUS_ORDEN_PAGADA);
-        entity.setObservacionesRegistro(orden.getObservaciones());
+        entity.setObservacionesRegistro(util.limpiarAcentos(orden.getObservaciones()).toUpperCase());
         entity.setOrdenId(ordenId);
         entity.setServicioId(orden.getServicioId());
         entity.setSuscriptorId(orden.getSuscriptorId());
