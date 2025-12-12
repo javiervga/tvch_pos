@@ -131,7 +131,9 @@ public class CancelarContratoController {
             detalleCobroTransaccionEntity.setNumeroMeses(0);
             Long detalleCobroId = detalleCobroTransaccionDao.registrarDetalleTransaccion(detalleCobroTransaccionEntity);
             
-            contratoDao.actualizarEstatus(suscriptor.getContratoId(), Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO);
+            contratoDao.actualizarEstatus(suscriptor.getContratoId(), 
+                    Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO,
+                    Constantes.TIPO_ACTUALIZACION_CONTRATO_NO_ACTUALIZAR);
             
             /*try{
                 UpdateContratoEstatusCanceladoPosRequest updateContratoEstatusCanceladoPosRequest = new UpdateContratoEstatusCanceladoPosRequest();

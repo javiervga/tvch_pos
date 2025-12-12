@@ -241,8 +241,12 @@ public class ContratoDao {
      * 
      * @param contratoId
      * @param estatus 
+     * @param tipoActualizacionContrato 
      */
-    public void actualizarEstatus(Long contratoId, Long estatus) {
+    public void actualizarEstatus(
+            Long contratoId, 
+            Long estatus,
+            int tipoActualizacionContrato) {
 
         Connection conn = null;
         Statement stmt = null;
@@ -255,7 +259,7 @@ public class ContratoDao {
             StringBuilder query = new StringBuilder();
             query.append("update contratos set id_estatus = ");
             query.append(estatus).append(", ");
-            query.append("actualizacion = 1 ");
+            query.append("actualizacion = ").append(tipoActualizacionContrato);
             query.append(" where id_contrato = ");
             query.append(contratoId);
             stmt.executeUpdate(query.toString());
@@ -348,7 +352,7 @@ public class ContratoDao {
             StringBuilder query = new StringBuilder();
             query.append("update contratos set fecha_proximo_pago = '");
             query.append(fechaPago);
-            query.append("', actualizacion = 1  where id_contrato = ");
+            query.append("'  where id_contrato = ");
             query.append(contratoId);
             stmt.executeUpdate(query.toString());
 

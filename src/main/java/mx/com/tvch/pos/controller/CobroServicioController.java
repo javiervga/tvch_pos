@@ -98,9 +98,9 @@ public class CobroServicioController {
             
             //paso 1 -> actualizar el estatus del contrato en local
             if(seDebeGenerarorden)
-                contratoDao.actualizarEstatus(suscriptorSeleccionado.getContratoId(), Constantes.ESTATUS_CONTRATO_RECONEXION);
+                contratoDao.actualizarEstatus(suscriptorSeleccionado.getContratoId(), Constantes.ESTATUS_CONTRATO_RECONEXION, Constantes.TIPO_ACTUALIZACION_CONTRATO_INFORMACION);
             else
-                contratoDao.actualizarEstatus(suscriptorSeleccionado.getContratoId(), Constantes.ESTATUS_CONTRATO_ACTIVO);
+                contratoDao.actualizarEstatus(suscriptorSeleccionado.getContratoId(), Constantes.ESTATUS_CONTRATO_ACTIVO, Constantes.TIPO_ACTUALIZACION_CONTRATO_INFORMACION_Y_ESTATUS);
         
             //paso 2-> enviar peticion de actualizacion de estaus y posible generacion de orden a central
             UpdateContratoEstatusReconexionPosRequest reconexionPosRequest = new UpdateContratoEstatusReconexionPosRequest();

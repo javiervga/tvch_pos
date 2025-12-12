@@ -251,18 +251,75 @@ public class CobrosPanel extends javax.swing.JPanel {
                             if (input == 0) {
                                 seAceptoPago = true;
                             }
+                            
+                            //si el contrato se encuentra en corte preguntar si se genera orden de reconexion
+                            //en caso de que si, el contrato pasara a reconexion, en caso de que no, pasara a activo
+                            boolean sePasaReconexion = true;
+                            if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
+                                
+                                //ver si en los cobros viene orden de reconexion
+                                //en caso de que si venga ya no se muestra el popup de eleccion de estatus
+                                if(cobroCapturado.getOrdenesPago() == null ||
+                                        !cobroCapturado.getOrdenesPago()
+                                            .stream().filter(o -> o.getTipoOrden() == Constantes.TIPO_ORDEN_SERVICIO && 
+                                                o.getTipoOrdenServicio() == Constantes.TIPO_ORDEN_SERVICIO_RECONEXION_SERVICIO)
+                                            .findAny()
+                                            .isPresent()){
+                                    
+                                    Object[] options = {"RECONEXION", "ACTIVO"};
+
+                                    StringBuilder sbReconexion = new StringBuilder();
+                                    sbReconexion.append("El contrato se encuentra actualmente en CORTE \n");
+                                    sbReconexion.append("\nIndique el estatus al cual pasará el contrato. ");
+
+                                    int result = JOptionPane.showOptionDialog(
+                                        cobroPanel,
+                                        sbReconexion.toString(),
+                                        "ELECCION DE NUEVO ESTATUS",
+                                        JOptionPane.YES_NO_OPTION,
+                                        JOptionPane.QUESTION_MESSAGE,
+                                        null,
+                                        options,
+                                        options[0] 
+                                    );
+
+
+                                    //int inputReconexion = JOptionPane.showConfirmDialog(null, sbReconexion.toString());
+                                    if (result == 0) {
+                                        sePasaReconexion = true;
+                                    }else{
+                                        sePasaReconexion = false;
+                                    }
+                                        
+                                    
+                                }
+                                    
+                            }
 
                             if(seAceptoPago){
 
-                                transaccionId = controller.cobrarServicio(suscriptorSeleccionado, cobroCapturado);
+                                transaccionId = controller.cobrarServicio(suscriptorSeleccionado, cobroCapturado, sePasaReconexion);
                                 System.out.println("transaccionId: " + transaccionId);
                                 
-                                if(cobroCapturado.isSeCobraServicio() && cobroCapturado.isSeCobraRecargo() 
-                                    && suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
+                                if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
+                                    //if(cobroCapturado.isSeCobraServicio() && cobroCapturado.isSeCobraRecargo() &&
+                                      //      sePasaReconexion){
+                                        JOptionPane.showMessageDialog(cobroPanel, "El cobro se realizó correctamente y el estatus de su contrato "
+                                            + "ha sido actualizado. \n"
+                                            + "Por favor verifique.", "", JOptionPane.INFORMATION_MESSAGE);
+                                    //}else{
+                                      //  JOptionPane.showMessageDialog(cobroPanel, "El cobro se realizó correctamente y el estatus de su contrato "
+                                        //    + "ha sido actualizado a ACTIVO \n"
+                                          //  + "Por favor verifique.", "", JOptionPane.INFORMATION_MESSAGE);
+                                    //}
+                                }
+                                
+                                /*if(cobroCapturado.isSeCobraServicio() && cobroCapturado.isSeCobraRecargo() 
+                                    && suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE ){
                                     JOptionPane.showMessageDialog(cobroPanel, "El cobro se realizó correctamente y el estatus de su contrato "
                                             + "ha sido actualizado a RECONEXION \n"
                                             + "Por favor verifique.", "", JOptionPane.WARNING_MESSAGE);
-                                }
+                                }*/
 
                                 try {
                                     impresora.imprimirTicketServicio(transaccionId, cobroCapturado, suscriptorSeleccionado, sesion.getSucursal()/*, numeroMeses*/);

@@ -44,7 +44,7 @@ public class Constantes {
     public static final int ESTATUS_ACTIVO = 1;
     public static final int ESTATUS_INACTIVO = 0;
     
-    public static final int TIPO_ACTUALIZACION_NO_ACTUALIZAR = 0;
+    public static final int TIPO_ACTUALIZACION_CONTRATO_NO_ACTUALIZAR = 0;
     public static final int TIPO_ACTUALIZACION_CONTRATO_INFORMACION = 1;
     public static final int TIPO_ACTUALIZACION_CONTRATO_INFORMACION_Y_ESTATUS = 2;
     

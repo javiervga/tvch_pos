@@ -128,7 +128,10 @@ public class CobroController {
         contratoDao.actualizarFechaPagoContrato(suscriptor.getContratoId(), nuevaFechaPagoMySql);
         
         //despues se actualiza el estatus del contrato a activo
-        contratoDao.actualizarEstatus(suscriptor.getContratoId(), Constantes.ESTATUS_CONTRATO_ACTIVO);
+        contratoDao.actualizarEstatus(
+                suscriptor.getContratoId(), 
+                Constantes.ESTATUS_CONTRATO_ACTIVO, 
+                Constantes.TIPO_ACTUALIZACION_CONTRATO_NO_ACTUALIZAR);
         
         //se genera un registro de la recuperacion
         RecuperacionContratoEntity entity = new RecuperacionContratoEntity();
@@ -178,10 +181,11 @@ public class CobroController {
      * 
      * @param suscriptor
      * @param cobro
+     * @param sePasaReconexion
      * @return
      * @throws Exception 
      */
-    public Long cobrarServicio(ContratoxSuscriptorDetalleEntity suscriptor, CobroServicio cobro) throws Exception {
+    public Long cobrarServicio(ContratoxSuscriptorDetalleEntity suscriptor, CobroServicio cobro, boolean sePasaReconexion) throws Exception {
 
         Long transaccionId = null;
         Integer numeroMeses = cobro.getMesesPagados();
@@ -272,16 +276,35 @@ public class CobroController {
                 //actualizar la fecha de pago en el contrato
                 contratoDao.actualizarFechaPagoContrato(suscriptor.getContratoId(), nuevaFechaPagoMySql);
                 
-                
+                //validar el estatus del contrato
                 if(cobro.isSeCobraServicio() && cobro.isSeCobraRecargo() 
                         && suscriptor.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE){
                     
-                    //si traia recargo (contrato en corte) actualizar el estatus a reconexion
-                    contratoDao.actualizarEstatus(suscriptor.getContratoId(), Constantes.ESTATUS_CONTRATO_RECONEXION);
-                    
+                    //actualizar el estatus a reconexion
+                    //y la bandera de actualizacion apagada, ya que el cambio de estatus en el server se hara cuando llegue la orden reconexion
+                    if(sePasaReconexion)
+                        contratoDao.actualizarEstatus(suscriptor.getContratoId(), 
+                                Constantes.ESTATUS_CONTRATO_RECONEXION,
+                                Constantes.TIPO_ACTUALIZACION_CONTRATO_NO_ACTUALIZAR);
+                    else{
+                        //actualizar contrato a activo
+                        //unico caso donde se manda bandera de actualiacion en 2
+                        //ya que al no generar y enviar orden de reconexion al server, el contrato no pasaria a activo
+                        //de esta forma con el valor en 2 se envia el estatus a actualizar en la sincronizacion del cron
+                        contratoDao.actualizarEstatus(
+                                suscriptor.getContratoId(), 
+                                Constantes.ESTATUS_CONTRATO_ACTIVO, 
+                                Constantes.TIPO_ACTUALIZACION_CONTRATO_INFORMACION_Y_ESTATUS);
+                    }
+                        
                 }else if(suscriptor.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_RECONEXION){
-                    
-                    contratoDao.actualizarEstatus(suscriptor.getContratoId(), Constantes.ESTATUS_CONTRATO_ACTIVO);
+                    //se quita esta actualizacion ya que aunque pague, sino tiene orden reconexion se queda igual en reconexion
+                    //para actualizar a activo se implemento desde la edicion de contrato
+                    //actualizar el contrato a activo
+                    //bandera apagada ya que el estatus cambiara en el server a activo cuando llegue la transaccion
+                    //contratoDao.actualizarEstatus(suscriptor.getContratoId(), 
+                     //       Constantes.ESTATUS_CONTRATO_ACTIVO, 
+                       //     Constantes.TIPO_ACTUALIZACION_CONTRATO_NO_ACTUALIZAR);
                     
                 }
                 
@@ -330,7 +353,9 @@ public class CobroController {
                         
                         registrarOrdenInstalacion(orden, ordenId);
                         //actualizar el contrato a estatus activo despues de hacerle su orden
-                        contratoDao.actualizarEstatus(orden.getContratoId(), Constantes.ESTATUS_CONTRATO_ACTIVO);
+                        contratoDao.actualizarEstatus(orden.getContratoId(), 
+                                Constantes.ESTATUS_CONTRATO_ACTIVO,
+                                Constantes.TIPO_ACTUALIZACION_CONTRATO_NO_ACTUALIZAR);
                         
                     }else if(orden.getTipoOrden() == Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO){
                         
@@ -342,21 +367,30 @@ public class CobroController {
                       
                     }else if(orden.getTipoOrden() == Constantes.TIPO_ORDEN_SERVICIO){
                         
+                        //primero registrar la orden
                         registrarOrdenServicio(orden, ordenId);
+                        
+                        //despues dependiendo de la orden ir actualizando informacion del contrato en bd
                         if(orden.getTipoOrdenServicio() == Constantes.TIPO_ORDEN_SERVICIO_CAMBIO_PLAN){
                             registrarCambioServicio(orden, ordenId);
                             deshabilitarServiciosAnteriores(orden.getContratoId());
                             registrarNuevoServicioPorContrato(orden);
                         } else if(orden.getTipoOrdenServicio() == Constantes.TIPO_ORDEN_SERVICIO_TV_ADICIONAL){
-                            //aca actualizar las tvs
+                            //aca actualizar las tvs, la bandera de act del contrato se pone en 1 por default, esto es correcto
                             Integer nuevoNumeroTvs = orden.getTvs() + orden.getTvsAdicionales();
                             contratoDao.actualizarNumeroTvs(orden.getContratoId(), nuevoNumeroTvs);
                         }else if(orden.getTipoOrdenServicio() == Constantes.TIPO_ORDEN_SERVICIO_RECONEXION_SERVICIO){
-                            //aca actualizar el estatus del contrato
-                            contratoDao.actualizarEstatus(orden.getContratoId(), Constantes.ESTATUS_CONTRATO_ACTIVO);
+                            //aca actualizar el estatus del contrato a activo
+                            //cuando lelgue al server se actualiza el estatus del contrato a activo, entonces no prender bandera actualizacion
+                            contratoDao.actualizarEstatus(orden.getContratoId(), 
+                                    Constantes.ESTATUS_CONTRATO_ACTIVO,
+                                    Constantes.TIPO_ACTUALIZACION_CONTRATO_NO_ACTUALIZAR);
                         }else if(orden.getTipoOrdenServicio() == Constantes.TIPO_ORDEN_SERVICIO_RETIRO_EQUIPO_CANCELACION){
                             //aca actualizar el estatus del contrato
-                            contratoDao.actualizarEstatus(orden.getContratoId(), Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO);
+                            //en server se actualiza el estatus al llegar la cancelacion, no prender bandera
+                            contratoDao.actualizarEstatus(orden.getContratoId(), 
+                                    Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO,
+                                    Constantes.TIPO_ACTUALIZACION_CONTRATO_NO_ACTUALIZAR);
                         }
                     }
                     
