@@ -80,6 +80,7 @@ public class RegistroSuscriptorController {
      * @param apellidoMaterno
      * @param telefono
      * @param tvs
+     * @param estatusContratoId
      * @param tipoServicioInternet
      * @param folioPlaca
      * @param colorPlaca
@@ -92,6 +93,7 @@ public class RegistroSuscriptorController {
      * @param calle1
      * @param calle2
      * @param referencia 
+     * @param seActualizaEstatus 
      */
     public void actualizarInformacionContrato(
             ContratoxSuscriptorDetalleEntity entity,
@@ -100,6 +102,7 @@ public class RegistroSuscriptorController {
             String apellidoMaterno,
             String telefono,
             String tvs,
+            Long estatusContratoId,
             TipoServicioInternet tipoServicioInternet,
             String folioPlaca,
             String colorPlaca,
@@ -111,7 +114,8 @@ public class RegistroSuscriptorController {
             String ciudad,
             String calle1,
             String calle2,
-            String referencia){
+            String referencia,
+            boolean seActualizaEstatus){
         
         // actualizar suscriptor
         SuscriptorEntity suscriptorEntity = new SuscriptorEntity();
@@ -126,7 +130,11 @@ public class RegistroSuscriptorController {
         ContratoEntity contratoEntity = new ContratoEntity();
         contratoEntity.setId(entity.getContratoId());
         contratoEntity.setFolioContrato(entity.getFolioContrato());
-        contratoEntity.setEstatus(entity.getEstatusContratoId());
+        if(seActualizaEstatus) // solo de reconexion a activo y cancelado pandiente a cancelado retirado
+            contratoEntity.setEstatus(estatusContratoId);
+        else{
+            contratoEntity.setEstatus(entity.getEstatusContratoId());
+        }
         if(tvs != null)
             contratoEntity.setTvs(Integer.valueOf(tvs));
         //contratoEntity.setFechaProximoPago(entity.getFechaProximoPago());  //no se actualiza
@@ -158,7 +166,7 @@ public class RegistroSuscriptorController {
         domicilioEntity.setEstatus(entity.getEstatusDomicilioId());
 
         suscriptorDao.actualizarSuscriptor(suscriptorEntity);
-        contratoDao.actualizarContrato(contratoEntity);
+        contratoDao.actualizarContrato(contratoEntity, seActualizaEstatus);
         domicilioDao.actualizarDomicilio(domicilioEntity);
         
     }

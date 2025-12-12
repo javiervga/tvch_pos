@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.entity.ContratoEntity;
+import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Utilerias;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,11 +101,15 @@ public class ContratoDao {
     /**
      * 
      * @param entity 
+     * @param seActualizaEstatus 
      */
-    public void actualizarContrato(ContratoEntity entity) {
+    public void actualizarContrato(ContratoEntity entity, boolean seActualizaEstatus) {
 
         Connection conn = null;
         Statement stmt = null;
+        int actualizacion = Constantes.TIPO_ACTUALIZACION_CONTRATO_INFORMACION;
+        if(seActualizaEstatus)
+            actualizacion = Constantes.TIPO_ACTUALIZACION_CONTRATO_INFORMACION_Y_ESTATUS;
 
         try {
             DbConfig dbConfig = DbConfig.getdDbConfig();
@@ -137,8 +142,8 @@ public class ContratoDao {
                 query.append("nap = '").append(entity.getNap()).append("', ");
             else
                 query.append("nap = null, ");
-            query.append("actualizacion = 1 ");
-            query.append("where id_contrato = ").append(entity.getId());
+            query.append("actualizacion = ").append(actualizacion);
+            query.append(" where id_contrato = ").append(entity.getId());
             System.out.println("update contrato: "+query.toString());
             stmt.executeUpdate(query.toString());
             query.delete(0, query.length());

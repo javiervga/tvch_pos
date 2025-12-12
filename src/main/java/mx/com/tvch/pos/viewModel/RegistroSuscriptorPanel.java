@@ -198,11 +198,31 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                     
                     boolean seConfirmaActualizacion = false;
                     StringBuilder sb = new StringBuilder();
+                    //mensaje genérico
                     sb.append("Se va a actualizar el contrato ").append(campoFolioContrato.getText());
                     sb.append(" perteneciente al suscriptor ");
                     sb.append(campoNombre.getText()).append(" ");
                     sb.append(campoApellidoPaterno.getText()).append(" ");
                     sb.append(campoApellidoMaterno.getText());
+                    
+                    //validar si el estatus cambia
+                    boolean seActualizaEstatus = false;
+                    EstatusContrato estatusSeleccionado = (EstatusContrato) comboEstatus.getSelectedItem();
+                    if(sesion.getContratoSeleccionado().getEstatusContratoId() != estatusSeleccionado.getId()){
+                        if(sesion.getContratoSeleccionado().getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_RECONEXION && 
+                                estatusSeleccionado.getId() == Constantes.ESTATUS_CONTRATO_ACTIVO){
+                            //pasa de reconexion a activo
+                            sb.append(" y su Estatus cambiará de RECONEXIÓN a ACTIVO");
+                            seActualizaEstatus = true;
+                        } else if(sesion.getContratoSeleccionado().getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO && 
+                                estatusSeleccionado.getId() == Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO){
+                            //pasa de reconexion a activo
+                            sb.append(" y su Estatus cambiará de CANCELADO PENDIENTE DE RETIRO a CANCELADO RETIRADO");
+                            seActualizaEstatus = true;
+                        }
+                        
+                    }
+                    //finaliza el mnsaje con la pregunta
                     sb.append("\n¿Los datos son correctos?\n");
               
                     int input = JOptionPane.showConfirmDialog(null, sb.toString());
@@ -219,6 +239,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                                     campoApellidoMaterno.getText().trim(),
                                     campoTelefono.getText().trim(),
                                     campoTvs.getText().trim(),
+                                    estatusSeleccionado.getId(),
                                     (TipoServicioInternet)comboTiposInternet.getSelectedItem(),
                                     campoFolioPlaca.getText().trim(),
                                     campoColorPlaca.getText().trim(),
@@ -230,7 +251,8 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                                     campoCiudad.getText().trim(), 
                                     campoEntreCalle1.getText().trim(), 
                                     campoEntreCalle2.getText().trim(), 
-                                    areaReferencia.getText().trim());
+                                    areaReferencia.getText().trim(),
+                                    seActualizaEstatus);
                             
                         } catch (Exception ex) {
 
@@ -245,6 +267,9 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                         if(campoFolioPlaca.getText() == null || campoFolioPlaca.getText().trim().isEmpty())
                             campoFolioPlaca.setText(campoFolioContrato.getText());
                         }
+                    
+                    if(seActualizaEstatus)
+                        comboEstatus.setEnabled(false);
                     
                 }else{
                     
@@ -681,9 +706,13 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_CORTE){
             comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_CORTE, "CORTE"));
         }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_RECONEXION){
+            comboEstatus.setEnabled(true);
             comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_RECONEXION, "RECONEXION"));
+            comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_ACTIVO, "ACTIVO"));
         }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO){
+            comboEstatus.setEnabled(true);
             comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO, "CANCELADO PENDIENTE DE RETIRO"));
+            comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO, "CANCELADO RETIRADO"));
         }else if(sesion.getContratoSeleccionado().getEstatusContratoId().longValue() == Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO){
             comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_CANCELADO_RETIRADO, "CANCELADO RETIRADO"));
         }
