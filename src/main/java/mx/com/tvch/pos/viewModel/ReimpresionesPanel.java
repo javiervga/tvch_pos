@@ -328,6 +328,19 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                 if (e.getApellidoMaterno() != null) {
                     suscriptor.append(" ").append(e.getApellidoMaterno());
                 }
+                
+                /*double montoTotalTransaccion = list
+                        .stream()
+                        .filter(t -> t.getTransaccionId() == e.getTransaccionId())
+                        .mapToDouble(TransaccionTicketEntity::)*/
+                        
+                //if()
+                
+                String descTipoCObro = "";
+                if(e.getDescripcionOrden() != null && !e.getDescripcionOrden().isEmpty())
+                    descTipoCObro = e.getDescripcionOrden();
+                else
+                    descTipoCObro = e.getDescripcionTipoCobro();
 
                 model.addRow(new Object[]{
                     e.getTransaccionId(),
@@ -336,7 +349,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                     e.getFolioContrato() != null ? String.valueOf(e.getFolioContrato()) : "",
                     e.getFechaTransaccion(),
                     e.getMonto(),
-                    e.getDescripcionTipoCobro()
+                    descTipoCObro
                 });
             }
         }

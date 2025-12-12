@@ -63,8 +63,10 @@ public class TransaccionDao {
 
             StringBuilder query = new StringBuilder();
             
-            query.append("select t.fecha_transaccion, t.id_transaccion, t.id_transaccion_server, tc.id_tipo_cobro, tc.descripcion AS tipoCobro, c.id_contrato, c.folio_contrato, c.fecha_proximo_pago, \n" +
-"		       t.id_apertura_caja, s.nombre, s.apellido_paterno, s.apellido_materno, d.calle, d.numero_calle, d.colonia, ser.nombre as servicio, s.telefono, t.monto \n" +
+            query.append("select t.fecha_transaccion, t.id_transaccion, t.id_transaccion_server, tc.id_tipo_cobro, "
+                    + "tc.descripcion AS tipoCobro, c.id_contrato, c.folio_contrato, c.fecha_proximo_pago, \n" +
+"		       t.id_apertura_caja, s.nombre, s.apellido_paterno, s.apellido_materno, d.calle, d.numero_calle, "
+                    + "d.colonia, ser.nombre as servicio, s.telefono, t.monto, dct.descripcion_orden, dct.monto as montoDetalle \n" +
 "		  from transacciones t \n" +
 "		 inner\n" +
 "		  join detalle_cobro_transaccion dct \n" +
@@ -124,6 +126,8 @@ public class TransaccionDao {
                 entity.setTipoCobroId(rs.getInt("id_tipo_cobro"));
                 entity.setTransaccionId(rs.getLong("id_transaccion"));
                 entity.setTransaccionServerId(rs.getLong("id_transaccion_server"));
+                entity.setDescripcionOrden(rs.getString("descripcion_orden"));
+                entity.setMontoDetalle(rs.getDouble("montoDetalle"));
                 list.add(entity);
             }
 

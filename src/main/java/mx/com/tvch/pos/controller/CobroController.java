@@ -300,7 +300,16 @@ public class CobroController {
                     DetalleCobroTransaccionEntity detalleCobroTransaccionEntity = new DetalleCobroTransaccionEntity();
                     detalleCobroTransaccionEntity.setMonto(orden.getCosto());// monto sin descuentos ni promociones aplicadas
                     detalleCobroTransaccionEntity.setServicioId(orden.getServicioId());
-                    detalleCobroTransaccionEntity.setTipoCobroId(orden.getTipoOrden());
+                    if(orden.getTipoOrden() == Constantes.TIPO_ORDEN_INSTALACION){
+                        detalleCobroTransaccionEntity.setTipoCobroId(Constantes.TIPO_COBRO_ORDEN_INSTALACION);
+                    }else if(orden.getTipoOrden() == Constantes.TIPO_ORDEN_SERVICIO){
+                        detalleCobroTransaccionEntity.setTipoCobroId(Constantes.TIPO_COBRO_ORDEN_SERVICIO);
+                    }else if(orden.getTipoOrden() == Constantes.TIPO_ORDEN_CAMBIO_DOMICILIO){
+                        detalleCobroTransaccionEntity.setTipoCobroId(Constantes.TIPO_COBRO_ORDEN_CAMBIO_DOMICILIO);
+                    }else{
+                        detalleCobroTransaccionEntity.setTipoCobroId(orden.getTipoOrden());///no deberia caer nunca aqui
+                    }
+                    
                     detalleCobroTransaccionEntity.setTransaccionId(transaccionId);
                     detalleCobroTransaccionEntity.setOrdenId(ordenId);
                     

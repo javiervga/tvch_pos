@@ -48,6 +48,10 @@ public class TransaccionTicketEntity {
 
     private Double monto;
 
+    private String descripcionOrden;
+
+    private Double montoDetalle;
+
     public Long getTransaccionId() {
         return transaccionId;
     }
@@ -198,6 +202,22 @@ public class TransaccionTicketEntity {
 
     public void setMonto(Double monto) {
         this.monto = monto;
+    }
+
+    public String getDescripcionOrden() {
+        return descripcionOrden;
+    }
+
+    public void setDescripcionOrden(String descripcionOrden) {
+        this.descripcionOrden = descripcionOrden;
+    }
+
+    public Double getMontoDetalle() {
+        return montoDetalle;
+    }
+
+    public void setMontoDetalle(Double montoDetalle) {
+        this.montoDetalle = montoDetalle;
     }
 
 }
