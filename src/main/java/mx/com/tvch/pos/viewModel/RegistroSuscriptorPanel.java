@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.controller.RegistroSuscriptorController;
@@ -288,7 +289,91 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         };
         botonActualizar.addActionListener(botonActualizarActionListener);
         
-        
+        ActionListener botonCortesiaActionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                //primero validar que se va a hacer
+                boolean seAplicaCortesia = false;
+                if(sesion.getContratoSeleccionado().getEstatusContratoId() != Constantes.ESTATUS_CONTRATO_CORTESIA){
+                    //si el contrato en sesion no esta en cortesia actualmnte, quiere decir que es nueva cortesia y se prende bandera
+                    seAplicaCortesia = true;
+                }
+                
+                boolean seAceptaProceso = false;
+                StringBuilder sb = new StringBuilder();
+                if(seAplicaCortesia){
+                    sb.append("Se va a cambiar el estatus con folio:");
+                    sb.append(sesion.getContratoSeleccionado().getFolioContrato());
+                    sb.append(" a CORTESIA ");
+                }else{
+                    sb.append("Se va a retirar la cortesía del contrato con folio: ");
+                    sb.append(sesion.getContratoSeleccionado().getFolioContrato());
+                    sb.append(" y el estatus pasará a ACTIVO");
+                }
+                sb.append("\n ¿Los datos son corrrectos?");
+                
+                Object[] options = {"SI", "NO"};
+
+                        int input = JOptionPane.showOptionDialog(
+                            panel,
+                            sb.toString(),
+                            "CONFIRMACION DE CORTESIA",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            options[1] 
+                        );
+                
+                if (input == 0) {
+                    seAceptaProceso = true;
+                }
+                
+                if(seAceptaProceso){
+                    
+                    try {
+                        
+                        controller.procesarCortesia(sesion.getContratoSeleccionado(), seAplicaCortesia);
+                        
+                        if(seAplicaCortesia){
+                            botonCortesia.setText("Eliminar Cortesía");
+                            cargarComboEstatusCortesia();
+                            JOptionPane.showMessageDialog(panel,"Su contrato "+sesion.getContratoSeleccionado().getFolioContrato()+" fue actualizado exitosamente"
+                                    + " a estatus CORTESIA",
+                                "", JOptionPane.INFORMATION_MESSAGE);
+                        }else{
+                            botonCortesia.setText("Aplicar Cortesía");
+                            cargarComboEstatusActivo();
+                            ajustarComboMeses(utilerias.obtenerMesEnCurso());
+                            ajustarComboAnios(LocalDate.now().getYear());
+                            JOptionPane.showMessageDialog(panel,"La cortesía fue retirada exitosamente y su contrato "+sesion.getContratoSeleccionado().getFolioContrato()
+                                    +" \n fue actualizado exitosamente a estatus ACTIVO",
+                                "", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                        
+                    } catch (Exception ex) {
+                        
+                        if(seAplicaCortesia){
+                            logger.error("Ocurrio error al procesar cortesia del contrato "+sesion.getContratoSeleccionado().getFolioContrato()+":"+ex.getMessage());
+                            JOptionPane.showMessageDialog(panel, 
+                                "Ocurrió un error al procesar cortesía del contrato: "+sesion.getContratoSeleccionado().getContratoId()
+                                        +" \n Por favor valide y reintente, en caso de persistir el problema contacte a soporte",
+                                "", JOptionPane.ERROR_MESSAGE);
+                        }else{
+                            logger.error("Ocurrio error al eliminar cortesia del contrato "+sesion.getContratoSeleccionado().getFolioContrato()+":"+ex.getMessage());
+                            JOptionPane.showMessageDialog(panel, 
+                                "Ocurrió un error al eliminar cortesía del contrato: "+sesion.getContratoSeleccionado().getContratoId()
+                                        +" \n Por favor valide y reintente, en caso de persistir el problema contacte a soporte",
+                                "", JOptionPane.ERROR_MESSAGE);
+                        }
+                        
+                    }
+                    
+                }
+            }
+        };
+        botonCortesia.addActionListener(botonCortesiaActionListener);
 
     }
     
@@ -513,6 +598,8 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         //botones
         botonRegistrar.setEnabled(true);
         botonActualizar.setEnabled(false);
+        botonCortesia.setEnabled(false);
+        botonCortesia.setText("Aplicar Cortesía");
         
         //datos del suscriptor
         campoNombre.setEnabled(true);
@@ -577,6 +664,8 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
             //botones
             botonRegistrar.setEnabled(true);
             botonActualizar.setEnabled(false);
+            botonCortesia.setEnabled(false);
+            botonCortesia.setText("Aplicar Cortesía");
             
             //informacion del suscriptor -> en este caso se pinta desde la sesion y se deshabulitan los campos
             campoNombre.setText(sesion.getContratoSeleccionado().getNombre());
@@ -641,6 +730,12 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         //botones
         botonRegistrar.setEnabled(false);
         botonActualizar.setEnabled(true);
+        botonCortesia.setEnabled(true);
+        if(sesion.getContratoSeleccionado().getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
+            botonCortesia.setText("Eliminar Cortesía");
+        }else{
+            botonCortesia.setText("Aplicar Cortesía");
+        }
         
         //informacion del suscriptor
         campoNombre.setEnabled(true);
@@ -765,6 +860,22 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
     /**
      * 
      */
+    private void cargarComboEstatusActivo(){
+        comboEstatus.removeAllItems();
+        comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_ACTIVO, "ACTIVO"));
+    }
+    
+    /**
+     * 
+     */
+    private void cargarComboEstatusCortesia(){
+        comboEstatus.removeAllItems();
+        comboEstatus.addItem(new EstatusContrato(Constantes.ESTATUS_CONTRATO_CORTESIA, "CORTESIA"));
+    }
+    
+    /**
+     * 
+     */
     private void cargarComboServicios(){
         
         List<ServicioEntity> servicios = servicioController.obtenerServicios();
@@ -792,6 +903,12 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         }
     }
     
+    private void ajustarComboAnios(int anio){
+       
+        comboAnios.addItem(anio);
+
+    }
+    
     /**
      * 
      */
@@ -807,6 +924,15 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         }else{
             comboMeses.setSelectedItem(utilerias.obtenerMesEnCurso());
         }
+    }
+    
+    private void ajustarComboMeses(Mes mesEnCurso){
+                
+        List<Mes> meses = utilerias.obtenerMeses();
+        meses.forEach(m -> comboMeses.addItem(m));
+        
+        comboMeses.setSelectedItem(utilerias.obtenerMesEnCurso());
+        
     }
 
     /**
@@ -929,6 +1055,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         areaReferencia = new javax.swing.JTextArea();
         botonActualizar = new javax.swing.JButton();
+        botonCortesia = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setMaximumSize(new java.awt.Dimension(1500, 800));
@@ -1491,31 +1618,41 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
             }
         });
 
+        botonCortesia.setBackground(java.awt.Color.orange);
+        botonCortesia.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        botonCortesia.setForeground(new java.awt.Color(255, 255, 255));
+        botonCortesia.setText("Aplicar Cortesía");
+        botonCortesia.setActionCommand("");
+        botonCortesia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonCortesiaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(panelIzquierdo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(panelSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(panelContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(botonCortesia, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(53, 53, 53)
                         .addComponent(botonActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(59, 59, 59)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(botonRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(51, 51, 51)
+                        .addGap(45, 45, 45)
                         .addComponent(botonRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(98, 98, 98))))
+                        .addGap(98, 98, 98))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(panelSuscriptor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(panelContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(panelHeader, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -1535,7 +1672,8 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(botonRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(botonRegistrar, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(botonActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addComponent(botonActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(botonCortesia, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -1547,10 +1685,15 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_botonActualizarActionPerformed
 
+    private void botonCortesiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCortesiaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_botonCortesiaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea areaReferencia;
     private javax.swing.JButton botonActualizar;
+    private javax.swing.JButton botonCortesia;
     private javax.swing.JButton botonRegistrar;
     private javax.swing.JButton botonRegresar;
     private javax.swing.JTextField campoApellidoMaterno;

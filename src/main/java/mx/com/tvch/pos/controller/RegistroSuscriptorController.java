@@ -4,6 +4,7 @@
  */
 package mx.com.tvch.pos.controller;
 
+import java.text.ParseException;
 import java.util.Date;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.dao.ContratoDao;
@@ -60,6 +61,40 @@ public class RegistroSuscriptorController {
         servicioPorContratoDao = ServicioPorContratoDao.getServicioPorContratoDao();
         sesion = Sesion.getSesion();
         utilerias = Utilerias.getUtilerias();
+    }
+    
+    /**
+     * 
+     * @param entity 
+     * @param seAplicaCortesia 
+     * @throws java.lang.Exception 
+     */
+    public void procesarCortesia(
+            ContratoxSuscriptorDetalleEntity entity,
+            boolean seAplicaCortesia) throws Exception{
+        
+        //validar si se va a agregar o a retirar cortesia
+        if(seAplicaCortesia){
+            //nueva cortesia
+            //en este caso solo se cambia el estatus del contrato a cortesia 
+            //el tipo de actualizacion debe ser informacion y estatus ya que no hay servicio que realice la actualizacion en server
+            contratoDao.actualizarEstatus(
+                    entity.getContratoId(), 
+                    Constantes.ESTATUS_CONTRATO_CORTESIA, 
+                    Constantes.TIPO_ACTUALIZACION_CONTRATO_INFORMACION_Y_ESTATUS);
+        }else{
+            //eliminacion de cortesia
+            //en este caso ajsutar la fecha de pago al mes en curso
+            //posteriormente actualizar el estatus a activo
+            //el tipo de actualizacion debe ser informacion y estatus ya que no hay servicio que realice la actualizacion en server
+            Date nuevaFechaCorte = utilerias.obtenerFechaCorteDelMesEnCurso();
+            String nuevaFechaPagoMySql = utilerias.convertirDateTime2String(nuevaFechaCorte, Constantes.FORMATO_FECHA_MYSQL);
+            contratoDao.actualizarFechaPagoContrato(entity.getContratoId(), nuevaFechaPagoMySql);
+            contratoDao.actualizarEstatus(
+                    entity.getContratoId(), 
+                    Constantes.ESTATUS_CONTRATO_ACTIVO, 
+                    Constantes.TIPO_ACTUALIZACION_CONTRATO_INFORMACION_Y_ESTATUS);
+        }
     }
     
     /**

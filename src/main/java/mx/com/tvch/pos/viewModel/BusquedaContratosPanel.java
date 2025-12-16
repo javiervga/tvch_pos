@@ -407,9 +407,14 @@ public class BusquedaContratosPanel extends javax.swing.JPanel {
         campoDomicilio.setText(domicilio.toString());
         campoTelefono.setText(suscriptorSeleccionado.getTelefono());
         
-        if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_ACTIVO ||
+        if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
+            botonCobro.setEnabled(false);
+            botonEditarContrato.setEnabled(true);
+            botonNuevoContrato.setEnabled(true);
+            botonRecuperar.setEnabled(false);
+            botonCancelar.setEnabled(true);
+        } else if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_ACTIVO ||
                 suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTE ||
-                suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA ||
                 suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_NUEVO ||
                 suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_PENDIENTE_INSTALAR){
             botonCobro.setEnabled(true);
