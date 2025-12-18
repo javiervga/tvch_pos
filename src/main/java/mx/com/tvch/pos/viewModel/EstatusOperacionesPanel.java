@@ -145,7 +145,6 @@ public class EstatusOperacionesPanel extends javax.swing.JPanel {
         tipos.add(new TipoOperacion(Constantes.OPERACION_NUEVO_CONTRATO, "Nuevos Contratos"));
         tipos.add(new TipoOperacion(Constantes.OPERACION_COBRO_SERVICIO, "Cobros de mensualidades de servicio"));
         tipos.add(new TipoOperacion(Constantes.OPERACION_CANCELACION, "Cobros de cancelaciones"));
-        tipos.add(new TipoOperacion(Constantes.OPERACION_COBRO_PROVISIONAL, "Cobros provisionales"));
         tipos.add(new TipoOperacion(Constantes.OPERACION_CORTE, "Cortes de Caja"));
         tipos.add(new TipoOperacion(Constantes.OPERACION_APERTURA, "Aperturas de Caja"));
         tipos.add(new TipoOperacion(Constantes.OPERACION_INGRESO, "Ingresos a caja"));

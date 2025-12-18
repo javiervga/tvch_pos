@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import mx.com.tvch.pos.entity.AperturaCajaEntity;
 import mx.com.tvch.pos.entity.CancelacionEntity;
-import mx.com.tvch.pos.entity.CobroProvisionalEntity;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.entity.CorteCajaEntity;
 import mx.com.tvch.pos.entity.IngresoCajaEntity;
@@ -121,23 +120,6 @@ public class PosMapper {
         op.setFolio(String.valueOf(entity.getCancelacionId()));
         op.setTipo(tipo);
         op.setMonto(0.0);
-        return op;
-    }
-    
-    public List<OperacionPendiente> cobrosProvisionales2OperacionPendientes(List<CobroProvisionalEntity> entities, TipoOperacion tipo){
-        List<OperacionPendiente> list = new ArrayList<>();
-        entities.forEach(s -> list.add(cobroProvisional2OperacionPendiente(s, tipo)));
-        return list;
-    }
-    
-    private OperacionPendiente cobroProvisional2OperacionPendiente(CobroProvisionalEntity entity, TipoOperacion tipo){
-        OperacionPendiente op = new OperacionPendiente();
-        op.setDescripcion(entity.getObservaciones());
-        op.setEstatus("PENDIENTE");
-        op.setFecha(util.convertirDateTime2String(entity.getFecha(), Constantes.FORMATO_FECHA_HORA_WEB_SERVICE));
-        op.setFolio(String.valueOf(entity.getCobroId()));
-        op.setTipo(tipo);
-        op.setMonto(entity.getMonto());
         return op;
     }
     

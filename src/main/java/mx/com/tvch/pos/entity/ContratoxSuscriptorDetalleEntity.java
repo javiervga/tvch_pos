@@ -74,7 +74,7 @@ public class ContratoxSuscriptorDetalleEntity {
 
     private String calle2;
 
-    private Long estatusDomicilioId;
+    private Integer estatusDomicilioId;
 
     private String nap;
     
@@ -320,11 +320,11 @@ public class ContratoxSuscriptorDetalleEntity {
         this.calle2 = calle2;
     }
 
-    public Long getEstatusDomicilioId() {
+    public Integer getEstatusDomicilioId() {
         return estatusDomicilioId;
     }
 
-    public void setEstatusDomicilioId(Long estatusDomicilioId) {
+    public void setEstatusDomicilioId(Integer estatusDomicilioId) {
         this.estatusDomicilioId = estatusDomicilioId;
     }
 

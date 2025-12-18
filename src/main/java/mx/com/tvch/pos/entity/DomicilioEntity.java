@@ -28,7 +28,7 @@ public class DomicilioEntity {
 
     private String referencia;
 
-    private Long estatus;
+    private Integer estatus;
 
     public Long getId() {
         return id;
@@ -102,11 +102,11 @@ public class DomicilioEntity {
         this.referencia = referencia;
     }
 
-    public Long getEstatus() {
+    public Integer getEstatus() {
         return estatus;
     }
 
-    public void setEstatus(Long estatus) {
+    public void setEstatus(Integer estatus) {
         this.estatus = estatus;
     }
 

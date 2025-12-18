@@ -16,6 +16,7 @@ import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.entity.ContratoPorSuscriptorEntity;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
+import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
 import mx.com.tvch.pos.util.Constantes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,7 +130,7 @@ public class ContratoxSuscriptorDao {
                 entity.setCiudad(rs.getString("ciudad"));
                 entity.setCalle1(rs.getString("calle1"));
                 entity.setCalle2(rs.getString("calle2"));
-                entity.setEstatusDomicilioId(rs.getLong("estatus_domicilio"));
+                entity.setEstatusDomicilioId(rs.getInt("estatus_domicilio"));
                 entity.setNap(rs.getString("nap"));
                 
                 list.add(entity);
@@ -213,9 +214,9 @@ public class ContratoxSuscriptorDao {
      * @return
      * @throws Exception
      */
-    public List<ContratoxSuscriptorDetalleEntity> obtenerIdsContratoSuscriptor(Long contratoId) throws Exception {
+    public List<ContratoxSuscriptorEntity> obtenerIdsContratoSuscriptor(Long contratoId) throws Exception {
 
-        List<ContratoxSuscriptorDetalleEntity> list = new ArrayList<>();
+        List<ContratoxSuscriptorEntity> list = new ArrayList<>();
 
         Connection conn = null;
         Statement stmt = null;
@@ -232,9 +233,9 @@ public class ContratoxSuscriptorDao {
 
             ResultSet rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
-                ContratoxSuscriptorDetalleEntity entity = new ContratoxSuscriptorDetalleEntity();
+                ContratoxSuscriptorEntity entity = new ContratoxSuscriptorEntity();
                 entity.setContratoId(rs.getLong("id_contrato"));
-                entity.setSusucriptorId(rs.getLong("id_suscriptor"));
+                entity.setSuscriptorId(rs.getLong("id_suscriptor"));
                 list.add(entity);
             }
 
@@ -334,7 +335,7 @@ public class ContratoxSuscriptorDao {
                 entity.setCiudad(rs.getString("ciudad"));
                 entity.setCalle1(rs.getString("calle1"));
                 entity.setCalle2(rs.getString("calle2"));
-                entity.setEstatusDomicilioId(rs.getLong("estatus_domicilio"));
+                entity.setEstatusDomicilioId(rs.getInt("estatus_domicilio"));
                 entity.setNap(rs.getString("nap"));
                 
                 list.add(entity);

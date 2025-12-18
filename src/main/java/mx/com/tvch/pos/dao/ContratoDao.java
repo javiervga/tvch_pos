@@ -379,5 +379,81 @@ public class ContratoDao {
         }
 
     }
+    
+    /**
+     * 
+     * @return
+     * @throws Exception 
+     */
+    public ContratoEntity obtenerContrato(Long contratoId) throws Exception{
+
+        Long contratoExistente = null;
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("select id_contrato , id_contrato_server , folio_contrato, id_estatus , tvs_contratadas, fecha_proximo_pago, ");
+            query.append("id_tipo_servicio , folio_placa, color_placa, onu, fecha_registro, dia_primer_pago, mes_primer_pago, ");
+            query.append("anio_primer_pago, nap, id_usuario, numero_caja, actualizacion " );
+            query.append("from contratos WHERE id_contrato = ").append(contratoId);
+            query.append(" order by id_contrato asc");
+            
+            ContratoEntity entity = null;
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                entity = new ContratoEntity();
+                entity.setId(rs.getLong("id_contrato"));
+                entity.setServerId(rs.getLong("id_contrato_server"));
+                entity.setFolioContrato(rs.getLong("folio_contrato"));
+                entity.setEstatus(rs.getLong("id_estatus"));
+                entity.setTvs(rs.getInt("tvs_contratadas"));
+                entity.setFechaProximoPago(rs.getString("fecha_proximo_pago"));
+                entity.setTipoServicioId(rs.getLong("id_tipo_servicio"));
+                entity.setFolioPlaca(rs.getLong("folio_placa"));
+                entity.setColorPlaca(rs.getString("color_placa"));
+                entity.setOnu(rs.getString("onu"));
+                entity.setFechaRegistro(rs.getString("fecha_registro"));
+                entity.setPrimerDiaPago(rs.getInt("dia_primer_pago"));
+                entity.setPrimerMesPago(rs.getInt("mes_primer_pago"));
+                entity.setPrimerAnioPago(rs.getInt("anio_primer_pago"));
+                entity.setNap(rs.getString("nap"));
+                entity.setUsuarioId(rs.getLong("id_usuario"));
+                entity.setNumeroCaja(rs.getInt("numero_caja"));
+                //entity.setActualizacion(rs.getInt("actualizacion"));
+                break;
+            }
+            
+            return entity;
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar id de contrato en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+    }
 
 }

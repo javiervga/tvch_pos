@@ -461,7 +461,7 @@ public class CobroController {
         entity.setCalle2(orden.getCalle2().toUpperCase());
         entity.setCiudad(orden.getCiudad().toUpperCase());
         entity.setColonia(orden.getColonia().toUpperCase());
-        entity.setEstatus(1L);
+        entity.setEstatus(Constantes.ESTATUS_DOMICILIO_CONTRATO_ACTIVO);
         entity.setId(domicilioId);
         entity.setNumeroCalle(orden.getNumeroCalle().toUpperCase());
         entity.setReferencia(orden.getReferencia().toUpperCase());

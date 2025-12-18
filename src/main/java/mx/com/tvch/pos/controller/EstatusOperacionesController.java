@@ -9,7 +9,6 @@ import java.util.List;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.dao.AperturaCajaDao;
 import mx.com.tvch.pos.dao.CancelacionDao;
-import mx.com.tvch.pos.dao.CobroProvisionalDao;
 import mx.com.tvch.pos.dao.ContratoDao;
 import mx.com.tvch.pos.dao.ContratoxSuscriptorDao;
 import mx.com.tvch.pos.dao.CorteCajaDao;
@@ -44,7 +43,6 @@ public class EstatusOperacionesController {
     private final IngresoCajaDao ingresoCajaDao;
     private final SalidaExtraordinariaDao salidaExtraordinariaDao;
     private final CancelacionDao cancelacionDao;
-    private final CobroProvisionalDao cobroProvisionalDao;
     private final Sesion sesion;
     private final Utilerias util;
     private final PosMapper mapper;
@@ -69,7 +67,6 @@ public class EstatusOperacionesController {
         ingresoCajaDao = IngresoCajaDao.getIngresoCajaDao();
         salidaExtraordinariaDao = SalidaExtraordinariaDao.getSalidaExtraordinariaDao();
         cancelacionDao = CancelacionDao.getCancelacionDao();
-        cobroProvisionalDao = CobroProvisionalDao.getCobroProvisionalDao();
         sesion = Sesion.getSesion();
         util = Utilerias.getUtilerias();
         mapper = PosMapper.getPosMapper();
@@ -91,8 +88,6 @@ public class EstatusOperacionesController {
                 return mapper.transacciones2OperacionPendientes(transaccionDao.obtenerTransacciones(), tipo);
             case Constantes.OPERACION_CANCELACION:
                 return mapper.cancelaciones2OperacionPendientes(cancelacionDao.obtenerCancelaciones(), tipo);
-            case Constantes.OPERACION_COBRO_PROVISIONAL:
-                return mapper.cobrosProvisionales2OperacionPendientes(cobroProvisionalDao.obtenerCobrosProvisionales(), tipo);
             case Constantes.OPERACION_CORTE:
                 return mapper.cortes2OperacionPendientes(corteCajaDao.obtenerCortesCaja(), tipo);
             case Constantes.OPERACION_APERTURA:

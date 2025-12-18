@@ -217,5 +217,74 @@ public class DomicilioDao {
         return existeDomicilio;
 
     }
+    
+    /**
+     * 
+     * @param domicilioId
+     * @return
+     * @throws Exception 
+     */
+    public DomicilioEntity consultarDomicilio(Long domicilioId) throws Exception{
+        
+        DomicilioEntity domicilioEntity = null;
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("select id_domicilio , id_domicilio_server , colonia, calle , numero_calle, ciudad, ");
+            query.append("calle1 , calle2, referencia , estatus ");
+            query.append("from domicilios WHERE id_domicilio = ");
+            query.append(domicilioId);
+            query.append(" order by id_domicilio asc");
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                domicilioEntity = new DomicilioEntity();
+                domicilioEntity.setId(rs.getLong("id_domicilio"));
+                domicilioEntity.setIdServer(rs.getLong("id_domicilio_server"));
+                domicilioEntity.setColonia(rs.getString("colonia"));
+                domicilioEntity.setCalle(rs.getString("calle"));
+                domicilioEntity.setNumeroCalle(rs.getString("numero_calle"));
+                domicilioEntity.setCiudad(rs.getString("ciudad"));
+                domicilioEntity.setCalle1(rs.getString("calle1"));
+                domicilioEntity.setCalle2(rs.getString("calle2"));
+                domicilioEntity.setReferencia(rs.getString("referencia"));
+                domicilioEntity.setEstatus(rs.getInt("estatus"));
+                break;
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar domicilio en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return domicilioEntity;
+        
+    }
 
 }

@@ -286,4 +286,72 @@ public class SuscriptorDao {
         
     }
     
+    /**
+     * 
+     * @param suscriptorId
+     * @return
+     * @throws Exception 
+     */
+    public SuscriptorEntity consultarSuscriptor(Long suscriptorId) throws Exception{
+        
+        SuscriptorEntity suscriptorEntity = null;
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("select id_suscriptor , id_suscriptor_server , nombre, apellido_paterno , apellido_materno, ");
+            query.append("telefono , fecha_registro, id_usuario , id_estatus ");
+            query.append("from suscriptores WHERE id_suscriptor = ");
+            query.append(suscriptorId);
+            query.append(" order by id_suscriptor asc");
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                suscriptorEntity = new SuscriptorEntity();
+                suscriptorEntity.setId(rs.getLong("id_suscriptor"));
+                suscriptorEntity.setServerId(rs.getLong("id_suscriptor_server"));
+                suscriptorEntity.setNombre(rs.getString("nombre"));
+                suscriptorEntity.setApellidoPaterno(rs.getString("apellido_paterno"));
+                suscriptorEntity.setApellidoMaterno(rs.getString("apellido_materno"));
+                suscriptorEntity.setTelefono(rs.getString("telefono"));
+                suscriptorEntity.setFechaRegistro(rs.getTimestamp("fecha_registro"));
+                suscriptorEntity.setUsuarioId(rs.getLong("id_usuario"));
+                suscriptorEntity.setEstatus(rs.getLong("id_estatus"));
+                break;
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar suscriptor en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return suscriptorEntity;
+        
+    }
+    
 }

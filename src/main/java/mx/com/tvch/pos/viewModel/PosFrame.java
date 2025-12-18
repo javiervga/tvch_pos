@@ -13,7 +13,6 @@ import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.util.VentanaEnum;
 import static mx.com.tvch.pos.util.VentanaEnum.APERTURA;
 import static mx.com.tvch.pos.util.VentanaEnum.CANCELACION_CONTRATO;
-import static mx.com.tvch.pos.util.VentanaEnum.COBRO_ORDEN;
 import static mx.com.tvch.pos.util.VentanaEnum.COBRO_SERVICIO;
 import static mx.com.tvch.pos.util.VentanaEnum.REIMPRESION;
 import static mx.com.tvch.pos.util.VentanaEnum.SALIDA;
@@ -38,11 +37,9 @@ public class PosFrame extends javax.swing.JFrame {
     private final SalidaExtraordinariaPanel salidaExtraordinariaPanel;
     private final IngresoCajaPanel ingresoCajaPanel;
     private final CobroServicioPanel cobroServicioPanel;
-    private final CobroOrdenPanel cobroOrdenPanel;
     private final CorteCajaPanel corteCajaPanel;
     private final ReimpresionesPanel reimpresionesPanel;
     private final CancelarContratoPanel cancelarContratoPanel;
-    private final CobroProvisionalPanel cobroProvisionalPanel;
     private final EstatusOperacionesPanel estatusOperacionesPanel;
     private final DbConfig dbConfig;
     private Sesion sesion;
@@ -65,12 +62,10 @@ public class PosFrame extends javax.swing.JFrame {
         salidaExtraordinariaPanel = SalidaExtraordinariaPanel.getSalidaCajaPanel(this);
         ingresoCajaPanel = IngresoCajaPanel.getIngresoCajaPanel(this);
         cobroServicioPanel = CobroServicioPanel.getCobroPanel(this);
-        cobroOrdenPanel = CobroOrdenPanel.getCobroOrdenPanel(this);
         loadingPanel = LoadingPanel.getLoadingPanel();
         corteCajaPanel = CorteCajaPanel.getCorteCajaPanel(this);
         this.reimpresionesPanel = ReimpresionesPanel.getReimpresionesPanel(this);
         cancelarContratoPanel = CancelarContratoPanel.getCobroPanel(this);
-        cobroProvisionalPanel = CobroProvisionalPanel.getCobroPanel(this);
         estatusOperacionesPanel = EstatusOperacionesPanel.getEstatusOperacionesPanel(this);
         dbConfig = DbConfig.getdDbConfig();
         sesion = Sesion.getSesion();
@@ -157,14 +152,6 @@ public class PosFrame extends javax.swing.JFrame {
             case COBRO_SERVICIO:
                 this.add(cobroServicioPanel);
                 cobroServicioPanel.cargarDatosSesion();
-                break;
-            case COBRO_ORDEN:
-                this.add(cobroOrdenPanel);
-                cobroOrdenPanel.cargarDatosSesion();
-                break;
-            case COBRO_PROVISIONAL:
-                this.add(cobroProvisionalPanel);
-                cobroProvisionalPanel.cargarDatosSesion();
                 break;
             case APERTURA:
                 this.add(aperturaCajaPanel);
