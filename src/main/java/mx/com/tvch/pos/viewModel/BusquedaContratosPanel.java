@@ -229,10 +229,42 @@ public class BusquedaContratosPanel extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(suscriptorSeleccionado != null){
-                    sesion.setTipoBusquedaAlmacenada((TipoBusquedaCobro) comboTiposBusqueda.getSelectedItem());
-                    sesion.setTextoBusquedaAlmacenada(campoBusqueda.getText());
-                    sesion.setContratoSeleccionado(suscriptorSeleccionado);
-                    posFrame.cambiarPantalla(contratosPanel, VentanaEnum.COBROS);
+                    
+                    boolean seAceptoCobro = true;
+                    if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
+                        
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("El contrato: ").append(suscriptorSeleccionado.getFolioContrato());
+                        sb.append(", tiene el estatus CORTESIA. \n Por favor verifique antes de intentar realizar un pago");
+                        sb.append("\n¿Desea continuar? \n");
+
+                        Object[] options = {"SI", "NO"};
+
+                        int result = JOptionPane.showOptionDialog(
+                            contratosPanel,
+                            sb.toString(),
+                            "CONFIRMACION DE COBRO A CORTESIA",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,
+                            options,
+                            options[1] 
+                        );
+
+                        if (result == 1) {
+                            seAceptoCobro = false;
+                        }
+                    }
+                    
+                    if(seAceptoCobro){
+                    
+                        sesion.setTipoBusquedaAlmacenada((TipoBusquedaCobro) comboTiposBusqueda.getSelectedItem());
+                        sesion.setTextoBusquedaAlmacenada(campoBusqueda.getText());
+                        sesion.setContratoSeleccionado(suscriptorSeleccionado);
+                        posFrame.cambiarPantalla(contratosPanel, VentanaEnum.COBROS);
+                    
+                    }
+                    
                 }else{
                     JOptionPane.showMessageDialog(contratosPanel, "Para editar un contrato o suscriptor existente, por favor seleccionelo de la lista.","", JOptionPane.WARNING_MESSAGE);
                 }
@@ -408,7 +440,7 @@ public class BusquedaContratosPanel extends javax.swing.JPanel {
         campoTelefono.setText(suscriptorSeleccionado.getTelefono());
         
         if(suscriptorSeleccionado.getEstatusContratoId() == Constantes.ESTATUS_CONTRATO_CORTESIA){
-            botonCobro.setEnabled(false);
+            botonCobro.setEnabled(true);
             botonEditarContrato.setEnabled(true);
             botonNuevoContrato.setEnabled(true);
             botonRecuperar.setEnabled(false);
