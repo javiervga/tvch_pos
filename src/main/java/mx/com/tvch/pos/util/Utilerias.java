@@ -93,9 +93,9 @@ public class Utilerias {
      */
     public Integer obtenerDiferenciaMeses(Calendar fechaCorte, Calendar fechaEnCurso) {
         LocalDate fechaInicio = LocalDate
-                .of(fechaCorte.get(Calendar.YEAR), fechaCorte.get(Calendar.MONTH), fechaCorte.get(Calendar.DAY_OF_MONTH));
+                .of(fechaCorte.get(Calendar.YEAR), fechaCorte.get(Calendar.MONTH)+1, fechaCorte.get(Calendar.DAY_OF_MONTH));
         LocalDate fechaFin = LocalDate
-                .of(fechaEnCurso.get(Calendar.YEAR), fechaEnCurso.get(Calendar.MONTH), fechaEnCurso.get(Calendar.DAY_OF_MONTH));
+                .of(fechaEnCurso.get(Calendar.YEAR), fechaEnCurso.get(Calendar.MONTH)+1, fechaEnCurso.get(Calendar.DAY_OF_MONTH));
 
         Period periodo = Period.between(fechaInicio, fechaFin);
         return periodo.getMonths();
