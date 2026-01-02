@@ -12,7 +12,6 @@ public enum VentanaEnum {
     
     LOGIN,
     MENU,
-    COBRO_SERVICIO,
     APERTURA,
     CORTE,
     BUSQUEDA,

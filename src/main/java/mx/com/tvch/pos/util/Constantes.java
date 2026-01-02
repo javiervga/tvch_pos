@@ -104,16 +104,16 @@ public class Constantes {
     // Propiedades
     public static final String TVCH_API_URL = "tvch.api.path.url";
     public static final String TVCH_API_LIST_SUSCRIPTORES = "tvch.api.path.suscriptores";
-    public static final String TVCH_API_LIST_ORDENES_INSTALACION = "tvch.api.path.ordenes.instalacion";
-    public static final String TVCH_API_LIST_ORDENES_INSTALACION_PROMOCIONES = "tvch.api.path.ordenes.instalacion.promociones";
-    public static final String TVCH_API_ORDENES_INSTALACION_UPDATE_PAGO = "tvch.api.path.ordenes.instalacion.pago";
-    public static final String TVCH_API_ORDENES_SERVICIO_UPDATE_PAGO = "tvch.api.path.ordenes.servicio.pago";
-    public static final String TVCH_API_ORDENES_CAMBIO_DOMICILIO_UPDATE_PAGO = "tvch.api.path.ordenes.cambio.domicilio.pago";
+    //public static final String TVCH_API_LIST_ORDENES_INSTALACION = "tvch.api.path.ordenes.instalacion";
+    //public static final String TVCH_API_LIST_ORDENES_INSTALACION_PROMOCIONES = "tvch.api.path.ordenes.instalacion.promociones";
+    //public static final String TVCH_API_ORDENES_INSTALACION_UPDATE_PAGO = "tvch.api.path.ordenes.instalacion.pago";
+    //public static final String TVCH_API_ORDENES_SERVICIO_UPDATE_PAGO = "tvch.api.path.ordenes.servicio.pago";
+    //public static final String TVCH_API_ORDENES_CAMBIO_DOMICILIO_UPDATE_PAGO = "tvch.api.path.ordenes.cambio.domicilio.pago";
     public static final String TVCH_API_LIST_TIPOS_DESCUENTO = "tvch.api.path.tipos.descuento";
-    public static final String TVCH_API_LIST_ORDENES_SERVICIO = "tvch.api.path.ordenes.servicio";
-    public static final String TVCH_API_LIST_ORDENES_CAMBIO_DOMICILIO = "tvch.api.path.ordenes.cambio.domicilio";
-    public static final String TVCH_API_CONTRATO_UPDATE_CANCELACION = "tvch.api.path.cancelacion.contrato";
-    public static final String TVCH_API_CONTRATO_UPDATE_RECONEXION = "tvch.api.path.reconexion.contrato";
+    //public static final String TVCH_API_LIST_ORDENES_SERVICIO = "tvch.api.path.ordenes.servicio";
+    //public static final String TVCH_API_LIST_ORDENES_CAMBIO_DOMICILIO = "tvch.api.path.ordenes.cambio.domicilio";
+    //public static final String TVCH_API_CONTRATO_UPDATE_CANCELACION = "tvch.api.path.cancelacion.contrato";
+    //public static final String TVCH_API_CONTRATO_UPDATE_RECONEXION = "tvch.api.path.reconexion.contrato";
     
     public static final String TVCH_API_LOGIN_URL = "tvch.api.login.url";
     public static final String TVCH_API_LIST_ZONAS = "tvch.api.zonas.url";

@@ -13,7 +13,6 @@ import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.util.VentanaEnum;
 import static mx.com.tvch.pos.util.VentanaEnum.APERTURA;
 import static mx.com.tvch.pos.util.VentanaEnum.CANCELACION_CONTRATO;
-import static mx.com.tvch.pos.util.VentanaEnum.COBRO_SERVICIO;
 import static mx.com.tvch.pos.util.VentanaEnum.REIMPRESION;
 import static mx.com.tvch.pos.util.VentanaEnum.SALIDA;
 import static mx.com.tvch.pos.util.VentanaEnum.CONSULTA_CONTRATOS;
@@ -36,7 +35,6 @@ public class PosFrame extends javax.swing.JFrame {
     private final SalidaCajaPanel salidaCajaPanel;
     private final SalidaExtraordinariaPanel salidaExtraordinariaPanel;
     private final IngresoCajaPanel ingresoCajaPanel;
-    private final CobroServicioPanel cobroServicioPanel;
     private final CorteCajaPanel corteCajaPanel;
     private final ReimpresionesPanel reimpresionesPanel;
     private final CancelarContratoPanel cancelarContratoPanel;
@@ -61,7 +59,6 @@ public class PosFrame extends javax.swing.JFrame {
         salidaCajaPanel = SalidaCajaPanel.getSalidaCajaPanel(this);
         salidaExtraordinariaPanel = SalidaExtraordinariaPanel.getSalidaCajaPanel(this);
         ingresoCajaPanel = IngresoCajaPanel.getIngresoCajaPanel(this);
-        cobroServicioPanel = CobroServicioPanel.getCobroPanel(this);
         loadingPanel = LoadingPanel.getLoadingPanel();
         corteCajaPanel = CorteCajaPanel.getCorteCajaPanel(this);
         this.reimpresionesPanel = ReimpresionesPanel.getReimpresionesPanel(this);
@@ -148,10 +145,6 @@ public class PosFrame extends javax.swing.JFrame {
             case MENU:
                 this.add(menuPanel);
                 menuPanel.cargarDatosSesion();
-                break;
-            case COBRO_SERVICIO:
-                this.add(cobroServicioPanel);
-                cobroServicioPanel.cargarDatosSesion();
                 break;
             case APERTURA:
                 this.add(aperturaCajaPanel);
