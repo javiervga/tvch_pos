@@ -51,6 +51,12 @@ public class Constantes {
     public static final long TIPO_PROMOCION_SERVICIO = 1;
     public static final long TIPO_PROMOCION_ORDEN_INSTALACION = 2;
     
+    //estatus de onus
+    public static final long ESTATUS_ONU_TODOS = 0;
+    public static final long ESTATUS_ONU_ASIGNADA = 1;
+    public static final long ESTATUS_ONU_DISPONIBLE = 2;
+    public static final long ESTATUS_ONU_INSERVIBLE = 3;
+    
     public static final long ESTATUS_ORDEN_NUEVA = 1;
     public static final long ESTATUS_ORDEN_PAGADA = 2;
     public static final long ESTATUS_ORDEN_AGENDADA = 3;

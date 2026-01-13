@@ -16,6 +16,7 @@ import static mx.com.tvch.pos.util.VentanaEnum.CANCELACION_CONTRATO;
 import static mx.com.tvch.pos.util.VentanaEnum.REIMPRESION;
 import static mx.com.tvch.pos.util.VentanaEnum.SALIDA;
 import static mx.com.tvch.pos.util.VentanaEnum.CONSULTA_CONTRATOS;
+import static mx.com.tvch.pos.util.VentanaEnum.ESTATUS_OPERACIONES;
 import static mx.com.tvch.pos.util.VentanaEnum.REGISTRO_CONTRATO;
 import static mx.com.tvch.pos.util.VentanaEnum.REGISTRO_SUSCRIPTOR;
 
@@ -39,6 +40,7 @@ public class PosFrame extends javax.swing.JFrame {
     private final ReimpresionesPanel reimpresionesPanel;
     private final CancelarContratoPanel cancelarContratoPanel;
     private final EstatusOperacionesPanel estatusOperacionesPanel;
+    private final OnusPanel onusPanel;
     private final DbConfig dbConfig;
     private Sesion sesion;
 
@@ -64,6 +66,7 @@ public class PosFrame extends javax.swing.JFrame {
         this.reimpresionesPanel = ReimpresionesPanel.getReimpresionesPanel(this);
         cancelarContratoPanel = CancelarContratoPanel.getCobroPanel(this);
         estatusOperacionesPanel = EstatusOperacionesPanel.getEstatusOperacionesPanel(this);
+        onusPanel = OnusPanel.getOnusPanel(this);
         dbConfig = DbConfig.getdDbConfig();
         sesion = Sesion.getSesion();
 
@@ -179,6 +182,10 @@ public class PosFrame extends javax.swing.JFrame {
             case ESTATUS_OPERACIONES:
                 this.add(estatusOperacionesPanel);
                 estatusOperacionesPanel.cargarDatosSesion();
+                break;
+            case ONUS:
+                this.add(onusPanel);
+                onusPanel.cargarDatosSesion();
                 break;
             case LOGIN:
                 sesion = null;

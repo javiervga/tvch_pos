@@ -30,6 +30,7 @@ public enum VentanaEnum {
     REGISTRO_CONTRATO,
     EDICION_CONTRATO,
     RECUPERACION_CONTRATO,
+    ONUS,
     LOADING
     
 }

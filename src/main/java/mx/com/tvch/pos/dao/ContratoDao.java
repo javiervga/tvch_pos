@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.entity.ContratoEntity;
 import mx.com.tvch.pos.util.Constantes;
@@ -454,6 +456,132 @@ public class ContratoDao {
                 se.printStackTrace();
             }
         }
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws Exception 
+     */
+    public List<ContratoEntity> consultarContratosPorOnu(Long onuId) throws Exception{
+
+        List<ContratoEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("select id_contrato , id_contrato_server , folio_contrato, id_estatus , tvs_contratadas, fecha_proximo_pago, ");
+            query.append("id_tipo_servicio , folio_placa, color_placa, onu, id_onu, fecha_registro, dia_primer_pago, mes_primer_pago, ");
+            query.append("anio_primer_pago, nap, id_usuario, numero_caja, actualizacion " );
+            query.append("from contratos WHERE id_onu = ").append(onuId);
+            query.append(" order by id_contrato asc");
+            
+            ContratoEntity entity = null;
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                entity = new ContratoEntity();
+                entity.setId(rs.getLong("id_contrato"));
+                entity.setServerId(rs.getLong("id_contrato_server"));
+                entity.setFolioContrato(rs.getLong("folio_contrato"));
+                entity.setEstatus(rs.getLong("id_estatus"));
+                entity.setTvs(rs.getInt("tvs_contratadas"));
+                entity.setFechaProximoPago(rs.getString("fecha_proximo_pago"));
+                entity.setTipoServicioId(rs.getLong("id_tipo_servicio"));
+                entity.setFolioPlaca(rs.getLong("folio_placa"));
+                entity.setColorPlaca(rs.getString("color_placa"));
+                entity.setOnu(rs.getString("onu"));
+                entity.setOnuId(rs.getLong("id_onu"));
+                entity.setFechaRegistro(rs.getString("fecha_registro"));
+                entity.setPrimerDiaPago(rs.getInt("dia_primer_pago"));
+                entity.setPrimerMesPago(rs.getInt("mes_primer_pago"));
+                entity.setPrimerAnioPago(rs.getInt("anio_primer_pago"));
+                entity.setNap(rs.getString("nap"));
+                entity.setUsuarioId(rs.getLong("id_usuario"));
+                entity.setNumeroCaja(rs.getInt("numero_caja"));
+                list.add(entity);
+            }
+            
+            return list;
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar id de contrato en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+    }
+    
+    /**
+     * 
+     * @param contratoId
+     * @param onuId 
+     */
+    public void actualizarOnu(Long contratoId, Long onuId) {
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            query.append("update contratos set id_onu = ");
+            if(onuId != null)
+                query.append(onuId).append(", ");
+            else
+                query.append("null, ");
+            query.append("actualizacion = 1 ");
+            query.append(" where id_contrato = ");
+            query.append(contratoId);
+            stmt.executeUpdate(query.toString());
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al actualizar onu en contrato: " + sw.toString());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
     }
 
 }

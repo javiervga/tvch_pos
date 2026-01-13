@@ -4,11 +4,13 @@
  */
 package mx.com.tvch.pos.entity;
 
+import java.util.Date;
+
 /**
  *
  * @author fvega
  */
-public class ContratoEntity {
+public class ContratoJoinOnuEntity {
 
     private Long id;
     private Long serverId;
@@ -20,14 +22,21 @@ public class ContratoEntity {
     private Long folioPlaca;
     private String colorPlaca;
     private String onu;
-    private Long onuId;
-    private String fechaRegistro;
+    private Date fechaRegistro;
     private Integer primerDiaPago;
     private Integer primerMesPago;
     private Integer primerAnioPago;
     private String nap;
     private Long usuarioId;
     private Integer numeroCaja;
+    private Long onuId;
+    private Long onuServerId;
+    private String serie;
+    private Long estatusOnuId;
+    private Long sucursalOnuId;
+    private Date fechaRegistroOnu;
+    private Long usuarioIdOnu;
+    private Integer actualizacion;
 
     public Long getId() {
         return id;
@@ -101,11 +110,11 @@ public class ContratoEntity {
         this.colorPlaca = colorPlaca;
     }
 
-    public String getFechaRegistro() {
+    public Date getFechaRegistro() {
         return fechaRegistro;
     }
 
-    public void setFechaRegistro(String fechaRegistro) {
+    public void setFechaRegistro(Date fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }
 
@@ -123,14 +132,6 @@ public class ContratoEntity {
 
     public void setOnu(String onu) {
         this.onu = onu;
-    }
-
-    public Long getOnuId() {
-        return onuId;
-    }
-
-    public void setOnuId(Long onuId) {
-        this.onuId = onuId;
     }
 
     public Integer getPrimerDiaPago() {
@@ -171,6 +172,70 @@ public class ContratoEntity {
 
     public void setNumeroCaja(Integer numeroCaja) {
         this.numeroCaja = numeroCaja;
+    }
+
+    public Long getOnuId() {
+        return onuId;
+    }
+
+    public void setOnuId(Long onuId) {
+        this.onuId = onuId;
+    }
+
+    public Long getOnuServerId() {
+        return onuServerId;
+    }
+
+    public void setOnuServerId(Long onuServerId) {
+        this.onuServerId = onuServerId;
+    }
+
+    public String getSerie() {
+        return serie;
+    }
+
+    public void setSerie(String serie) {
+        this.serie = serie;
+    }
+
+    public Long getEstatusOnuId() {
+        return estatusOnuId;
+    }
+
+    public void setEstatusOnuId(Long estatusOnuId) {
+        this.estatusOnuId = estatusOnuId;
+    }
+
+    public Long getSucursalOnuId() {
+        return sucursalOnuId;
+    }
+
+    public void setSucursalOnuId(Long sucursalOnuId) {
+        this.sucursalOnuId = sucursalOnuId;
+    }
+
+    public Date getFechaRegistroOnu() {
+        return fechaRegistroOnu;
+    }
+
+    public void setFechaRegistroOnu(Date fechaRegistroOnu) {
+        this.fechaRegistroOnu = fechaRegistroOnu;
+    }
+
+    public Long getUsuarioIdOnu() {
+        return usuarioIdOnu;
+    }
+
+    public void setUsuarioIdOnu(Long usuarioIdOnu) {
+        this.usuarioIdOnu = usuarioIdOnu;
+    }
+
+    public Integer getActualizacion() {
+        return actualizacion;
+    }
+
+    public void setActualizacion(Integer actualizacion) {
+        this.actualizacion = actualizacion;
     }
 
 }

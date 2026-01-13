@@ -67,6 +67,8 @@ public class ContratoxSuscriptorDetalleEntity {
     private String colorPlaca;
 
     private String onu;
+    
+    private Long onuId;
 
     private String ciudad;
 
@@ -294,6 +296,14 @@ public class ContratoxSuscriptorDetalleEntity {
 
     public void setOnu(String onu) {
         this.onu = onu;
+    }
+
+    public Long getOnuId() {
+        return onuId;
+    }
+
+    public void setOnuId(Long onuId) {
+        this.onuId = onuId;
     }
 
     public String getCiudad() {
