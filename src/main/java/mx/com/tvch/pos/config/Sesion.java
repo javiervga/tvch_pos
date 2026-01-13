@@ -36,7 +36,7 @@ public class Sesion {
     private String telefonoSucursal;
 
     private Integer usaWhats;
-    
+
     private String telefonoSoporte;
 
     private String ticketLineaCiudadRfc;
@@ -52,14 +52,16 @@ public class Sesion {
     private Integer ticketSangriaColonia;
 
     private Integer ticketSangriaSucursal;
-    
+
     private ContratoxSuscriptorDetalleEntity contratoSeleccionado;
-    
+
     private TipoBusquedaCobro tipoBusquedaAlmacenada;
-    
+
     private String textoBusquedaAlmacenada;
-    
+
     private Long contratoRegistrado;
+
+    private String serieOnuRegistrada;
 
     public static Sesion getSesion() {
         if (sesion == null) {
@@ -250,6 +252,14 @@ public class Sesion {
 
     public void setContratoRegistrado(Long contratoRegistrado) {
         this.contratoRegistrado = contratoRegistrado;
+    }
+
+    public String getSerieOnuRegistrada() {
+        return serieOnuRegistrada;
+    }
+
+    public void setSerieOnuRegistrada(String serieOnuRegistrada) {
+        this.serieOnuRegistrada = serieOnuRegistrada;
     }
 
 }

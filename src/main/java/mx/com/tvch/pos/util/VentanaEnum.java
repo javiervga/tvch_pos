@@ -31,6 +31,8 @@ public enum VentanaEnum {
     EDICION_CONTRATO,
     RECUPERACION_CONTRATO,
     ONUS,
+    ONUS_MOSTRAR_NUEVA,
+    ONU_REGISTRO,
     LOADING
     
 }

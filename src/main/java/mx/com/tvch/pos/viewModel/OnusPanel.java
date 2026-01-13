@@ -264,7 +264,8 @@ public class OnusPanel extends javax.swing.JPanel {
                 //posFrame.cambiarPantalla(onusPanel, VentanaEnum.REGISTRO_SUSCRIPTOR);
                 
                 //enviar a pagina de registro de nueva Onu
-                
+                limpiarPantalla();
+                posFrame.cambiarPantalla(onusPanel, VentanaEnum.ONU_REGISTRO);
                 
             }
         };
@@ -715,6 +716,20 @@ public class OnusPanel extends javax.swing.JPanel {
         //inicializar todos los campos
         cargarComboEstatusOnu();
         limpiarPantalla();
+
+    }
+    
+    /**
+     * 
+     */
+    public void cargarDatosSesionNuevaOnu() {
+
+        cargarDatosSesion();
+        campoSerieOnuBusqueda.setText(sesion.getSerieOnuRegistrada());
+        buscarOnus();
+        
+        //al final limpiar variable
+        sesion.setSerieOnuRegistrada(null);
 
     }
     

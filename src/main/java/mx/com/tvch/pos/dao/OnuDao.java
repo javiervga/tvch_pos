@@ -142,10 +142,11 @@ public class OnuDao {
 
             StringBuilder query = new StringBuilder();
 
-            query.append("insert into onus (id_onu, serie, id_estatus, id_sucursal, actualizacion) values (");
+            query.append("insert into onus (id_onu, serie, id_estatus, id_usuario, id_sucursal, actualizacion) values (");
             query.append(entity.getOnuId()).append(",'");
             query.append(entity.getSerie()).append("',");
             query.append(entity.getEstatusId()).append(",");
+            query.append(entity.getUsuarioId()).append(",");
             query.append(entity.getSucursalId()).append(", 1)");
 
             System.out.println("query insert onu: " + query.toString());
@@ -199,6 +200,72 @@ public class OnuDao {
             query.append("from onus WHERE id_onu = ");
             query.append(onuId);
             query.append(" order by id_onu asc");
+
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                onuEntity = new OnuEntity();
+                onuEntity.setOnuId(rs.getLong("id_onu"));
+                onuEntity.setOnuServerId(rs.getLong("id_onu_server"));
+                onuEntity.setSerie(rs.getString("serie"));
+                onuEntity.setEstatusId(rs.getLong("id_estatus"));
+                onuEntity.setSucursalId(rs.getLong("id_sucursal"));
+                onuEntity.setFechaRegistro(rs.getDate("fecha_registro"));
+                onuEntity.setUsuarioId(rs.getLong("id_usuario"));
+                onuEntity.setActualizacion(rs.getInt("actualizacion"));
+                break;
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar onu en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return onuEntity;
+
+    }
+    
+    /**
+     * 
+     * @param serie
+     * @return
+     * @throws Exception 
+     */
+    public OnuEntity consultarOnuPorSerie(String serie) throws Exception {
+
+        OnuEntity onuEntity = null;
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+
+            query.append("select id_onu, id_onu_server, serie, id_estatus, id_sucursal, fecha_registro, id_usuario, actualizacion ");
+            query.append("from onus WHERE serie = '");
+            query.append(serie).append("' ");
+            query.append("order by id_onu asc");
 
             ResultSet rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
