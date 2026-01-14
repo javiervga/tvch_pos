@@ -447,9 +447,19 @@ public class OnusPanel extends javax.swing.JPanel {
                             
                         } catch (TvchException ex) {
                             JOptionPane.showMessageDialog(onusPanel, ex.getMessage(),"", JOptionPane.WARNING_MESSAGE);
+                            campoFolioContrato.setText("");
+                            campoSuscriptor.setText("");
+                            campoDireccion.setText("");
+                            campoEstatusContrato.setText("");
+                            contratoPorAsociarSeleccionado = null;
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(onusPanel, "Ocurrió un error al consultar contrato."
                                     + "\n Por favor reintente, en caso de que persista el error llame a Soporte Técnico","", JOptionPane.ERROR_MESSAGE);
+                            campoFolioContrato.setText("");
+                            campoSuscriptor.setText("");
+                            campoDireccion.setText("");
+                            campoEstatusContrato.setText("");
+                            contratoPorAsociarSeleccionado = null;
                         }
                     
                     }else{
