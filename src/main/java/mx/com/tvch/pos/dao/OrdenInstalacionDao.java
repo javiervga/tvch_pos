@@ -53,7 +53,7 @@ public class OrdenInstalacionDao {
 
             StringBuilder query = new StringBuilder();
             query.append("insert into ordenes_instalacion (id_orden_instalacion , id_contrato , id_usuario , id_suscriptor , observaciones_registro, "
-                    + "id_estatus , id_domicilio , tvs_contratadas, id_servicio , costo ) values (");
+                    + "id_estatus , id_domicilio , tvs_contratadas, id_servicio , costo, terminal_serie ) values (");
             query.append(entity.getOrdenId()).append(",");
             query.append(entity.getContratoId()).append(",");
             query.append(entity.getUsuarioId()).append(",");
@@ -63,8 +63,12 @@ public class OrdenInstalacionDao {
             query.append(entity.getDomicilioId()).append(",");
             query.append(entity.getTvs()).append(",");
             query.append(entity.getServicioId()).append(",");
-            query.append(entity.getCosto()).append(")");
-   
+            query.append(entity.getCosto()).append(",");
+            if(entity.getTerminalSerie() != null)
+                query.append("'").append(entity.getTerminalSerie()).append("')");
+            else
+                query.append("null)");
+                
             logger.info("query insert orden de instalacion: "+query);
             stmt.executeUpdate(query.toString());
             query.delete(0, query.length());

@@ -36,6 +36,8 @@ public class OrdenInstalacionEntity {
 
     private Double costo;
 
+    private String terminalSerie;
+
     public Long getOrdenId() {
         return ordenId;
     }
@@ -130,6 +132,14 @@ public class OrdenInstalacionEntity {
 
     public void setCosto(Double costo) {
         this.costo = costo;
+    }
+
+    public String getTerminalSerie() {
+        return terminalSerie;
+    }
+
+    public void setTerminalSerie(String terminalSerie) {
+        this.terminalSerie = terminalSerie;
     }
 
 }

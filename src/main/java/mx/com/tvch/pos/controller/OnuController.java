@@ -152,6 +152,17 @@ public class OnuController {
     
     /**
      * 
+     * @param onuId
+     * @return
+     * @throws TvchException
+     * @throws Exception 
+     */
+    public OnuEntity consultarOnu(Long onuId) throws TvchException, Exception {
+        return onuDao.consultarOnu(onuId);
+    }
+    
+    /**
+     * 
      * @param contratoId
      * @param esBusquedaPorFolio
      * @return

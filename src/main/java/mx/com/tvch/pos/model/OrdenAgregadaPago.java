@@ -56,6 +56,8 @@ public class OrdenAgregadaPago {
 
     private Long sucursalId;
 
+    private String serieOnu;
+
     public Integer getNumeroOrden() {
         return numeroOrden;
     }
@@ -238,6 +240,14 @@ public class OrdenAgregadaPago {
 
     public void setSucursalId(Long sucursalId) {
         this.sucursalId = sucursalId;
+    }
+
+    public String getSerieOnu() {
+        return serieOnu;
+    }
+
+    public void setSerieOnu(String serieOnu) {
+        this.serieOnu = serieOnu;
     }
 
 }

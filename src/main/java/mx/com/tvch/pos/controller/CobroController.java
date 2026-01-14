@@ -554,6 +554,7 @@ public class CobroController {
         entity.setSuscriptorId(orden.getSuscriptorId());
         entity.setTvs(orden.getTvs());
         entity.setUsuarioId(orden.getUsuarioId());
+        entity.setTerminalSerie(orden.getSerieOnu());
         ordenInstalacionDao.registrarOrdenInstalacion(entity);
     }
 

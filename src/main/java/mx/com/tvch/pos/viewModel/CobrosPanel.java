@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
@@ -22,8 +24,10 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.controller.CobroController;
+import mx.com.tvch.pos.controller.OnuController;
 import mx.com.tvch.pos.controller.ServicioController;
 import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
+import mx.com.tvch.pos.entity.OnuEntity;
 import mx.com.tvch.pos.entity.PromocionEntity;
 import mx.com.tvch.pos.entity.ServicioEntity;
 import mx.com.tvch.pos.entity.TipoDescuentoEntity;
@@ -52,6 +56,7 @@ public class CobrosPanel extends javax.swing.JPanel {
     private final Sesion sesion;
     private final CobroController controller;
     private final ServicioController servicioController;
+    private final OnuController onuController;
     private final Utilerias util;
     private final Impresora impresora;
 
@@ -85,6 +90,7 @@ public class CobrosPanel extends javax.swing.JPanel {
         sesion = Sesion.getSesion();
         controller = CobroController.getCobroController();
         servicioController = ServicioController.getServicioController();
+        onuController = OnuController.getOnuController();
         util = Utilerias.getUtilerias();
         impresora = Impresora.getImpresora();
         //suscriptoresConsultaList = new ArrayList<>();
@@ -762,6 +768,52 @@ public class CobrosPanel extends javax.swing.JPanel {
             }
             
             
+            
+        }else if(tipoOrden.getTipoOrdenId() == Constantes.TIPO_ORDEN_INSTALACION ){
+            
+            //validar si el contrato ya tiene registrada su onu
+            if(suscriptorSeleccionado.getOnuId() == null || suscriptorSeleccionado.getOnuId() == 0){
+                
+                //no tiene, se muestra alerta al usuario
+                StringBuilder sbReconexion = new StringBuilder();
+                sbReconexion.append("El contrato no cuenta aún con una Onu Registrada. \n");
+                sbReconexion.append("\n Elija alguna opción para continuar. ");
+
+                boolean seConfirmaOrden = false;
+                Object[] options = {"GENERAR ORDEN SIN ONU", "NO AGREGAR ORDEN"};
+                int result = JOptionPane.showOptionDialog(
+                    cobroPanel,
+                    sbReconexion.toString(),
+                    "CONFIRMACION DE ORDEN",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[1] 
+                );
+
+                if (result == 0) {
+                    seConfirmaOrden = true;
+                }
+
+                if(seConfirmaOrden){
+                    seAgregaOrden = true;
+                }else{
+                    seAgregaOrden = false;
+                }
+                
+            }else{
+                
+                try {
+                    //si tiene, se obtiene la onu ligada al contrato
+                    OnuEntity onuEntity = onuController.consultarOnu(suscriptorSeleccionado.getOnuId());
+                    ordenAgregadaPago.setSerieOnu(onuEntity.getSerie());
+                } catch (Exception ex) {
+                    logger.error("Error al consultar onu con id: "+suscriptorSeleccionado.getOnuId());
+                    ex.printStackTrace();
+                }
+                
+            }
             
         }
         

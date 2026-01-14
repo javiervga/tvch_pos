@@ -59,7 +59,7 @@ public class ContratoxSuscriptorDao {
 
             query.append("SELECT c.id_contrato, id_contrato_server , c.folio_contrato, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_registro, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n"
                         + "               sus.apellido_paterno, sus.apellido_materno, sus.telefono, sus.id_estatus as estatus_suscriptor, d.id_domicilio, d.colonia, d.calle, d.ciudad, d.calle1, d.calle2, d.estatus as estatus_domicilio,\n"
-                        + "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio, c.id_tipo_servicio, c.folio_placa, c.color_placa, c.onu, c.nap\n"
+                        + "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio, c.id_tipo_servicio, c.folio_placa, c.color_placa, c.onu, id_onu, c.nap\n"
                         + "          FROM contratos c\n"
                         + "    INNER JOIN contratos_x_suscriptor cs\n"
                         + "            ON c.id_contrato = cs.id_contrato\n"
@@ -127,6 +127,7 @@ public class ContratoxSuscriptorDao {
                 entity.setFolioPlaca(rs.getLong("folio_placa"));
                 entity.setColorPlaca(rs.getString("color_placa"));
                 entity.setOnu(rs.getString("onu"));
+                entity.setOnuId(rs.getLong("id_onu"));
                 entity.setCiudad(rs.getString("ciudad"));
                 entity.setCalle1(rs.getString("calle1"));
                 entity.setCalle2(rs.getString("calle2"));
@@ -464,6 +465,7 @@ public class ContratoxSuscriptorDao {
                 entity.setFolioPlaca(rs.getLong("folio_placa"));
                 entity.setColorPlaca(rs.getString("color_placa"));
                 entity.setOnu(rs.getString("onu"));
+                entity.setOnuId(rs.getLong("id_onu"));
                 entity.setCiudad(rs.getString("ciudad"));
                 entity.setCalle1(rs.getString("calle1"));
                 entity.setCalle2(rs.getString("calle2"));
@@ -532,7 +534,7 @@ public class ContratoxSuscriptorDao {
             case Constantes.TIPO_BUSQUEDA_FOLIO_CONTRATO:
                 builder.append("SELECT c.id_contrato, c.folio_contrato, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_registro, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n"
                         + "               sus.apellido_paterno, sus.apellido_materno, sus.telefono, sus.id_estatus as estatus_suscriptor, d.id_domicilio, d.colonia, d.calle, d.ciudad, d.calle1, d.calle2, d.estatus as estatus_domicilio,\n"
-                        + "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio, c.id_tipo_servicio, c.folio_placa, c.color_placa, c.onu, c.nap\n"
+                        + "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio, c.id_tipo_servicio, c.folio_placa, c.color_placa, c.onu, c.id_onu, c.nap\n"
                         + "          FROM contratos c\n"
                         + "    INNER JOIN contratos_x_suscriptor cs\n"
                         + "            ON c.id_contrato = cs.id_contrato\n"
@@ -556,7 +558,7 @@ public class ContratoxSuscriptorDao {
             case Constantes.TIPO_BUSQUEDA_NOMBRE:
                 builder.append("SELECT c.id_contrato, c.folio_contrato, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_registro, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n"
                         + "               sus.apellido_paterno, sus.apellido_materno, sus.telefono, sus.id_estatus as estatus_suscriptor, d.id_domicilio, d.colonia, d.calle, d.ciudad, d.calle1, d.calle2, d.estatus as estatus_domicilio,\n"
-                        + "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio, c.id_tipo_servicio, c.folio_placa, c.color_placa, c.onu, c.nap\n"
+                        + "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio, c.id_tipo_servicio, c.folio_placa, c.color_placa, c.onu, c.id_onu, c.nap\n"
                         + "          FROM contratos c\n"
                         + "    INNER JOIN contratos_x_suscriptor cs\n"
                         + "            ON c.id_contrato = cs.id_contrato\n"
@@ -581,7 +583,7 @@ public class ContratoxSuscriptorDao {
             case Constantes.TIPO_BUSQUEDA_APELLIDO_PATERNO:
                 builder.append("SELECT c.id_contrato, c.folio_contrato, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_registro, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n"
                         + "               sus.apellido_paterno, sus.apellido_materno, sus.telefono, sus.id_estatus as estatus_suscriptor, d.id_domicilio, d.colonia, d.calle, d.ciudad, d.calle1, d.calle2, d.estatus as estatus_domicilio,\n"
-                        + "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio, c.id_tipo_servicio, c.folio_placa, c.color_placa, c.onu, c.nap\n"
+                        + "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio, c.id_tipo_servicio, c.folio_placa, c.color_placa, c.onu, c.id_onu,  c.nap\n"
                         + "          FROM contratos c\n"
                         + "    INNER JOIN contratos_x_suscriptor cs\n"
                         + "            ON c.id_contrato = cs.id_contrato\n"
@@ -605,7 +607,7 @@ public class ContratoxSuscriptorDao {
             case Constantes.TIPO_BUSQUEDA_APELLIDO_MATERNO:
                 builder.append("SELECT c.id_contrato, c.folio_contrato, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_registro, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n"
                         + "               sus.apellido_paterno, sus.apellido_materno, sus.telefono, sus.id_estatus as estatus_suscriptor, d.id_domicilio, d.colonia, d.calle, d.ciudad, d.calle1, d.calle2, d.estatus as estatus_domicilio,\n"
-                        + "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio, c.id_tipo_servicio, c.folio_placa, c.color_placa, c.onu, c.nap\n"
+                        + "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio, c.id_tipo_servicio, c.folio_placa, c.color_placa, c.onu, c.id_onu,  c.nap\n"
                         + "          FROM contratos c\n"
                         + "    INNER JOIN contratos_x_suscriptor cs\n"
                         + "            ON c.id_contrato = cs.id_contrato\n"
@@ -629,7 +631,7 @@ public class ContratoxSuscriptorDao {
             case Constantes.TIPO_BUSQUEDA_DOMICILIO:
                 builder.append("SELECT c.id_contrato, c.folio_contrato, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_registro, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n"
                         + "               sus.apellido_paterno, sus.apellido_materno, sus.telefono, sus.id_estatus as estatus_suscriptor, d.id_domicilio, d.colonia, d.calle, d.ciudad, d.calle1, d.calle2, d.estatus as estatus_domicilio,\n"
-                        + "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio, c.id_tipo_servicio, c.folio_placa, c.color_placa, c.onu, c.nap\n"
+                        + "               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio, c.id_tipo_servicio, c.folio_placa, c.color_placa, c.onu, c.id_onu, c.nap\n"
                         + "          FROM contratos c\n"
                         + "    INNER JOIN contratos_x_suscriptor cs\n"
                         + "            ON c.id_contrato = cs.id_contrato\n"
