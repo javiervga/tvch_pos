@@ -525,8 +525,8 @@ public class OnusPanel extends javax.swing.JPanel {
                     }
                     
                 }else{
-                    JOptionPane.showMessageDialog(onusPanel, "Para retirar una Onu de un contrato existente, "
-                            + "por favor seleccionelo de la lista.","", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(onusPanel, "Para asociar una Onu debe consultar un Contrato válido. "
+                            ,"", JOptionPane.WARNING_MESSAGE);
                 }
             }
         };
