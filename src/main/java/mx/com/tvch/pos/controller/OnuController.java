@@ -59,11 +59,11 @@ public class OnuController {
         
         if (estatusOnu.getEstatusId() == Constantes.ESTATUS_ONU_TODOS) {
             
-            onus = onuDao.consultarOnus(serieBuscada, estatusOnu.getEstatusId());
+            onus = onuDao.consultarOnus(serieBuscada, null );
             
         }else{
             
-            onus = onuDao.consultarOnus(serieBuscada, null);
+            onus = onuDao.consultarOnus(serieBuscada, estatusOnu.getEstatusId() );
             
         }
         

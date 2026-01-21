@@ -335,7 +335,7 @@ public class OnuDao {
             query.append("o.id_onu as onuId, o.id_onu_server, o.serie, o.id_estatus as estatus_onu , o.id_sucursal, o.fecha_registro as fecha_registro_onu, o.id_usuario as id_usuario_onu, o.actualizacion ");
             query.append("from onus o left join contratos c on o.id_onu = c.id_onu ");
             query.append("WHERE o.serie like '%").append(serieOnu).append("%' ");
-            if(estatusId > 0)
+            if(estatusId != null && estatusId > 0)
                 query.append("and o.id_estatus = ").append(estatusId);
             query.append(" order by o.serie asc");
 
