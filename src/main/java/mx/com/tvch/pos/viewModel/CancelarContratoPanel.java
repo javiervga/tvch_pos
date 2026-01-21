@@ -342,8 +342,10 @@ public class CancelarContratoPanel extends javax.swing.JPanel {
 
         try {
 
-            List<MotivoCancelacionEntity> list = controller.consultarMotivosCancelacion();
-            list.forEach(e -> comboMotivosCancelacion.addItem(e));
+            if(comboMotivosCancelacion.getModel().getSize() == 0){
+                List<MotivoCancelacionEntity> list = controller.consultarMotivosCancelacion();
+                list.forEach(e -> comboMotivosCancelacion.addItem(e));
+            }
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(cancelacionPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
