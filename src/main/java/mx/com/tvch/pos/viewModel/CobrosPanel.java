@@ -1409,9 +1409,36 @@ public class CobrosPanel extends javax.swing.JPanel {
         campoCostoServicio.setEditable(false);
         campoCostoServicio.setText(String.valueOf(sesion.getContratoSeleccionado().getCostoServicio()));
         
+        campoTvs.setEditable(false);
+        if(sesion.getContratoSeleccionado().getTvsContratadas() != null )
+            campoTvs.setText(String.valueOf(sesion.getContratoSeleccionado().getTvsContratadas()));
+        else
+            campoTvs.setText("0");
+        
+        campoNap.setEditable(false);
+        if(sesion.getContratoSeleccionado().getNap() != null && !sesion.getContratoSeleccionado().getNap().isEmpty())
+            campoNap.setText(sesion.getContratoSeleccionado().getNap());
+        else
+            campoNap.setText("");
+        
+        campoOnu.setEditable(false);
+        if(sesion.getContratoSeleccionado().getOnuId() != null && sesion.getContratoSeleccionado().getOnuId() > 0){
+            try {
+                OnuEntity onuEntity = onuController.consultarOnu(sesion.getContratoSeleccionado().getOnuId());
+                campoOnu.setText(onuEntity.getSerie());
+                //campoOnu.setText(sesion.getContratoSeleccionado().getOnu());
+            } catch (Exception ex) {
+                logger.error("Error consultando onu del contrato id "+sesion.getContratoSeleccionado().getContratoId()+" folio "+
+                        sesion.getContratoSeleccionado().getFolioContrato());
+            }
+        }else
+            campoOnu.setText("");
+        
         StringBuilder domicilio = new StringBuilder();
         domicilio.append(sesion.getContratoSeleccionado().getCalle()).append(" ");
         domicilio.append(sesion.getContratoSeleccionado().getNumeroCalle()).append(" ");
+        if(sesion.getContratoSeleccionado().getColonia() != null)
+            domicilio.append(sesion.getContratoSeleccionado().getColonia());
         if(sesion.getContratoSeleccionado().getCiudad() != null)
             domicilio.append(sesion.getContratoSeleccionado().getCiudad());
         campoDomicilio.setEditable(false);
@@ -1526,6 +1553,9 @@ public class CobrosPanel extends javax.swing.JPanel {
         campoDomicilio.setText("");
         campoTelefono.setText("");
         campoCostoServicio.setText("");
+        campoTvs.setText("");
+        campoNap.setText("");
+        campoOnu.setText("");
         etiquetaImporte.setText("0.00");
         etiquetaPromocionAplicada.setVisible(false);
         etiquetaDescPago1.setText("");
@@ -1573,6 +1603,12 @@ public class CobrosPanel extends javax.swing.JPanel {
         campoTelefono = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
         campoCostoServicio = new javax.swing.JTextField();
+        jLabel16 = new javax.swing.JLabel();
+        campoTvs = new javax.swing.JTextField();
+        jLabel18 = new javax.swing.JLabel();
+        campoNap = new javax.swing.JTextField();
+        jLabel21 = new javax.swing.JLabel();
+        campoOnu = new javax.swing.JTextField();
         panelPromociones = new javax.swing.JPanel();
         etiquetaInfoPromociones = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
@@ -1774,6 +1810,36 @@ public class CobrosPanel extends javax.swing.JPanel {
             }
         });
 
+        jLabel16.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel16.setText("Tv's Contratadas:");
+
+        campoTvs.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        campoTvs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                campoTvsActionPerformed(evt);
+            }
+        });
+
+        jLabel18.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel18.setText("Nap:");
+
+        campoNap.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        campoNap.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                campoNapActionPerformed(evt);
+            }
+        });
+
+        jLabel21.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel21.setText("Onu:");
+
+        campoOnu.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        campoOnu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                campoOnuActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelInfoContratoLayout = new javax.swing.GroupLayout(panelInfoContrato);
         panelInfoContrato.setLayout(panelInfoContratoLayout);
         panelInfoContratoLayout.setHorizontalGroup(
@@ -1787,7 +1853,9 @@ public class CobrosPanel extends javax.swing.JPanel {
                         .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelInfoContratoLayout.createSequentialGroup()
                                 .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(613, 613, 613))
+                                .addGap(31, 31, 31)
+                                .addComponent(etiquetaCOntrato)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(campoSuscriptor)))
                     .addGroup(panelInfoContratoLayout.createSequentialGroup()
                         .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1801,32 +1869,43 @@ public class CobrosPanel extends javax.swing.JPanel {
                         .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(campoDomicilio, javax.swing.GroupLayout.PREFERRED_SIZE, 637, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(panelInfoContratoLayout.createSequentialGroup()
-                                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(etiquetaCOntrato, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(campoServicioContratado, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(campoServicioContratado, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(panelInfoContratoLayout.createSequentialGroup()
-                                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(campoCostoServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(panelInfoContratoLayout.createSequentialGroup()
-                                        .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(57, 57, 57)
-                                        .addComponent(jLabel9)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(campoEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(39, 39, 39)
-                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel15)
+                                .addGap(18, 18, 18)
+                                .addComponent(campoCostoServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(74, 74, 74)
+                                .addComponent(jLabel16)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(campoTvs, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(30, 30, 30)
+                                .addComponent(jLabel18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(campoNap, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panelInfoContratoLayout.createSequentialGroup()
+                                .addGap(225, 225, 225)
+                                .addComponent(campoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(57, 57, 57)
+                                .addComponent(jLabel9)
+                                .addGap(18, 18, 18)
+                                .addComponent(campoEstatus, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(panelInfoContratoLayout.createSequentialGroup()
-                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(campoTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelInfoContratoLayout.createSequentialGroup()
+                                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(campoTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(panelInfoContratoLayout.createSequentialGroup()
+                                .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(panelInfoContratoLayout.createSequentialGroup()
-                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(35, 35, 35)
+                        .addComponent(jLabel21)
                         .addGap(18, 18, 18)
-                        .addComponent(campoFechaPago, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(campoOnu)))
                 .addGap(147, 147, 147))
         );
         panelInfoContratoLayout.setVerticalGroup(
@@ -1856,7 +1935,13 @@ public class CobrosPanel extends javax.swing.JPanel {
                     .addComponent(jLabel7)
                     .addComponent(campoServicioContratado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel15)
-                    .addComponent(campoCostoServicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(campoCostoServicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel16)
+                    .addComponent(campoTvs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel18)
+                    .addComponent(campoNap, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel21)
+                    .addComponent(campoOnu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelInfoContratoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
@@ -2493,6 +2578,18 @@ public class CobrosPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_campoCostoServicioActionPerformed
 
+    private void campoTvsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoTvsActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_campoTvsActionPerformed
+
+    private void campoNapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoNapActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_campoNapActionPerformed
+
+    private void campoOnuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoOnuActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_campoOnuActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea areaReferencia;
@@ -2519,12 +2616,15 @@ public class CobrosPanel extends javax.swing.JPanel {
     private javax.swing.JTextField campoMonto;
     private javax.swing.JTextField campoMontoSugerido;
     private javax.swing.JTextField campoMotivoDescuento;
+    private javax.swing.JTextField campoNap;
     private javax.swing.JTextField campoNumeroCalle;
     private javax.swing.JTextArea campoObservaciones;
     private javax.swing.JTextField campoObservacionesOrden;
+    private javax.swing.JTextField campoOnu;
     private javax.swing.JTextField campoServicioContratado;
     private javax.swing.JTextField campoSuscriptor;
     private javax.swing.JTextField campoTelefono;
+    private javax.swing.JTextField campoTvs;
     private javax.swing.JTextField campoTvsExtra;
     private javax.swing.JCheckBox checkServicio;
     private javax.swing.JComboBox<Integer> comboAnios;
@@ -2556,9 +2656,12 @@ public class CobrosPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel25;
