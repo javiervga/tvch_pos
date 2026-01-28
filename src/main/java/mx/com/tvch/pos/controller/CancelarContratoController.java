@@ -19,16 +19,16 @@ import mx.com.tvch.pos.dao.ContratoxSuscriptorDao;
 import mx.com.tvch.pos.dao.DetalleCobroTransaccionDao;
 import mx.com.tvch.pos.dao.EstatusSuscriptorDao;
 import mx.com.tvch.pos.dao.MotivoCancelacionDao;
+import mx.com.tvch.pos.dao.OrdenServicioDao;
 import mx.com.tvch.pos.dao.TransaccionDao;
 import mx.com.tvch.pos.entity.CancelacionEntity;
-import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
+import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.entity.DetalleCobroTransaccionEntity;
 import mx.com.tvch.pos.entity.EstatusSuscriptorEntity;
 import mx.com.tvch.pos.entity.MotivoCancelacionEntity;
+import mx.com.tvch.pos.entity.OrdenServicioEntity;
 import mx.com.tvch.pos.entity.TransaccionEntity;
 import mx.com.tvch.pos.model.DetallePagoServicio;
-import mx.com.tvch.pos.model.client.Request;
-import mx.com.tvch.pos.model.client.UpdateContratoEstatusCanceladoPosRequest;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Utilerias;
 import org.slf4j.Logger;
@@ -77,10 +77,13 @@ public class CancelarContratoController {
      * 
      * @param suscriptor
      * @param detallesPago
-     * @return 
+     * @param motivoCancelacionId
+     * @param observaciones
+     * @return
+     * @throws Exception 
      */
     public Long cobrarCancelacion(
-            ContratoxSuscriptorEntity suscriptor, 
+            ContratoxSuscriptorDetalleEntity suscriptor, 
             List<DetallePagoServicio> detallesPago, 
             Long motivoCancelacionId,
             String observaciones) throws Exception{
@@ -109,6 +112,9 @@ public class CancelarContratoController {
             transaccionEntity.setFechaTransaccion(util.obtenerFechaFormatoMysql());
             transaccionEntity.setMonto(importePagar);
             transaccionEntity.setTransaccionId(util.generarIdLocal());
+            transaccionEntity.setActualFechaCorte(util.convertirDateTime2String(suscriptor.getFechaProximoPago(), Constantes.FORMATO_FECHA_MYSQL));
+            transaccionEntity.setNuevaFechaCorte(util.convertirDateTime2String(suscriptor.getFechaProximoPago(), Constantes.FORMATO_FECHA_MYSQL));
+            transaccionEntity.setObservaciones("CANCELACION DE CONTRATO");
             transaccionId = transaccionEntity.getTransaccionId();
             transaccionDao.registrarTransaccion(transaccionEntity);
             
@@ -122,9 +128,11 @@ public class CancelarContratoController {
             detalleCobroTransaccionEntity.setNumeroMeses(0);
             Long detalleCobroId = detalleCobroTransaccionDao.registrarDetalleTransaccion(detalleCobroTransaccionEntity);
             
-            contratoDao.actualizarEstatus(suscriptor.getContratoId(), Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO);
+            contratoDao.actualizarEstatus(suscriptor.getContratoId(), 
+                    Constantes.ESTATUS_CONTRATO_CANCELADO_PENDIENTE_RETIRO,
+                    Constantes.TIPO_ACTUALIZACION_CONTRATO_NO_ACTUALIZAR);
             
-            try{
+            /*try{
                 UpdateContratoEstatusCanceladoPosRequest updateContratoEstatusCanceladoPosRequest = new UpdateContratoEstatusCanceladoPosRequest();
                 updateContratoEstatusCanceladoPosRequest.setContratoId(suscriptor.getContratoId());
                 updateContratoEstatusCanceladoPosRequest.setUsuarioId(sesion.getUsuarioId());
@@ -133,7 +141,22 @@ public class CancelarContratoController {
                 client.updateEstatusContrato(request);
             }catch(Exception exception){
                 
-            }
+            }*/
+            
+            //por ultimo registrar orden de servicio de returo por cancelacion
+            OrdenServicioDao ordenServicioDao = OrdenServicioDao.getOrdenServicioDao();
+            OrdenServicioEntity entity = new OrdenServicioEntity();
+            entity.setContratoId(suscriptor.getContratoId());
+            entity.setCosto(importePagar);
+            entity.setDomicilioId(suscriptor.getDomicilioId());
+            entity.setEstatusId(Constantes.ESTATUS_ORDEN_PAGADA);
+            entity.setObservacionesRegistro(util.limpiarAcentos(observaciones).toUpperCase());
+            entity.setOrdenId(util.generarIdLocal());
+            entity.setServicioId(suscriptor.getServicioId());
+            entity.setSuscriptorId(suscriptor.getSusucriptorId());
+            entity.setTipoOrdenServicioId(Constantes.TIPO_ORDEN_SERVICIO_RETIRO_EQUIPO_CANCELACION);
+            entity.setUsuarioId(sesion.getUsuarioId());
+            ordenServicioDao.registrarOrdenServicio(entity);
             
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
@@ -153,11 +176,11 @@ public class CancelarContratoController {
      * @return
      * @throws Exception 
      */
-    public List<ContratoxSuscriptorEntity> consultarSuscriptores(Long contratoId, int tipoBusquedaCobro, String cadenaBusqueda) throws Exception {
+    public List<ContratoxSuscriptorDetalleEntity> consultarSuscriptores(Long contratoId, int tipoBusquedaCobro, String cadenaBusqueda) throws Exception {
 
         try {
 
-            List<ContratoxSuscriptorEntity> list = dao.obtenerContratosSuscriptor(contratoId, tipoBusquedaCobro, cadenaBusqueda);
+            List<ContratoxSuscriptorDetalleEntity> list = dao.obtenerContratosSuscriptor(contratoId, tipoBusquedaCobro, cadenaBusqueda);
             //quitar los cancelados
             list = list
                     .stream()
@@ -248,7 +271,7 @@ public class CancelarContratoController {
 
     }
     
-    public boolean seDebeGenerarRecargo(ContratoxSuscriptorEntity suscriptorSeleccionado) {
+    public boolean seDebeGenerarRecargo(ContratoxSuscriptorDetalleEntity suscriptorSeleccionado) {
         boolean seGeneraRecargo = false;
 
         if (suscriptorSeleccionado.getFechaProximoPago() != null) {
@@ -276,7 +299,7 @@ public class CancelarContratoController {
         return seGeneraRecargo;
     }
     
-    public Double calcularMontoPorDia(ContratoxSuscriptorEntity suscriptorSeleccionado){
+    public Double calcularMontoPorDia(ContratoxSuscriptorDetalleEntity suscriptorSeleccionado){
         return suscriptorSeleccionado.getCostoServicio() / 30;
     }
     
@@ -285,7 +308,7 @@ public class CancelarContratoController {
      * @param suscriptorSeleccionado
      * @return 
      */
-    public Double obtenerMontoCancelacion(ContratoxSuscriptorEntity suscriptorSeleccionado, Double montoPorDia){
+    public Double obtenerMontoCancelacion(ContratoxSuscriptorDetalleEntity suscriptorSeleccionado, Double montoPorDia){
         
         Double monto = 0.0;
                     

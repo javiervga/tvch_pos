@@ -13,8 +13,10 @@ public class Orden {
     private Long id;
 
     private Long contratoId;
+    
+    private Long folioContrato;
 
-    private Integer tipoOrdenId;
+    private Long tipoOrdenId;
 
     private String tipoOrden;
 
@@ -46,10 +48,11 @@ public class Orden {
     
     private String conceptoOrdenServicio;
 
-    public Orden(Long id, Long contratoId, Integer tipoOrdenId, String tipoOrden,
+    public Orden(Long id, Long contratoId, Long folioContrato, Long tipoOrdenId, String tipoOrden,
             Double costo, String fechaRegistro, Double importePagar) {
         this.id = id;
         this.contratoId = contratoId;
+        this.folioContrato = folioContrato;
         this.tipoOrdenId = tipoOrdenId;
         this.tipoOrden = tipoOrden;
         this.costo = costo;
@@ -73,6 +76,14 @@ public class Orden {
         this.contratoId = contratoId;
     }
 
+    public Long getFolioContrato() {
+        return folioContrato;
+    }
+
+    public void setFolioContrato(Long folioContrato) {
+        this.folioContrato = folioContrato;
+    }
+
     public String getTipoOrden() {
         return tipoOrden;
     }
@@ -81,11 +92,11 @@ public class Orden {
         this.tipoOrden = tipoOrden;
     }
 
-    public Integer getTipoOrdenId() {
+    public Long getTipoOrdenId() {
         return tipoOrdenId;
     }
 
-    public void setTipoOrdenId(Integer tipoOrdenId) {
+    public void setTipoOrdenId(Long tipoOrdenId) {
         this.tipoOrdenId = tipoOrdenId;
     }
 

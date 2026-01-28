@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.dao.AperturaCajaDao;
+import mx.com.tvch.pos.dao.CajaDao;
 import mx.com.tvch.pos.dao.CorteCajaDao;
 import mx.com.tvch.pos.dao.DetalleCobroTransaccionDao;
 import mx.com.tvch.pos.dao.DetalleDescuentoTransaccionDao;
@@ -42,6 +43,7 @@ public class CorteCajaController {
 
     private static CorteCajaController controller;
 
+    private final CajaDao cajaDao;
     private final AperturaCajaDao aperturaCajaDao;
     private final CorteCajaDao corteCajaDao;
     private final DetalleCobroTransaccionDao detalleCobroTransaccionDao;
@@ -64,6 +66,7 @@ public class CorteCajaController {
     }
 
     public CorteCajaController() {
+        cajaDao = CajaDao.getCajaDao();
         aperturaCajaDao = AperturaCajaDao.getAperturaCajaDao();
         corteCajaDao = CorteCajaDao.getCorteCajaDao();
         detalleCobroTransaccionDao = DetalleCobroTransaccionDao.getDetalleCobroTransaccionDao();
@@ -199,6 +202,8 @@ public class CorteCajaController {
             //Long idCorteCaja = 11L;
             Long idCorteCaja = corteCajaDao.registrarCorteCaja(entity);
             aperturaCajaDao.actualizarEstatusApertura(sesion.getAperturaCajaId(), Constantes.ESTATUS_INACTIVO);
+            cajaDao.actualizarEstatusCaja(sesion.getCajaId(), Constantes.ESTATUS_CAJA_INACTIVA);
+            
             DetalleCorte detalleId = new DetalleCorte();
             detalleId.setConcepto(String.valueOf(idCorteCaja));
             detalleId.setTipoDetalle(Constantes.TIPO_DETALLE_CORTE_ID);
@@ -272,11 +277,12 @@ public class CorteCajaController {
             DetalleCorte detalleIngresos = null;
             DetalleCorte detalleCobros = null;
 
+            Double montoOperaciones = 0.0;
             List<TransaccionEntity> transacciones = transaccionDao.obtenerTransaccionesxAperturaCaja(aperturaCaja.getAperturaCajaId());
             if (!transacciones.isEmpty()) {
                 existenTransacciones = true;
 
-                Double montoOperaciones = transacciones.stream().mapToDouble(TransaccionEntity::getMonto).sum();
+                montoOperaciones = transacciones.stream().mapToDouble(TransaccionEntity::getMonto).sum();
                 detalleNumeroTransacciones = new DetalleCorte();
                 detalleNumeroTransacciones.setCantidad(transacciones.size());
                 detalleNumeroTransacciones.setConcepto("Número de operaciones");
@@ -396,14 +402,16 @@ public class CorteCajaController {
             detalleMontoSolicitado.setCantidad(1);
             detalleMontoSolicitado.setConcepto("Efectivo esperado");
             detalleMontoSolicitado.setTipoDetalle(Constantes.TIPO_DETALLE_CORTE_MONTO_SOLICITADO);
+            
+            //primero setear al monto esperado al fondo fijo
             double montoEsperado = detalleFondoFijo.getMonto();
             if (existenTransacciones) {
-                //list.add(detalleNumeroTransacciones);
-                montoEsperado = montoEsperado + detalleCobros.getMonto();
+                //sumar el monto de las transacciones mas el fondo fijo
+                montoEsperado = montoEsperado + montoOperaciones;
             }
-            if (existenDescuentos) {
-                montoEsperado = montoEsperado - detalleDescuentos.getMonto();
-            }
+            //if (existenDescuentos) {
+                //montoEsperado = montoEsperado - detalleDescuentos.getMonto();
+            //}
             if (existenSalidas) {
                 montoEsperado = montoEsperado - detalleSalidas.getMonto();
             }

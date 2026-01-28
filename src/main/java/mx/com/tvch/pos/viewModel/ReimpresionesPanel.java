@@ -23,8 +23,9 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.controller.ReimpresionesController;
-import mx.com.tvch.pos.entity.TransaccionTicketEntity;
+import mx.com.tvch.pos.model.TransaccionTicket;
 import mx.com.tvch.pos.model.TipoCobro;
+import mx.com.tvch.pos.model.Transaccion;
 import mx.com.tvch.pos.util.Calendario;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Impresora;
@@ -50,8 +51,8 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
     private final JDateChooser calendarioFin;
     private final ReimpresionesController controller;
     private final Utilerias util;
-    private List<TransaccionTicketEntity> listaTransacciones;
-    private TransaccionTicketEntity transaccionSeleccionada;
+    private List<Transaccion> listaTransacciones;
+    private Transaccion transaccionSeleccionada;
 
     Logger logger = LoggerFactory.getLogger(CorteCajaPanel.class);
 
@@ -80,7 +81,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         initComponents();
         crearEventos();
         cargarCOmboTiposCobro();
-        
+
         Calendar calFechaMinima = Calendar.getInstance();
         calFechaMinima.setTime(new Date());
         calFechaMinima.add(Calendar.WEEK_OF_YEAR, -1);
@@ -97,14 +98,16 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
     }
 
     private void crearEventos() {
-        
+
         ActionListener botonImprimirListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(transaccionSeleccionada != null){
+                if (transaccionSeleccionada != null ) {
                     try {
+
                         controller.reimprimirTicket(transaccionSeleccionada);
                         limpiarPantalla();
+
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(panel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
                     }
@@ -118,14 +121,16 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     int selectedRow = tablaTransacciones.getSelectedRow();
                     if (selectedRow >= 0) {
+
                         Long transaccionId = (Long) tablaTransacciones.getModel().getValueAt(selectedRow, 0);
                         System.out.println("transaccion seleccionada: " + transaccionId);
                         if (!listaTransacciones.isEmpty()) {
                             if (listaTransacciones.stream().filter(t -> t.getTransaccionId() == transaccionId.longValue()).findAny().isPresent()) {
-                                TransaccionTicketEntity entity = listaTransacciones.stream().filter(t -> t.getTransaccionId() == transaccionId.longValue()).findFirst().get();
+                                Transaccion entity = listaTransacciones.stream().filter(t -> t.getTransaccionId() == transaccionId.longValue()).findFirst().get();
                                 cargarDatosTransaccion(entity);
                             }
                         }
+                        
                     }
                 }
             }
@@ -138,20 +143,29 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    // your valueChanged overridden method
+
                     Long transaccionId = (Long) tablaTransacciones.getModel().getValueAt(row, 0);
                     System.out.println("transaccion seleccionada: " + transaccionId);
                     if (!listaTransacciones.isEmpty()) {
                         if (listaTransacciones.stream().filter(t -> t.getTransaccionId() == transaccionId.longValue()).findAny().isPresent()) {
-                            TransaccionTicketEntity entity = listaTransacciones.stream().filter(t -> t.getTransaccionId() == transaccionId.longValue()).findFirst().get();
+                            Transaccion entity = listaTransacciones.stream().filter(t -> t.getTransaccionId() == transaccionId.longValue()).findFirst().get();
                             cargarDatosTransaccion(entity);
                         }
                     }
+                    
                     mouseEvent.consume();
                 }
             }
         };
         tablaTransacciones.addMouseListener(dobleClickTablaTransaccionesListener);
+
+        /*ActionListener comboTiposOperacionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TipoCobro tipoCobro = (TipoCobro) comboTipoOperacion.getModel().getSelectedItem();
+            }
+        };
+        comboTipoOperacion.addActionListener(comboTiposOperacionListener);*/
 
         ActionListener botonBusquedaActionListener = new ActionListener() {
             @Override
@@ -169,7 +183,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                             String fechaInicio = util.convertirDateTime2String(dateIni, Constantes.FORMATO_FECHA_MYSQL);
                             String fechaFin = util.convertirDateTime2String(dateFin, Constantes.FORMATO_FECHA_MYSQL);
 
-                            List<TransaccionTicketEntity> list = controller.consultarTransacciones(
+                            List<Transaccion> list = controller.consultarTransacciones(
                                     tipoCobro.getTipoCobroId(),
                                     fechaInicio,
                                     fechaFin);
@@ -181,6 +195,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                                 cargarTablaTransacciones(model, list);
                             } else {
                                 JOptionPane.showMessageDialog(panel, "No se encontraron operaciones.", "", JOptionPane.WARNING_MESSAGE);
+                                limpiarDatosTransaccion();
                             }
 
                             model.fireTableDataChanged();
@@ -213,22 +228,20 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
 
         tablaTransacciones.getColumnModel().getColumn(0).setPreferredWidth(100);
         tablaTransacciones.getColumnModel().getColumn(1).setPreferredWidth(240);
-        tablaTransacciones.getColumnModel().getColumn(2).setPreferredWidth(90);
-        tablaTransacciones.getColumnModel().getColumn(3).setPreferredWidth(100);
-        tablaTransacciones.getColumnModel().getColumn(4).setPreferredWidth(120);
-        tablaTransacciones.getColumnModel().getColumn(5).setPreferredWidth(80);
-        tablaTransacciones.getColumnModel().getColumn(6).setPreferredWidth(280);
+        tablaTransacciones.getColumnModel().getColumn(2).setPreferredWidth(120);
+        tablaTransacciones.getColumnModel().getColumn(3).setPreferredWidth(70);
+        tablaTransacciones.getColumnModel().getColumn(4).setPreferredWidth(70);
+        tablaTransacciones.getColumnModel().getColumn(5).setPreferredWidth(40);
+        tablaTransacciones.getColumnModel().getColumn(6).setPreferredWidth(350);
 
-        
         /*if(panelCalendarioIni.getComponents().length == 0)
             panelCalendarioIni.add(calendarioIni);
         if(panelCalendarioFin.getComponents().length == 0)
             panelCalendarioFin.add(calendarioFin);*/
-
         campoTransaccion.setEditable(false);
         campoAPerturaCaja.setEditable(false);
         campoContrato.setEditable(false);
-        campoContratoAnterior.setEditable(false);
+        campoFolioContrato.setEditable(false);
         campoFecha.setEditable(false);
         campoMonto.setEditable(false);
         campoServicio.setEditable(false);
@@ -236,12 +249,12 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
 
     }
 
-    private void cargarTablaTransacciones(DefaultTableModel model, List<TransaccionTicketEntity> list) {
+    private void cargarTablaTransacciones(DefaultTableModel model, List<Transaccion> list) {
 
         if (!list.isEmpty()) {
             model.getDataVector().clear();
             model.fireTableDataChanged();
-            for (TransaccionTicketEntity e : list) {
+            for (Transaccion e : list) {
 
                 StringBuilder suscriptor = new StringBuilder();
                 suscriptor.append(e.getNombre());
@@ -251,15 +264,54 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                 if (e.getApellidoMaterno() != null) {
                     suscriptor.append(" ").append(e.getApellidoMaterno());
                 }
+                
+                /*double montoTotalTransaccion = list
+                        .stream()
+                        .filter(t -> t.getTransaccionId() == e.getTransaccionId())
+                        .mapToDouble(TransaccionTicket::)*/
+                        
+                //if()
+                
+                String descTipoCObro = "";
+                boolean existeCobroMensualidad = false;
+                boolean existenOrdenes = false;
+                
+                if(e.getDetallesCobro()
+                        .stream()
+                        .filter(d -> d.getTipoCobroId() == Constantes.TIPO_COBRO_SERVICIO)
+                        .findAny()
+                        .isPresent()){
+                    existeCobroMensualidad = true;
+                }
+                if(e.getDetallesCobro()
+                        .stream()
+                        .filter(d -> d.getTipoCobroId() != Constantes.TIPO_COBRO_SERVICIO &&
+                                d.getTipoCobroId() != Constantes.TIPO_COBRO_RECARGO_MENSUALIDAD)
+                        .findAny()
+                        .isPresent()){
+                    existenOrdenes = true;
+                }
+                
+                
+                if(existeCobroMensualidad){
+                    if(existenOrdenes){
+                        descTipoCObro = e.getPeriodo().concat(" + PAGO ORDEN(ES)");
+                    }else{
+                        descTipoCObro = e.getPeriodo();
+                    }
+                }else{
+                    descTipoCObro = "PAGO DE ORDEN(ES)";
+                }
+                    
 
                 model.addRow(new Object[]{
                     e.getTransaccionId(),
                     suscriptor,
                     e.getContratoId(),
-                    e.getContratoAnteriorId() != null ? String.valueOf(e.getContratoAnteriorId()) : "",
+                    e.getFolioContrato() != null ? String.valueOf(e.getFolioContrato()) : "",
                     e.getFechaTransaccion(),
                     e.getMonto(),
-                    e.getDescripcionTipoCobro()
+                    descTipoCObro
                 });
             }
         }
@@ -269,30 +321,56 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
     private void cargarCOmboTiposCobro() {
 
         List<TipoCobro> tiposCobro = new ArrayList<>();
-        tiposCobro.add(new TipoCobro(2, "MENSUALIDAD SERVICIO"));
-        tiposCobro.add(new TipoCobro(1, "ORDEN INSTALACION"));
+        tiposCobro.add(new TipoCobro(2, "TODAS"));
+        tiposCobro.add(new TipoCobro(1, "ORDEN DE INSTALACION"));
         tiposCobro.add(new TipoCobro(3, "ORDEN DE SERVICIO"));
         tiposCobro.add(new TipoCobro(4, "ORDEN DE CAMBIO DE DOMICILIO"));
-        //tiposCobro.add(new TipoCobro(5, "RECARGO EN MENSUALIDAD DE SERVICIO"));
+        ////tiposCobro.add(new TipoCobro(5, "RECARGO EN MENSUALIDAD DE SERVICIO"));
         tiposCobro.add(new TipoCobro(6, "CANCELACION DE CONTRATO"));
         tiposCobro.forEach(t -> comboTipoOperacion.addItem(t));
 
     }
 
-    private void cargarDatosTransaccion(TransaccionTicketEntity entity) {
-        
+    private void cargarDatosTransaccion(Transaccion entity) {
+
         transaccionSeleccionada = entity;
         campoTransaccion.setText(String.valueOf(entity.getTransaccionId()));
         campoAPerturaCaja.setText(String.valueOf(entity.getAperturaCajaId()));
         campoContrato.setText(String.valueOf(entity.getContratoId()));
-        if (entity.getContratoAnteriorId() != null) {
-            campoContratoAnterior.setText(String.valueOf(entity.getContratoAnteriorId()));
+        if (entity.getFolioContrato() != null) {
+            campoFolioContrato.setText(String.valueOf(entity.getFolioContrato()));
         }
         campoFecha.setText(entity.getFechaTransaccion());
         campoMonto.setText(String.valueOf(entity.getMonto()));
         campoServicio.setText(entity.getServicio());
-        campoTipoCobro.setText(entity.getDescripcionTipoCobro());
-
+        
+        boolean existeCobroMensualidad = false;
+        boolean existenOrdenes = false;
+        if(entity.getDetallesCobro()
+                .stream()
+                .filter(d -> d.getTipoCobroId() == Constantes.TIPO_COBRO_SERVICIO)
+                .findAny()
+                .isPresent()){
+            existeCobroMensualidad = true;
+        }
+        if(entity.getDetallesCobro()
+                .stream()
+                .filter(d -> d.getTipoCobroId() != Constantes.TIPO_COBRO_SERVICIO &&
+                        d.getTipoCobroId() != Constantes.TIPO_COBRO_RECARGO_MENSUALIDAD)
+                .findAny()
+                .isPresent()){
+            existenOrdenes = true;
+        }
+        if(existeCobroMensualidad){
+            if(existenOrdenes){
+                campoTipoCobro.setText(entity.getPeriodo().concat(" + PAGO ORDEN(ES)"));
+            }else{
+                campoTipoCobro.setText(entity.getPeriodo());
+            }
+        }else{
+            campoTipoCobro.setText("PAGO DE ORDEN(ES)");
+        }
+        
     }
 
     private void limpiarDatosTransaccion() {
@@ -300,7 +378,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         campoTransaccion.setText("");
         campoAPerturaCaja.setText("");
         campoContrato.setText("");
-        campoContratoAnterior.setText("");
+        campoFolioContrato.setText("");
         campoFecha.setText("");
         campoMonto.setText("");
         campoServicio.setText("");
@@ -352,7 +430,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         campoContrato = new javax.swing.JTextField();
-        campoContratoAnterior = new javax.swing.JTextField();
+        campoFolioContrato = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         campoFecha = new javax.swing.JTextField();
@@ -434,7 +512,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         panelCalendarioIni.setLayout(panelCalendarioIniLayout);
         panelCalendarioIniLayout.setHorizontalGroup(
             panelCalendarioIniLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 187, Short.MAX_VALUE)
+            .addGap(0, 193, Short.MAX_VALUE)
         );
         panelCalendarioIniLayout.setVerticalGroup(
             panelCalendarioIniLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -456,7 +534,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         panelCalendarioFin.setLayout(panelCalendarioFinLayout);
         panelCalendarioFinLayout.setHorizontalGroup(
             panelCalendarioFinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 175, Short.MAX_VALUE)
+            .addGap(0, 192, Short.MAX_VALUE)
         );
         panelCalendarioFinLayout.setVerticalGroup(
             panelCalendarioFinLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -476,13 +554,13 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                 .addComponent(jLabel4)
                 .addGap(18, 18, 18)
                 .addComponent(panelCalendarioIni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel5)
                 .addGap(18, 18, 18)
                 .addComponent(panelCalendarioFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(106, 106, 106)
+                .addGap(89, 89, 89)
                 .addComponent(botonBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(250, Short.MAX_VALUE))
         );
         panelFiltrosLayout.setVerticalGroup(
             panelFiltrosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -511,7 +589,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Folio", "Suscriptor", "Contrato", "Contrato Anterior", "Fecha", "Monto", "Tipo Operacion"
+                "Folio", "Suscriptor", "ID Sistema", "Contrato", "Fecha", "Monto", "Concepto"
             }
         ) {
             Class[] types = new Class [] {
@@ -595,14 +673,14 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         campoAPerturaCaja.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel6.setText("Contrato:");
+        jLabel6.setText("Id Sistema:");
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel7.setText("Contrato Anterior:");
+        jLabel7.setText("Número de Contrato:");
 
         campoContrato.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
-        campoContratoAnterior.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        campoFolioContrato.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel8.setText("Fecha:");
@@ -618,7 +696,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
         jLabel13.setText("Servicio:");
 
         jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel14.setText("Tipo de Cobro:");
+        jLabel14.setText("Concepto:");
 
         campoServicio.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
@@ -644,12 +722,14 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                     .addComponent(campoTransaccion))
                 .addGap(18, 18, 18)
                 .addGroup(panelDatosTransaccionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addGroup(panelDatosTransaccionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(campoContrato, javax.swing.GroupLayout.DEFAULT_SIZE, 99, Short.MAX_VALUE)
-                    .addComponent(campoContratoAnterior))
+                    .addGroup(panelDatosTransaccionLayout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(campoFolioContrato, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE))
+                    .addGroup(panelDatosTransaccionLayout.createSequentialGroup()
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(campoContrato)))
                 .addGap(18, 18, 18)
                 .addGroup(panelDatosTransaccionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel8)
@@ -668,7 +748,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                     .addComponent(campoTipoCobro, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE))
                 .addGap(54, 54, 54)
                 .addComponent(botonImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(66, Short.MAX_VALUE))
         );
         panelDatosTransaccionLayout.setVerticalGroup(
             panelDatosTransaccionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -689,7 +769,7 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
                     .addComponent(jLabel3)
                     .addComponent(campoAPerturaCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7)
-                    .addComponent(campoContratoAnterior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(campoFolioContrato, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel9)
                     .addComponent(campoMonto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14)
@@ -730,8 +810,8 @@ public class ReimpresionesPanel extends javax.swing.JPanel {
     private javax.swing.JButton botonRegresar;
     private javax.swing.JTextField campoAPerturaCaja;
     private javax.swing.JTextField campoContrato;
-    private javax.swing.JTextField campoContratoAnterior;
     private javax.swing.JTextField campoFecha;
+    private javax.swing.JTextField campoFolioContrato;
     private javax.swing.JTextField campoMonto;
     private javax.swing.JTextField campoServicio;
     private javax.swing.JTextField campoTipoCobro;

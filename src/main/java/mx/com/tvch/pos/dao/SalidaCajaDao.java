@@ -155,4 +155,68 @@ public class SalidaCajaDao {
         
     }
     
+    /**
+     * 
+     * @return
+     * @throws Exception 
+     */
+    public List<SalidaCajaEntity> obtenerSalidasCaja() throws Exception{
+
+        List<SalidaCajaEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("SELECT id_salida_caja, id_apertura_caja, ");
+            query.append("id_tipo_salida, observaciones, monto, fecha_salida ");
+            query.append("FROM salidas_caja WHERE id_salida_caja_server is null ");
+            query.append("order by id_salida_caja asc");
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                SalidaCajaEntity entity = new SalidaCajaEntity();
+                entity.setAperturaCajaId(rs.getLong("id_apertura_caja"));
+                entity.setFechaSalida(rs.getDate("fecha_salida"));
+                entity.setMonto(rs.getDouble("monto"));
+                entity.setObservaciones(rs.getString("observaciones"));
+                entity.setSalidaCajaId(rs.getLong("id_salida_caja"));
+                entity.setTipoSalidaId(rs.getLong("id_tipo_salida"));
+                list.add(entity);
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar salidas de caja en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return list;
+
+        
+    }
+    
 }

@@ -11,6 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.entity.CancelacionEntity;
 import mx.com.tvch.pos.util.Utilerias;
@@ -97,6 +99,73 @@ public class CancelacionDao {
                 se.printStackTrace();
             }
         }
+        
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws Exception 
+     */
+    public List<CancelacionEntity> obtenerCancelaciones() throws Exception{
+
+        List<CancelacionEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("SELECT id_cancelacion, id_cancelacion_server, id_contrato, ");
+            query.append("fecha_cancelacion, id_usuario, id_servicio, id_motivo, id_sucursal, observaciones ");
+            query.append("FROM cancelaciones_contrato WHERE id_cancelacion_server is null ");
+            query.append("order by id_cancelacion asc"); 
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                CancelacionEntity entity = new CancelacionEntity();
+                entity.setCancelacionId(rs.getLong("id_cancelacion"));
+                entity.setCancelacionServerId(null);
+                entity.setContratoId(rs.getLong("id_contrato"));
+                entity.setFechaCancelacion(rs.getString("fecha_cancelacion"));
+                entity.setUsuarioId(rs.getLong("id_usuario"));
+                entity.setServicioId(rs.getLong("id_servicio"));
+                entity.setMotivoId(rs.getLong("id_motivo"));
+                entity.setSucursalId(rs.getLong("id_sucursal"));
+                entity.setObservaciones(rs.getString("observaciones"));
+                list.add(entity);
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar cancelaciones en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return list;
+
         
     }
     

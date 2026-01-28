@@ -12,9 +12,15 @@ import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.util.VentanaEnum;
 import static mx.com.tvch.pos.util.VentanaEnum.APERTURA;
-import static mx.com.tvch.pos.util.VentanaEnum.COBRO_SERVICIO;
+import static mx.com.tvch.pos.util.VentanaEnum.CANCELACION_CONTRATO;
 import static mx.com.tvch.pos.util.VentanaEnum.REIMPRESION;
 import static mx.com.tvch.pos.util.VentanaEnum.SALIDA;
+import static mx.com.tvch.pos.util.VentanaEnum.CONSULTA_CONTRATOS;
+import static mx.com.tvch.pos.util.VentanaEnum.ESTATUS_OPERACIONES;
+import static mx.com.tvch.pos.util.VentanaEnum.ONUS;
+import static mx.com.tvch.pos.util.VentanaEnum.REGISTRO_CONTRATO;
+import static mx.com.tvch.pos.util.VentanaEnum.REGISTRO_SUSCRIPTOR;
+import static mx.com.tvch.pos.util.VentanaEnum.ONUS_MOSTRAR_NUEVA;
 
 /**
  *
@@ -23,16 +29,21 @@ import static mx.com.tvch.pos.util.VentanaEnum.SALIDA;
 public class PosFrame extends javax.swing.JFrame {
 
     private final LoginPanel loginPanel;
+    private final BusquedaContratosPanel busquedaContratosPanel;
+    private final RegistroSuscriptorPanel registroSuscriptorPanel;
+    private final CobrosPanel cobrosPanel;
     private final MenuPanel menuPanel;
     private final LoadingPanel loadingPanel;
     private final AperturaCajaPanel aperturaCajaPanel;
     private final SalidaCajaPanel salidaCajaPanel;
+    private final SalidaExtraordinariaPanel salidaExtraordinariaPanel;
     private final IngresoCajaPanel ingresoCajaPanel;
-    private final CobroServicioPanel cobroServicioPanel;
-    private final CobroOrdenPanel cobroOrdenPanel;
     private final CorteCajaPanel corteCajaPanel;
     private final ReimpresionesPanel reimpresionesPanel;
     private final CancelarContratoPanel cancelarContratoPanel;
+    private final EstatusOperacionesPanel estatusOperacionesPanel;
+    private final OnusPanel onusPanel;
+    private final RegistroOnuPanel registroOnuPanel;
     private final DbConfig dbConfig;
     private Sesion sesion;
 
@@ -45,16 +56,21 @@ public class PosFrame extends javax.swing.JFrame {
         initComponents();
 
         loginPanel = LoginPanel.getLoginPanel(this);
+        busquedaContratosPanel = BusquedaContratosPanel.getCobroPanel(this);
+        registroSuscriptorPanel = RegistroSuscriptorPanel.getRegistroSuscriptorPanel(this);
+        cobrosPanel = CobrosPanel.getCobroPanel(this);
         menuPanel = MenuPanel.getMenuPanel(this);
         aperturaCajaPanel = AperturaCajaPanel.getAperturaCajaPanel(this);
         salidaCajaPanel = SalidaCajaPanel.getSalidaCajaPanel(this);
+        salidaExtraordinariaPanel = SalidaExtraordinariaPanel.getSalidaCajaPanel(this);
         ingresoCajaPanel = IngresoCajaPanel.getIngresoCajaPanel(this);
-        cobroServicioPanel = CobroServicioPanel.getCobroPanel(this);
-        cobroOrdenPanel = CobroOrdenPanel.getCobroOrdenPanel(this);
         loadingPanel = LoadingPanel.getLoadingPanel();
         corteCajaPanel = CorteCajaPanel.getCorteCajaPanel(this);
         this.reimpresionesPanel = ReimpresionesPanel.getReimpresionesPanel(this);
         cancelarContratoPanel = CancelarContratoPanel.getCobroPanel(this);
+        estatusOperacionesPanel = EstatusOperacionesPanel.getEstatusOperacionesPanel(this);
+        onusPanel = OnusPanel.getOnusPanel(this);
+        registroOnuPanel = RegistroOnuPanel.getRegistroOnuPanel(this);
         dbConfig = DbConfig.getdDbConfig();
         sesion = Sesion.getSesion();
 
@@ -105,17 +121,37 @@ public class PosFrame extends javax.swing.JFrame {
             case LOADING:
                 this.add(loadingPanel);
                 break;
+            case CONSULTA_CONTRATOS:
+                this.add(busquedaContratosPanel);
+                busquedaContratosPanel.cargarDatosSesion();
+                break;
+            case CONSULTA_CONTRATOS_CANCELADO:
+                this.add(busquedaContratosPanel);
+                busquedaContratosPanel.cargarDatosSesionCancelado();
+                break;
+            case CONSULTA_CONTRATOS_NUEVO_CONTRATO:
+                this.add(busquedaContratosPanel);
+                busquedaContratosPanel.cargarDatosSesion();
+                break;
+            case REGISTRO_SUSCRIPTOR:
+                this.add(registroSuscriptorPanel);
+                registroSuscriptorPanel.cargarDatosSesionNuevoSuscriptor();
+                break;
+            case REGISTRO_CONTRATO:
+                this.add(registroSuscriptorPanel);
+                registroSuscriptorPanel.cargarDatosSesionNuevoContrato();
+                break;
+            case EDICION_CONTRATO:
+                this.add(registroSuscriptorPanel);
+                registroSuscriptorPanel.cargarDatosSesionEdicionContrato();
+                break;
+            case COBROS:
+                this.add(cobrosPanel);
+                cobrosPanel.cargarDatosSesion();
+                break;
             case MENU:
                 this.add(menuPanel);
                 menuPanel.cargarDatosSesion();
-                break;
-            case COBRO_SERVICIO:
-                this.add(cobroServicioPanel);
-                cobroServicioPanel.cargarDatosSesion();
-                break;
-            case COBRO_ORDEN:
-                this.add(cobroOrdenPanel);
-                cobroOrdenPanel.cargarDatosSesion();
                 break;
             case APERTURA:
                 this.add(aperturaCajaPanel);
@@ -124,6 +160,10 @@ public class PosFrame extends javax.swing.JFrame {
             case SALIDA:
                 this.add(salidaCajaPanel);
                 salidaCajaPanel.cargarDatosSesion();
+                break;
+            case SALIDA_EXTRAORDINARIA:
+                this.add(salidaExtraordinariaPanel);
+                salidaExtraordinariaPanel.cargarDatosSesion();
                 break;
             case INGRESO:
                 this.add(ingresoCajaPanel);
@@ -142,6 +182,22 @@ public class PosFrame extends javax.swing.JFrame {
             case CANCELACION_CONTRATO:
                 this.add(cancelarContratoPanel);
                 cancelarContratoPanel.cargarDatosSesion();
+                break;
+            case ESTATUS_OPERACIONES:
+                this.add(estatusOperacionesPanel);
+                estatusOperacionesPanel.cargarDatosSesion();
+                break;
+            case ONUS:
+                this.add(onusPanel);
+                onusPanel.cargarDatosSesion();
+                break;
+            case ONUS_MOSTRAR_NUEVA:
+                this.add(onusPanel);
+                onusPanel.cargarDatosSesion();
+                break;
+            case ONU_REGISTRO:
+                this.add(registroOnuPanel);
+                registroOnuPanel.cargarDatosSesion();
                 break;
             case LOGIN:
                 sesion = null;

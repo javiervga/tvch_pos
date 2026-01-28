@@ -1,50 +1,14 @@
+===============================================
+               Apertura de caja                
                                                
-
-                                              
-                                               
-             Comprobante de Pago               
-                                               
-             TV Cable Hidalguense              
-       Atotonilco  R.F.C. TCH151120HY6         
-           AV. ALLENDE 1 COL. CENTRO,          
-         ATOTONILCO EL GRANDE, HIDALGO         
-             Sucursal ATOTONILCO               
-                                               
-Fecha:       11/05/2025 20:11:43               
-                                               
-Caja:        2                                 
-                                               
-Folio:       220250511201142                   
-                                               
-Tipo Pago:   Pago de Mensualidad               
-                                               
-Contrato:    ATOTONILCO-21302                  
-                                               
-Suscriptor:  JORGE  SANCHEZ MOEDANO            
-                                               
-Domicilio:   FLOR DE LIMON SN LAS FLORES       
-                                               
-Servicio:    PAQUETE PLATA - MINERAL 2         
-                                               
-Telefono:    7711865115                        
-                                               
-Costo Mensualidad(es):                 $ 500.0 
-Pago tardio:                           $ 50.0  
-                                               
-Total a pagar:                         $ 550.0 
-                                               
-Proximo pago antes de:  10/06/25               
-                                               
- RECONEXION DE 24 a 48 HORAS DESPUES DE SU PAGO
-   CANCELACION DEL 25 AL 30 DEL MES PAGADO     
-  HORARIO DE OFICINA LUNES A VIERNES 9AM A 6PM,
-              SABADO DE 9AM A 2PM              
-         Telefono Oficina:  7713614498         
-    Soporte Tecnico WhatsApp: null             
-                                               
-                                               
-                                               
-                                               
+Sucursal:              ATOTONILCO              
+Folio Caja:            120251129020246         
+Folio Server:          0                       
+Num. Caja:             1                       
+Cajero:                MDELGADO                
+Fondo Fijo:            0.0                     
+Fecha:                 29/11/25                
+Hora:                  02:02:46                
                                                
                                                
                                                

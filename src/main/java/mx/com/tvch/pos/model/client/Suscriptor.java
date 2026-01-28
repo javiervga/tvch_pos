@@ -34,9 +34,9 @@ public class Suscriptor {
 
     private String estatusContrato;
 
-    private Long contrato;
+    private Long contratoId;
 
-    private Long contratoAnterior;
+    private Long folioContrato;
 
     private String domicilio;
 
@@ -142,20 +142,20 @@ public class Suscriptor {
         this.estatusContrato = estatusContrato;
     }
 
-    public Long getContrato() {
-        return contrato;
+    public Long getContratoId() {
+        return contratoId;
     }
 
-    public void setContrato(Long contrato) {
-        this.contrato = contrato;
+    public void setContratoId(Long contratoId) {
+        this.contratoId = contratoId;
     }
 
-    public Long getContratoAnterior() {
-        return contratoAnterior;
+    public Long getFolioContrato() {
+        return folioContrato;
     }
 
-    public void setContratoAnterior(Long contratoAnterior) {
-        this.contratoAnterior = contratoAnterior;
+    public void setFolioContrato(Long folioContrato) {
+        this.folioContrato = folioContrato;
     }
 
     public String getDomicilio() {

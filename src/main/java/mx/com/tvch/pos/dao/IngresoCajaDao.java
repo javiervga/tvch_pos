@@ -155,4 +155,68 @@ public class IngresoCajaDao {
         
     }
     
+    /**
+     * 
+     * @return
+     * @throws Exception 
+     */
+    public List<IngresoCajaEntity> obtenerIngresosCaja() throws Exception{
+
+        List<IngresoCajaEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("SELECT id_ingreso_caja, id_apertura_caja, ");
+            query.append("id_tipo_ingreso, observaciones, monto, fecha_ingreso ");
+            query.append("FROM ingresos_caja WHERE id_ingreso_caja_server is null ");
+            query.append("order by id_ingreso_caja asc");
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                IngresoCajaEntity entity = new IngresoCajaEntity();
+                entity.setIngresoCajaId(rs.getLong("id_ingreso_caja"));
+                entity.setAperturaCajaId(rs.getLong("id_apertura_caja"));
+                entity.setTipoIngresoId(rs.getLong("id_tipo_ingreso"));
+                entity.setObservaciones(rs.getString("observaciones"));
+                entity.setMonto(rs.getDouble("monto"));
+                entity.setFechaIngreso(rs.getDate("fecha_ingreso"));
+                list.add(entity);
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar ingresos de caja en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return list;
+
+        
+    }
+    
 }

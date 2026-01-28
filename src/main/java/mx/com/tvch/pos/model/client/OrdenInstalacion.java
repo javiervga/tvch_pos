@@ -13,6 +13,8 @@ public class OrdenInstalacion {
     private Long ordenInstalacionId;
 
     private Long contratoId;
+    
+    private Long folioContrato;
 
     private String usuario;
 
@@ -52,6 +54,14 @@ public class OrdenInstalacion {
 
     public void setContratoId(Long contratoId) {
         this.contratoId = contratoId;
+    }
+
+    public Long getFolioContrato() {
+        return folioContrato;
+    }
+
+    public void setFolioContrato(Long folioContrato) {
+        this.folioContrato = folioContrato;
     }
 
     public String getUsuario() {

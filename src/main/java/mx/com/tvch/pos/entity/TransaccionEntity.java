@@ -19,8 +19,16 @@ public class TransaccionEntity {
     private Long contratoId;
 
     private Double monto;
+    
+    private String observaciones;
+    
+    private String periodo;
 
     private String fechaTransaccion;
+    
+    private String actualFechaCorte;
+    
+    private String nuevaFechaCorte;
 
     public Long getTransaccionId() {
         return transaccionId;
@@ -62,12 +70,44 @@ public class TransaccionEntity {
         this.monto = monto;
     }
 
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
+    public String getPeriodo() {
+        return periodo;
+    }
+
+    public void setPeriodo(String periodo) {
+        this.periodo = periodo;
+    }
+
     public String getFechaTransaccion() {
         return fechaTransaccion;
     }
 
     public void setFechaTransaccion(String fechaTransaccion) {
         this.fechaTransaccion = fechaTransaccion;
+    }
+
+    public String getActualFechaCorte() {
+        return actualFechaCorte;
+    }
+
+    public void setActualFechaCorte(String actualFechaCorte) {
+        this.actualFechaCorte = actualFechaCorte;
+    }
+
+    public String getNuevaFechaCorte() {
+        return nuevaFechaCorte;
+    }
+
+    public void setNuevaFechaCorte(String nuevaFechaCorte) {
+        this.nuevaFechaCorte = nuevaFechaCorte;
     }
 
 }

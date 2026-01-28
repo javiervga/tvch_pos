@@ -4,6 +4,8 @@
  */
 package mx.com.tvch.pos.entity;
 
+import java.util.Date;
+
 /**
  *
  * @author fvega
@@ -19,6 +21,8 @@ public class SalidaCajaEntity {
     private String observaciones;
 
     private Double monto;
+    
+    private Date fechaSalida;
 
     public Long getSalidaCajaId() {
         return salidaCajaId;
@@ -58,6 +62,14 @@ public class SalidaCajaEntity {
 
     public void setMonto(Double monto) {
         this.monto = monto;
+    }
+
+    public Date getFechaSalida() {
+        return fechaSalida;
+    }
+
+    public void setFechaSalida(Date fechaSalida) {
+        this.fechaSalida = fechaSalida;
     }
 
 }

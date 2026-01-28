@@ -4,6 +4,8 @@
  */
 package mx.com.tvch.pos.entity;
 
+import java.util.Date;
+
 /**
  *
  * @author fvega
@@ -21,6 +23,8 @@ public class IngresoCajaEntity {
     private String observaciones;
 
     private Double monto;
+    
+    private Date fechaIngreso;
 
     public Long getIngresoCajaId() {
         return ingresoCajaId;
@@ -68,6 +72,14 @@ public class IngresoCajaEntity {
 
     public void setMonto(Double monto) {
         this.monto = monto;
+    }
+
+    public Date getFechaIngreso() {
+        return fechaIngreso;
+    }
+
+    public void setFechaIngreso(Date fechaIngreso) {
+        this.fechaIngreso = fechaIngreso;
     }
 
 }

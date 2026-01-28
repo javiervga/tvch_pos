@@ -18,17 +18,14 @@ public class DetallePagoServicio {
 
     private Double monto;
 
-    private String motivoDescuento;
-
-    private Long promocionId;
-
-    private Long tipoDescuentoId;
-
     private String fechaProximoPago;
 
-    private Integer mesesGratis;
-    
     private Integer numeroMeses;
+
+    private Integer mesesGratis;
+    private Long promocionId;
+    private Long tipoDescuentoId;
+    private String motivoDescuento;
 
     public Integer getTipoDetalle() {
         return tipoDetalle;

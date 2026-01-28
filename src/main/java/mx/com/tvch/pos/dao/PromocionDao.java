@@ -13,7 +13,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
-import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
+import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.entity.PromocionEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
