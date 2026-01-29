@@ -18,7 +18,7 @@ public class ServicioEntity {
 
     private Double costo;
 
-    private Long zonaId;
+    private Long sucursalId;
 
     private Integer estatus;
 
@@ -58,12 +58,12 @@ public class ServicioEntity {
         this.costo = costo;
     }
 
-    public Long getZonaId() {
-        return zonaId;
+    public Long getSucursalId() {
+        return sucursalId;
     }
 
-    public void setZonaId(Long zonaId) {
-        this.zonaId = zonaId;
+    public void setSucursalId(Long sucursalId) {
+        this.sucursalId = sucursalId;
     }
 
     public Integer getEstatus() {
