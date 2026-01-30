@@ -197,7 +197,6 @@
                                   <Component id="campoFolioContrato" min="-2" pref="100" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
                                   <Component id="etiquetaCOntrato" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="32767" attributes="0"/>
                               </Group>
                               <Component id="campoSuscriptor" max="32767" attributes="0"/>
                           </Group>
