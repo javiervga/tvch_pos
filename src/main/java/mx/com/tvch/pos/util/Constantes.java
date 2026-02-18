@@ -99,6 +99,7 @@ public class Constantes {
     public static final long TIPO_ORDEN_SERVICIO_CAMBIO_PLAN = 7;
     public static final long TIPO_ORDEN_SERVICIO_RETIRO_EQUIPO_CANCELACION = 8;
     public static final long TIPO_ORDEN_SERVICIO_RECONEXION_SERVICIO = 9;
+    public static final long TIPO_ORDEN_SERVICIO_MIGRACION = 10;
     
     public static final long TIPO_COBRO_ORDEN_INSTALACION = 1;
     public static final long TIPO_COBRO_SERVICIO = 2;
