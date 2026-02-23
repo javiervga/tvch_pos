@@ -199,8 +199,8 @@ public class ContratoDao {
             query.append(entity.getFechaProximoPago()).append("',");
             query.append(entity.getTipoServicioId()).append(",");
             query.append(entity.getFolioPlaca()).append(",'");
-            query.append(entity.getColorPlaca()).append("','");
-            query.append(entity.getOnu()).append("',");
+            query.append(entity.getColorPlaca()).append("',");
+            query.append("null,");
             query.append(entity.getUsuarioId()).append(",");
             query.append(entity.getPrimerDiaPago()).append(",");
             query.append(entity.getPrimerMesPago()).append(",");

@@ -13,8 +13,10 @@ import java.util.List;
 import java.util.logging.Level;
 import javax.swing.JOptionPane;
 import mx.com.tvch.pos.config.Sesion;
+import mx.com.tvch.pos.controller.OnuController;
 import mx.com.tvch.pos.controller.RegistroSuscriptorController;
 import mx.com.tvch.pos.controller.ServicioController;
+import mx.com.tvch.pos.entity.OnuEntity;
 import mx.com.tvch.pos.util.Utilerias;
 import mx.com.tvch.pos.util.VentanaEnum;
 import mx.com.tvch.pos.model.Mes;
@@ -37,6 +39,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
     private final Sesion sesion;
     private final RegistroSuscriptorController controller;
     private final ServicioController servicioController;
+    private final OnuController onuController;
     private final Utilerias utilerias;
     private boolean esNuevoSuscriptor;
     private boolean esNuevoCOntrato;
@@ -58,6 +61,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         sesion = Sesion.getSesion();
         controller = RegistroSuscriptorController.getRegistroSuscriptorController();
         servicioController = ServicioController.getServicioController();
+        onuController = OnuController.getOnuController();
         utilerias = Utilerias.getUtilerias();
         crearEventos();
     }
@@ -128,7 +132,6 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                                         (TipoServicioInternet)comboTiposInternet.getSelectedItem(),
                                         campoFolioPlaca.getText().trim(),
                                         campoColorPlaca.getText().trim(),
-                                        campoOnu.getText().trim(),
                                         campoNap.getText().trim(),
                                         campoCalle.getText().trim(), 
                                         campoNumeroExt.getText().trim(), 
@@ -244,7 +247,6 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                                     (TipoServicioInternet)comboTiposInternet.getSelectedItem(),
                                     campoFolioPlaca.getText().trim(),
                                     campoColorPlaca.getText().trim(),
-                                    campoOnu.getText().trim(),
                                     campoNap.getText().trim(),
                                     campoCalle.getText().trim(), 
                                     campoNumeroExt.getText().trim(), 
@@ -439,8 +441,8 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         if( campoColorPlaca.getText().trim().isEmpty() || campoColorPlaca.getText().length() > 20)
             errores.add("El color de placa debe tener una longitud de entre 1 y 20 caracteres  \n ");
         
-        if( campoOnu.getText().trim().isEmpty() || campoOnu.getText().length() > 50)
-            errores.add("La ONU debe tener una longitud de entre 1 y 50 caracteres  \n ");
+        //if( campoOnu.getText().trim().isEmpty() || campoOnu.getText().length() > 50)
+            //errores.add("La ONU debe tener una longitud de entre 1 y 50 caracteres  \n ");
         
         if( campoNap.getText().trim().isEmpty() || campoNap.getText().length() > 50)
             errores.add("La Nap debe tener una longitud de entre 1 y 50 caracteres  \n ");
@@ -519,8 +521,8 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         if( campoColorPlaca.getText().trim().isEmpty() || campoColorPlaca.getText().length() > 20)
             errores.add("El color de placa debe tener una longitud de entre 1 y 20 caracteres  \n ");
         
-        if( campoOnu.getText().trim().isEmpty() || campoOnu.getText().length() > 50)
-            errores.add("La ONU debe tener una longitud de entre 1 y 50 caracteres  \n ");
+        //if( campoOnu.getText().trim().isEmpty() || campoOnu.getText().length() > 50)
+            //errores.add("La ONU debe tener una longitud de entre 1 y 50 caracteres  \n ");
         
         if( campoNap.getText().trim().isEmpty() || campoNap.getText().length() > 50)
             errores.add("La Nap debe tener una longitud de entre 1 y 50 caracteres  \n ");
@@ -621,7 +623,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         comboTiposInternet.setEnabled(true);
         campoFolioPlaca.setEnabled(true);
         campoColorPlaca.setEnabled(true);
-        campoOnu.setEnabled(true);
+        campoOnu.setEnabled(false);
         campoNap.setEnabled(true);
         campoCalle.setEnabled(true);
         campoNumeroExt.setEnabled(true);
@@ -691,7 +693,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
             comboTiposInternet.setEnabled(true);
             campoFolioPlaca.setEnabled(true);
             campoColorPlaca.setEnabled(true);
-            campoOnu.setEnabled(true);
+            campoOnu.setEnabled(false);
             campoNap.setEnabled(true);
             campoCalle.setEnabled(true);
             campoNumeroExt.setEnabled(true);
@@ -818,8 +820,16 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         campoColorPlaca.setEnabled(true);
         campoColorPlaca.setText(sesion.getContratoSeleccionado().getColorPlaca());
         
-        campoOnu.setEnabled(true);
-        campoOnu.setText(sesion.getContratoSeleccionado().getOnu());
+        campoOnu.setEnabled(false);
+        if(sesion.getContratoSeleccionado().getOnuId() != null){
+            try {
+                OnuEntity onuEntity = onuController.consultarOnu(sesion.getContratoSeleccionado().getOnuId());
+                campoOnu.setText(onuEntity.getSerie());
+            } catch (Exception ex) {
+                logger.error("Error al consultar Onu con id: "+sesion.getContratoSeleccionado().getOnuId());
+                ex.printStackTrace();
+            }
+        }
         
         campoNap.setEnabled(true);
         campoNap.setText(sesion.getContratoSeleccionado().getNap());
@@ -1337,7 +1347,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         etiquetaOnu.setText("Onu:");
 
         campoOnu.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        campoOnu.setToolTipText("Capture Datos de la Onu");
+        campoOnu.setToolTipText("Número de Serie de la Onu asociada");
 
         etiquetaNap.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
         etiquetaNap.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -1390,13 +1400,12 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
                                     .addComponent(campoFolioPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(panelDatosContrato1Layout.createSequentialGroup()
-                                .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(campoOnu, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
-                                    .addComponent(campoColorPlaca, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addComponent(campoColorPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(38, 38, 38)
                                 .addComponent(etiquetaNap)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(campoNap))))
+                                .addComponent(campoNap))
+                            .addComponent(campoOnu)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelDatosContrato1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(panelDatosContrato1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
