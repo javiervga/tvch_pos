@@ -143,7 +143,7 @@ public class OnuController {
             throw new TvchException("No se encontró el contrato asociado a la Onu indicada. Por favor contacte a Soporte Técnico");
         
         if(contratoEntitys.size() > 1)
-            throw new TvchException("Se han encontrado múltiples contratos con la Onu seleccionada. Pr favor contacte a Soporte Técnico");
+            throw new TvchException("Se han encontrado múltiples contratos con la Onu seleccionada. Por favor contacte a Soporte Técnico");
         
         onuDao.actualizarOnu(entity.getOnuId(), entity.getSerie(), Constantes.ESTATUS_ONU_DISPONIBLE);
         contratoDao.actualizarOnu(contratoEntitys.get(0).getId(), null);

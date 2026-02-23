@@ -119,7 +119,6 @@ public class RegistroSuscriptorController {
      * @param tipoServicioInternet
      * @param folioPlaca
      * @param colorPlaca
-     * @param onu
      * @param nap
      * @param calle
      * @param numeroCalle
@@ -141,7 +140,6 @@ public class RegistroSuscriptorController {
             TipoServicioInternet tipoServicioInternet,
             String folioPlaca,
             String colorPlaca,
-            String onu,
             String nap,
             String calle,
             String numeroCalle,
@@ -183,8 +181,6 @@ public class RegistroSuscriptorController {
             contratoEntity.setFolioPlaca(Long.valueOf(contratoEntity.getFolioContrato()));
         }
         
-        if(onu != null)
-            contratoEntity.setOnu(utilerias.limpiarAcentos(onu.toUpperCase()));
         if(nap != null)
             contratoEntity.setNap(utilerias.limpiarAcentos(nap.toUpperCase()));
 
@@ -222,7 +218,6 @@ public class RegistroSuscriptorController {
      * @param tipoServicioInternet
      * @param folioPlaca
      * @param colorPlaca
-     * @param onu
      * @param nap
      * @param calle
      * @param numeroCalle
@@ -248,7 +243,6 @@ public class RegistroSuscriptorController {
             TipoServicioInternet tipoServicioInternet,
             String folioPlaca,
             String colorPlaca,
-            String onu,
             String nap,
             String calle,
             String numeroCalle,
@@ -285,8 +279,6 @@ public class RegistroSuscriptorController {
         else
             contratoEntity.setFolioPlaca(Long.parseLong(folioContrato));
         contratoEntity.setUsuarioId(sesion.getUsuarioId());
-        if(onu != null)
-            contratoEntity.setOnu(utilerias.limpiarAcentos(onu.toUpperCase()));
         contratoEntity.setPrimerDiaPago(sesion.getDiaCorte());
         contratoEntity.setPrimerMesPago(mesPago.getNumero());
         contratoEntity.setPrimerAnioPago(anioPago);
