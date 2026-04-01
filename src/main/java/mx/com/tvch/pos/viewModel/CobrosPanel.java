@@ -928,8 +928,13 @@ public class CobrosPanel extends javax.swing.JPanel {
             anioPagado = anioPagado - 1;
       
         Integer numeroMeses = 0;
-        if(checkServicio.isSelected())
-            numeroMeses = util.calcularMesesPagados(mesSeleccionado, anioSeleccionado, suscriptorSeleccionado.getFechaProximoPago());
+        if(checkServicio.isSelected()){
+            if(promocion != null){
+                numeroMeses = promocion.getMesesPagados() + promocion.getMesesGratis();
+            }else{
+                numeroMeses = util.calcularMesesPagados(mesSeleccionado, anioSeleccionado, suscriptorSeleccionado.getFechaProximoPago());
+            }
+        }
         
         Double montoTotalMeses = 0.0;
         
@@ -1500,9 +1505,9 @@ public class CobrosPanel extends javax.swing.JPanel {
         etiquetaPromocionAplicada.setVisible(false);
         etiquetaRecargoPagoTardio.setVisible(false);
         
-        tablaOrdenes.getColumnModel().getColumn(0).setPreferredWidth(50);
-        tablaOrdenes.getColumnModel().getColumn(1).setPreferredWidth(180);
-        tablaOrdenes.getColumnModel().getColumn(2).setPreferredWidth(580);
+        tablaOrdenes.getColumnModel().getColumn(0).setPreferredWidth(80);
+        tablaOrdenes.getColumnModel().getColumn(1).setPreferredWidth(170);
+        tablaOrdenes.getColumnModel().getColumn(2).setPreferredWidth(560);
         tablaOrdenes.getColumnModel().getColumn(3).setPreferredWidth(90);
         
         actualizarInformacionPago(null, mesSeleccionado, anioSeleccionado, suscriptorSeleccionado, true);
