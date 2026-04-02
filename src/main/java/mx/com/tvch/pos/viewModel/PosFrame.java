@@ -91,7 +91,6 @@ public class PosFrame extends javax.swing.JFrame {
                     + "\n antes de continuar, verifique su instalación de la Base de Datos");
         }
 
-        System.out.println("hashcode: " + this.hashCode());
     }
     
     private void crearEventos(){
