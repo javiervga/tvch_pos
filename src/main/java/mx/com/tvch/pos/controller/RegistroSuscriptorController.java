@@ -181,8 +181,10 @@ public class RegistroSuscriptorController {
             contratoEntity.setFolioPlaca(Long.valueOf(contratoEntity.getFolioContrato()));
         }
         
-        if(nap != null)
+        if(nap != null && !nap.isEmpty())
             contratoEntity.setNap(utilerias.limpiarAcentos(nap.toUpperCase()));
+        else
+            contratoEntity.setNap(null);
 
         // actualizar domicilio
         DomicilioEntity domicilioEntity = new DomicilioEntity();
@@ -282,8 +284,10 @@ public class RegistroSuscriptorController {
         contratoEntity.setPrimerDiaPago(sesion.getDiaCorte());
         contratoEntity.setPrimerMesPago(mesPago.getNumero());
         contratoEntity.setPrimerAnioPago(anioPago);
-        if(nap != null)
+        if(nap != null && !nap.isEmpty())
             contratoEntity.setNap(utilerias.limpiarAcentos(nap.toUpperCase()));
+        else
+            contratoEntity.setNap(null);
         contratoEntity.setNumeroCaja(sesion.getNumeroCaja());
 
         ContratoPorSuscriptorEntity entity = new ContratoPorSuscriptorEntity();

@@ -821,7 +821,7 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         campoColorPlaca.setText(sesion.getContratoSeleccionado().getColorPlaca());
         
         campoOnu.setEnabled(false);
-        if(sesion.getContratoSeleccionado().getOnuId() != null){
+        if(sesion.getContratoSeleccionado().getOnuId() != null && sesion.getContratoSeleccionado().getOnuId() > 0){
             try {
                 OnuEntity onuEntity = onuController.consultarOnu(sesion.getContratoSeleccionado().getOnuId());
                 campoOnu.setText(onuEntity.getSerie());
