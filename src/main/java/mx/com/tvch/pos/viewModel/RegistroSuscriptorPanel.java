@@ -444,8 +444,8 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         //if( campoOnu.getText().trim().isEmpty() || campoOnu.getText().length() > 50)
             //errores.add("La ONU debe tener una longitud de entre 1 y 50 caracteres  \n ");
         
-        if( campoNap.getText().trim().isEmpty() || campoNap.getText().length() > 50)
-            errores.add("La Nap debe tener una longitud de entre 1 y 50 caracteres  \n ");
+        //if( campoNap.getText().trim().isEmpty() || campoNap.getText().length() > 50)
+            //errores.add("La Nap debe tener una longitud de entre 1 y 50 caracteres  \n ");
         
         if( campoCalle.getText().trim().isEmpty() || campoCalle.getText().length() > 120)
             errores.add("La calle debe tener una longitud de entre 1 y 120 caracteres  \n ");
@@ -524,8 +524,8 @@ public class RegistroSuscriptorPanel extends javax.swing.JPanel {
         //if( campoOnu.getText().trim().isEmpty() || campoOnu.getText().length() > 50)
             //errores.add("La ONU debe tener una longitud de entre 1 y 50 caracteres  \n ");
         
-        if( campoNap.getText().trim().isEmpty() || campoNap.getText().length() > 50)
-            errores.add("La Nap debe tener una longitud de entre 1 y 50 caracteres  \n ");
+        //if( campoNap.getText().trim().isEmpty() || campoNap.getText().length() > 50)
+            //errores.add("La Nap debe tener una longitud de entre 1 y 50 caracteres  \n ");
         
         if( campoCalle.getText().trim().isEmpty() || campoCalle.getText().length() > 120)
             errores.add("La calle debe tener una longitud de entre 1 y 120 caracteres  \n ");
