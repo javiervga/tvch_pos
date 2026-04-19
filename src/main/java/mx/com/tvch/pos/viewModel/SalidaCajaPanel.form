@@ -73,8 +73,8 @@
                                   <Component id="campoUsuario" min="-2" pref="268" max="-2" attributes="0"/>
                                   <Component id="campoCaja" alignment="0" min="-2" pref="268" max="-2" attributes="0"/>
                                   <Component id="campoSucursal" alignment="0" min="-2" max="-2" attributes="0"/>
-                                  <Component id="comboTipoSalida" alignment="0" min="-2" pref="206" max="-2" attributes="0"/>
                                   <Component id="campoMontoSalida" min="-2" pref="94" max="-2" attributes="0"/>
+                                  <Component id="comboTipoSalida" alignment="0" min="-2" pref="385" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
