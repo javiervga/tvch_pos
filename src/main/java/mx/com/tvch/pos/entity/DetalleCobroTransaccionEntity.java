@@ -11,6 +11,8 @@ package mx.com.tvch.pos.entity;
 public class DetalleCobroTransaccionEntity {
 
     private Long detalleId;
+    
+    private Long detalleServerId;
 
     private Long servicioId;
 
@@ -32,6 +34,14 @@ public class DetalleCobroTransaccionEntity {
 
     public void setDetalleId(Long detalleId) {
         this.detalleId = detalleId;
+    }
+
+    public Long getDetalleServerId() {
+        return detalleServerId;
+    }
+
+    public void setDetalleServerId(Long detalleServerId) {
+        this.detalleServerId = detalleServerId;
     }
 
     public Long getServicioId() {

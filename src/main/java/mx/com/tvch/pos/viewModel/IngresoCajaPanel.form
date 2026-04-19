@@ -70,11 +70,11 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="botonRegresar" min="-2" pref="140" max="-2" attributes="0"/>
                           <Component id="campoMontoSalida" min="-2" pref="94" max="-2" attributes="0"/>
-                          <Component id="comboTipoIngreso" min="-2" pref="206" max="-2" attributes="0"/>
                           <Component id="campoSucursal" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="campoCaja" alignment="0" min="-2" pref="268" max="-2" attributes="0"/>
                           <Component id="campoUsuario" alignment="0" min="-2" pref="268" max="-2" attributes="0"/>
                           <Component id="jScrollPane1" min="-2" pref="457" max="-2" attributes="0"/>
+                          <Component id="comboTipoIngreso" alignment="0" min="-2" pref="373" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>

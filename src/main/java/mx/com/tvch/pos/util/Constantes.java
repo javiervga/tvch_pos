@@ -23,6 +23,10 @@ public class Constantes {
     
     public static final long ESTATUS_SUSCRIPTOR_ACTIVO = 2;
     
+    public static final int ESTATUS_DOMICILIO_CONTRATO_ACTIVO = 1;
+    
+    public static final int ESTATUS_SERVICIO_CONTRATO_ACTIVO = 1;
+    
     public static final long ESTATUS_CONTRATO_NUEVO = 1;
     public static final long ESTATUS_CONTRATO_PENDIENTE_INSTALAR = 2;
     public static final long ESTATUS_CONTRATO_ACTIVO = 3;
@@ -40,8 +44,18 @@ public class Constantes {
     public static final int ESTATUS_ACTIVO = 1;
     public static final int ESTATUS_INACTIVO = 0;
     
+    public static final int TIPO_ACTUALIZACION_CONTRATO_NO_ACTUALIZAR = 0;
+    public static final int TIPO_ACTUALIZACION_CONTRATO_INFORMACION = 1;
+    public static final int TIPO_ACTUALIZACION_CONTRATO_INFORMACION_Y_ESTATUS = 2;
+    
     public static final long TIPO_PROMOCION_SERVICIO = 1;
     public static final long TIPO_PROMOCION_ORDEN_INSTALACION = 2;
+    
+    //estatus de onus
+    public static final long ESTATUS_ONU_TODOS = 0;
+    public static final long ESTATUS_ONU_ASIGNADA = 1;
+    public static final long ESTATUS_ONU_DISPONIBLE = 2;
+    public static final long ESTATUS_ONU_INSERVIBLE = 3;
     
     public static final long ESTATUS_ORDEN_NUEVA = 1;
     public static final long ESTATUS_ORDEN_PAGADA = 2;
@@ -72,19 +86,20 @@ public class Constantes {
     public static final int TIPO_BUSQUEDA_APELLIDO_MATERNO = 4;
     public static final int TIPO_BUSQUEDA_DOMICILIO = 5;
     
-    public static final int TIPO_ORDEN_INSTALACION = 1;
-    public static final int TIPO_ORDEN_SERVICIO = 2;
-    public static final int TIPO_ORDEN_CAMBIO_DOMICILIO = 4;
+    public static final long TIPO_ORDEN_INSTALACION = 1;
+    public static final long TIPO_ORDEN_SERVICIO = 2;
+    public static final long TIPO_ORDEN_CAMBIO_DOMICILIO = 4;
     
-    public static final int TIPO_ORDEN_SERVICIO_TV_ADICIONAL = 1;
-    public static final int TIPO_ORDEN_SERVICIO_CAMBIO_CABLE_ACOMETIDA = 2;
-    public static final int TIPO_ORDEN_SERVICIO_CAMBIO_CABLEADO = 3;
-    public static final int TIPO_ORDEN_SERVICIO_REUBICACION_MODEM = 4;
-    public static final int TIPO_ORDEN_SERVICIO_CAMBIO_UBICACION_TV = 5;
-    public static final int TIPO_ORDEN_SERVICIO_VISITA_TECNICA = 6;
-    public static final int TIPO_ORDEN_SERVICIO_CAMBIO_PLAN = 7;
-    public static final int TIPO_ORDEN_SERVICIO_RETIRO_EQUIPO_CANCELACION = 8;
-    public static final int TIPO_ORDEN_SERVICIO_RECONEXION_SERVICIO = 9;
+    public static final long TIPO_ORDEN_SERVICIO_TV_ADICIONAL = 1;
+    public static final long TIPO_ORDEN_SERVICIO_CAMBIO_CABLE_ACOMETIDA = 2;
+    public static final long TIPO_ORDEN_SERVICIO_CAMBIO_CABLEADO = 3;
+    public static final long TIPO_ORDEN_SERVICIO_REUBICACION_MODEM = 4;
+    public static final long TIPO_ORDEN_SERVICIO_CAMBIO_UBICACION_TV = 5;
+    public static final long TIPO_ORDEN_SERVICIO_VISITA_TECNICA = 6;
+    public static final long TIPO_ORDEN_SERVICIO_CAMBIO_PLAN = 7;
+    public static final long TIPO_ORDEN_SERVICIO_RETIRO_EQUIPO_CANCELACION = 8;
+    public static final long TIPO_ORDEN_SERVICIO_RECONEXION_SERVICIO = 9;
+    public static final long TIPO_ORDEN_SERVICIO_MIGRACION = 10;
     
     public static final long TIPO_COBRO_ORDEN_INSTALACION = 1;
     public static final long TIPO_COBRO_SERVICIO = 2;
@@ -92,21 +107,20 @@ public class Constantes {
     public static final long TIPO_COBRO_ORDEN_CAMBIO_DOMICILIO = 4;
     public static final long TIPO_COBRO_RECARGO_MENSUALIDAD = 5;
     public static final long TIPO_COBRO_CANCELACION_CONTRATO = 6;
-    public static final long TIPO_COBRO_PROVISIONAL = 7;
     
     // Propiedades
     public static final String TVCH_API_URL = "tvch.api.path.url";
     public static final String TVCH_API_LIST_SUSCRIPTORES = "tvch.api.path.suscriptores";
-    public static final String TVCH_API_LIST_ORDENES_INSTALACION = "tvch.api.path.ordenes.instalacion";
-    public static final String TVCH_API_LIST_ORDENES_INSTALACION_PROMOCIONES = "tvch.api.path.ordenes.instalacion.promociones";
-    public static final String TVCH_API_ORDENES_INSTALACION_UPDATE_PAGO = "tvch.api.path.ordenes.instalacion.pago";
-    public static final String TVCH_API_ORDENES_SERVICIO_UPDATE_PAGO = "tvch.api.path.ordenes.servicio.pago";
-    public static final String TVCH_API_ORDENES_CAMBIO_DOMICILIO_UPDATE_PAGO = "tvch.api.path.ordenes.cambio.domicilio.pago";
+    //public static final String TVCH_API_LIST_ORDENES_INSTALACION = "tvch.api.path.ordenes.instalacion";
+    //public static final String TVCH_API_LIST_ORDENES_INSTALACION_PROMOCIONES = "tvch.api.path.ordenes.instalacion.promociones";
+    //public static final String TVCH_API_ORDENES_INSTALACION_UPDATE_PAGO = "tvch.api.path.ordenes.instalacion.pago";
+    //public static final String TVCH_API_ORDENES_SERVICIO_UPDATE_PAGO = "tvch.api.path.ordenes.servicio.pago";
+    //public static final String TVCH_API_ORDENES_CAMBIO_DOMICILIO_UPDATE_PAGO = "tvch.api.path.ordenes.cambio.domicilio.pago";
     public static final String TVCH_API_LIST_TIPOS_DESCUENTO = "tvch.api.path.tipos.descuento";
-    public static final String TVCH_API_LIST_ORDENES_SERVICIO = "tvch.api.path.ordenes.servicio";
-    public static final String TVCH_API_LIST_ORDENES_CAMBIO_DOMICILIO = "tvch.api.path.ordenes.cambio.domicilio";
-    public static final String TVCH_API_CONTRATO_UPDATE_CANCELACION = "tvch.api.path.cancelacion.contrato";
-    public static final String TVCH_API_CONTRATO_UPDATE_RECONEXION = "tvch.api.path.reconexion.contrato";
+    //public static final String TVCH_API_LIST_ORDENES_SERVICIO = "tvch.api.path.ordenes.servicio";
+    //public static final String TVCH_API_LIST_ORDENES_CAMBIO_DOMICILIO = "tvch.api.path.ordenes.cambio.domicilio";
+    //public static final String TVCH_API_CONTRATO_UPDATE_CANCELACION = "tvch.api.path.cancelacion.contrato";
+    //public static final String TVCH_API_CONTRATO_UPDATE_RECONEXION = "tvch.api.path.reconexion.contrato";
     
     public static final String TVCH_API_LOGIN_URL = "tvch.api.login.url";
     public static final String TVCH_API_LIST_ZONAS = "tvch.api.zonas.url";
@@ -148,16 +162,13 @@ public class Constantes {
     public static final long TIPO_DIFERENCIA_CORTE_FALTANTE = 1;
     public static final long TIPO_DIFERENCIA_CORTE_SOBRANTE = 2;
     
-    public static final int ESTATUS_COBRO_PROVISIONAL_NUEVO = 0;
-    public static final int ESTATUS_COBRO_PROVISIONAL_APLICADO = 1;
-    
+    public static final int OPERACION_NUEVO_CONTRATO = 0;
     public static final int OPERACION_COBRO_SERVICIO = 1;
     public static final int OPERACION_CANCELACION = 2;
-    public static final int OPERACION_COBRO_PROVISIONAL = 3;
-    public static final int OPERACION_CORTE = 4;
-    public static final int OPERACION_APERTURA = 5;
-    public static final int OPERACION_INGRESO = 6;
-    public static final int OPERACION_EGRESO = 7;
-    public static final int OPERACION_EGRESO_EXTRAORDINARIO = 8;
+    public static final int OPERACION_CORTE = 3;
+    public static final int OPERACION_APERTURA = 4;
+    public static final int OPERACION_INGRESO = 5;
+    public static final int OPERACION_EGRESO = 6;
+    public static final int OPERACION_EGRESO_EXTRAORDINARIO = 7;
     
 }

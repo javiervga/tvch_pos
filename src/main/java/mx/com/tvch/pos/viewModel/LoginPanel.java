@@ -14,6 +14,7 @@ import mx.com.tvch.pos.controller.LoginController;
 import mx.com.tvch.pos.entity.CajaEntity;
 import mx.com.tvch.pos.entity.SucursalEntity;
 import mx.com.tvch.pos.entity.UsuarioEntity;
+import mx.com.tvch.pos.util.LectorProperties;
 import mx.com.tvch.pos.util.VentanaEnum;
 
 /**
@@ -27,6 +28,7 @@ public class LoginPanel extends javax.swing.JPanel {
 
     private final LoginController controller;
     private final Sesion sesion;
+    private final LectorProperties properties;
 
     public static LoginPanel getLoginPanel(PosFrame frame) {
         if (loginPanel == null) {
@@ -42,6 +44,7 @@ public class LoginPanel extends javax.swing.JPanel {
     public LoginPanel() {
         controller = LoginController.getLoginController();
         sesion = Sesion.getSesion();
+        properties = LectorProperties.getLectorProperties();
         initComponents();
         crearEventos();
     }
@@ -147,6 +150,7 @@ public class LoginPanel extends javax.swing.JPanel {
         accesarButton = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         campoPassword = new javax.swing.JPasswordField();
+        jLabel4 = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setMaximumSize(new java.awt.Dimension(1500, 800));
@@ -165,20 +169,28 @@ public class LoginPanel extends javax.swing.JPanel {
 
         campoPassword.setToolTipText("");
 
+        jLabel4.setText("V - 2.0.0 ");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 1130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(accesarButton, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
-                    .addComponent(campousuario, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(campoPassword))
-                .addContainerGap(187, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(accesarButton, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
+                            .addComponent(campousuario, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(campoPassword))
+                        .addContainerGap(187, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel4)
+                        .addGap(20, 20, 20))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -194,7 +206,9 @@ public class LoginPanel extends javax.swing.JPanel {
                 .addComponent(campoPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
                 .addComponent(accesarButton)
-                .addContainerGap(545, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 423, Short.MAX_VALUE)
+                .addComponent(jLabel4)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -206,5 +220,6 @@ public class LoginPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     // End of variables declaration//GEN-END:variables
 }

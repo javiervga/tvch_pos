@@ -5,6 +5,7 @@
 package mx.com.tvch.pos.util;
 
 import java.text.DecimalFormat;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -17,8 +18,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javafx.util.converter.LocalDateStringConverter;
 import mx.com.tvch.pos.config.Sesion;
-import mx.com.tvch.pos.entity.ContratoxSuscriptorEntity;
+import mx.com.tvch.pos.entity.ContratoxSuscriptorDetalleEntity;
 import mx.com.tvch.pos.model.Mes;
 
 /**
@@ -57,6 +59,32 @@ public class Utilerias {
         meses.add(new Mes(12,"DICIEMBRE"));
     }
     
+    public LocalDate dateToLocalDate(Date fecha) {
+        return fecha.toInstant()
+            .atZone(ZoneId.of(Constantes.ZONA_HORARIA))
+            .toLocalDate();
+    }
+    
+    public LocalDateTime dateToLocalDateTime(Date fecha){
+        return Instant.ofEpochMilli(fecha.getTime())
+                .atZone(ZoneId.of(Constantes.ZONA_HORARIA))
+                .toLocalDateTime();
+    }
+
+    public List<Mes> obtenerMeses(){
+        return meses;
+    }
+    
+    public Mes obtenerMesEnCurso(){
+        LocalDate ld = LocalDate.now();
+        return meses.stream().filter(m -> m.getNumero() == ld.getMonthValue()).findFirst().get();
+    }
+    
+    public Mes obtenerMes(Integer mesPorBuscar){
+        Mes mes = meses.stream().filter(m -> m.getNumero() == mesPorBuscar ).findFirst().get();
+        return mes;
+    }
+    
     /**
      * 
      * @param fechaCorte
@@ -65,9 +93,9 @@ public class Utilerias {
      */
     public Integer obtenerDiferenciaMeses(Calendar fechaCorte, Calendar fechaEnCurso) {
         LocalDate fechaInicio = LocalDate
-                .of(fechaCorte.get(Calendar.YEAR), fechaCorte.get(Calendar.MONTH), fechaCorte.get(Calendar.DAY_OF_MONTH));
+                .of(fechaCorte.get(Calendar.YEAR), fechaCorte.get(Calendar.MONTH)+1, fechaCorte.get(Calendar.DAY_OF_MONTH));
         LocalDate fechaFin = LocalDate
-                .of(fechaEnCurso.get(Calendar.YEAR), fechaEnCurso.get(Calendar.MONTH), fechaEnCurso.get(Calendar.DAY_OF_MONTH));
+                .of(fechaEnCurso.get(Calendar.YEAR), fechaEnCurso.get(Calendar.MONTH)+1, fechaEnCurso.get(Calendar.DAY_OF_MONTH));
 
         Period periodo = Period.between(fechaInicio, fechaFin);
         return periodo.getMonths();
@@ -106,7 +134,7 @@ public class Utilerias {
         return cadena.toString();
     }
     
-    public boolean esFechaPagoValida(ContratoxSuscriptorEntity suscriptor, Mes mesSeleccionado, int anioSeleccionado){
+    public boolean esFechaPagoValida(ContratoxSuscriptorDetalleEntity suscriptor, Mes mesSeleccionado, int anioSeleccionado){
         
         boolean esValida = false;
         
@@ -427,6 +455,15 @@ public class Utilerias {
         return Long.valueOf(cadenaId);
 
     }
+    
+    public Long generarIdSucursal(Long idSucursal) {
+
+        LocalDateTime ld = LocalDateTime.now(ZoneId.of(Constantes.ZONA_HORARIA));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+        String cadenaId = String.valueOf(idSucursal).concat(ld.format(formatter));
+        return Long.valueOf(cadenaId);
+
+    }
 
     public boolean esMontoValido(String montoCadena, boolean sePermiteCero) {
 
@@ -457,6 +494,42 @@ public class Utilerias {
      */
     public Date convertirCadenaMysqlaDate(String cadenaFechaMysql) throws ParseException {
         return dateFormatMysql.parse(cadenaFechaMysql);
+    }
+    
+    /**
+     * 
+     * @param cadena
+     * @return 
+     */
+    public String limpiarAcentos(String cadena) {
+        String cadenaLimpia = null;
+        if (cadena != null) {
+            String valor = cadena;
+            valor = valor.toUpperCase();
+            // Normalizar texto para eliminar acentos, dieresis, cedillas y tildes
+            cadenaLimpia = Normalizer.normalize(valor, Normalizer.Form.NFD);
+            // Quitar caracteres no ASCII excepto la enie, interrogacion que abre, exclamacion que abre, grados, U con dieresis.
+            //cadenaLimpia = cadenaLimpia.replaceAll("[^\\p{ASCII}(N\u0303)(n\u0303)(\u00A1)(\u00BF)(\u00B0)(U\u0308)(u\u0308)]", "");
+            cadenaLimpia = cadenaLimpia.replaceAll("[^\\p{ASCII}]", "");
+            // Regresar a la forma compuesta, para poder comparar la enie con la tabla de valores
+            cadenaLimpia = Normalizer.normalize(cadenaLimpia, Normalizer.Form.NFC);
+        }
+        return cadenaLimpia;
+    }
+    
+    /**
+     * 
+     * @return
+     * @throws ParseException 
+     */
+    public Date obtenerFechaCorteDelMesEnCurso() throws ParseException {
+        Calendar nuevaFechaCorte = Calendar.getInstance();
+        nuevaFechaCorte.setTime(new Date());// se setea la fecha en curso
+        nuevaFechaCorte.set(Calendar.DAY_OF_MONTH, 10);  // se le pone el dia de corte
+        nuevaFechaCorte.set(Calendar.HOUR_OF_DAY, 0);
+        nuevaFechaCorte.set(Calendar.MINUTE, 0);
+        nuevaFechaCorte.set(Calendar.SECOND, 0);
+        return nuevaFechaCorte.getTime();
     }
 
 }

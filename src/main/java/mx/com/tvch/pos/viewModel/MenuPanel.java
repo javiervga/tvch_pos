@@ -135,7 +135,7 @@ public class MenuPanel extends javax.swing.JPanel {
         };
         botonCorteCaja.addActionListener(botonCorteCajaListener);
         
-        ActionListener botonCobrarOrdenListener = new ActionListener() {
+        /*ActionListener botonCobrarOrdenListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //posFrame.mostrarLoading();
@@ -155,9 +155,9 @@ public class MenuPanel extends javax.swing.JPanel {
                 }
             }
         };
-        botonCobrarOrden.addActionListener(botonCobrarOrdenListener);
+        botonCobrarOrden.addActionListener(botonCobrarOrdenListener);*/
         
-        ActionListener botonCobrarServicioListener = new ActionListener() {
+        /*ActionListener botonCobrarServicioListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //posFrame.mostrarLoading();
@@ -177,9 +177,9 @@ public class MenuPanel extends javax.swing.JPanel {
                 }
             }
         };
-        botonCobrarServicio.addActionListener(botonCobrarServicioListener);
+        botonCobrarServicio.addActionListener(botonCobrarServicioListener);*/
         
-        ActionListener botonCobroProvisionalServicioListener = new ActionListener() {
+        /*ActionListener botonCobroProvisionalServicioListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //posFrame.mostrarLoading();
@@ -199,7 +199,7 @@ public class MenuPanel extends javax.swing.JPanel {
                 }
             }
         };
-        botonCobroProvisional.addActionListener(botonCobroProvisionalServicioListener);
+        botonCobroProvisional.addActionListener(botonCobroProvisionalServicioListener);*/
         
         ActionListener botonAbrirCajaListener = new ActionListener() {
             @Override
@@ -258,6 +258,38 @@ public class MenuPanel extends javax.swing.JPanel {
         };
         botonEstatusOperaciones.addActionListener(botonEstatusOperacionesListener);
         
+        ActionListener botonBusquedaContratosListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                try{
+                    AperturaCajaEntity entity = aperturaCajaController.obtenerAperturaCajaActiva();
+                    if(entity != null){
+                        if(entity.getUsuarioId().longValue() == sesion.getUsuarioId().longValue()){
+                            sesion.setAperturaCajaId(entity.getAperturaCajaId());
+                            posFrame.cambiarPantalla(menuPanel, VentanaEnum.CONSULTA_CONTRATOS);
+                        }else{
+                            JOptionPane.showMessageDialog(menuPanel, "Se encontro una apertura de caja realizada por un usuario diferente, para ingresar a pantalla de contratos debe hacerlo con el usuario que realizo la apertura","", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }else
+                        JOptionPane.showMessageDialog(menuPanel, "No se encontro una apertura de caja activa, para ingresar a pantalla de contratos primero debe abrir caja","", JOptionPane.WARNING_MESSAGE);
+                }catch(Exception ex){
+                    JOptionPane.showMessageDialog(menuPanel, ex.getMessage(),"", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        };
+        botonBusquedaContratos.addActionListener(botonBusquedaContratosListener);
+        
+        ActionListener botonOnusListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                posFrame.cambiarPantalla(menuPanel, VentanaEnum.ONUS);
+
+            }
+        };
+        botonOnus.addActionListener(botonOnusListener);
+        
     }
     
     public void cargarDatosSesion(){
@@ -266,6 +298,8 @@ public class MenuPanel extends javax.swing.JPanel {
         etiquetaSucursal.setText(sesion.getSucursal());
         
         botonCobrarOtraSucursal.setVisible(false);
+        botonCancelarContrato.setEnabled(false);
+        botonCancelarContrato.setVisible(false);
     }
 
     /**
@@ -289,17 +323,16 @@ public class MenuPanel extends javax.swing.JPanel {
         botonCancelarContrato = new javax.swing.JButton();
         botonSalidaExtraordinaria = new javax.swing.JButton();
         botonCobrarOtraSucursal = new javax.swing.JButton();
+        botonOnus = new javax.swing.JButton();
         panelCentral = new javax.swing.JPanel();
         botonReimpresion = new javax.swing.JButton();
         etiquetaLogo = new javax.swing.JLabel();
-        botonCobrarServicio = new javax.swing.JButton();
+        botonBusquedaContratos = new javax.swing.JButton();
         panelInferior = new javax.swing.JPanel();
-        botonSalir = new javax.swing.JButton();
         botonAbrirCaja = new javax.swing.JButton();
         botonCorteCaja = new javax.swing.JButton();
-        botonCobrarOrden = new javax.swing.JButton();
-        botonCobroProvisional = new javax.swing.JButton();
         botonEstatusOperaciones = new javax.swing.JButton();
+        botonSalir = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setMaximumSize(new java.awt.Dimension(1500, 800));
@@ -375,37 +408,54 @@ public class MenuPanel extends javax.swing.JPanel {
         botonCobrarOtraSucursal.setText("Cobrar diferente sucursal");
         botonCobrarOtraSucursal.setPreferredSize(new java.awt.Dimension(75, 25));
 
+        botonOnus.setBackground(new java.awt.Color(163, 73, 164));
+        botonOnus.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        botonOnus.setForeground(new java.awt.Color(255, 255, 255));
+        botonOnus.setText("Registro de Onus");
+        botonOnus.setPreferredSize(new java.awt.Dimension(75, 25));
+        botonOnus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonOnusActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelSuperiorLayout = new javax.swing.GroupLayout(panelSuperior);
         panelSuperior.setLayout(panelSuperiorLayout);
         panelSuperiorLayout.setHorizontalGroup(
             panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelSuperiorLayout.createSequentialGroup()
-                .addContainerGap(83, Short.MAX_VALUE)
-                .addGroup(panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSuperiorLayout.createSequentialGroup()
-                        .addComponent(botonRegistrarSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(68, 68, 68)
-                        .addComponent(botonSalidaExtraordinaria, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(60, 60, 60)
-                        .addComponent(botonRegistrarIngreso, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(56, 56, 56)
-                        .addComponent(botonCancelarContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(73, 73, 73))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSuperiorLayout.createSequentialGroup()
-                        .addComponent(botonCobrarOtraSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(95, 95, 95))))
+                .addContainerGap(1176, Short.MAX_VALUE)
+                .addComponent(botonCancelarContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(botonCobrarOtraSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(95, 95, 95))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSuperiorLayout.createSequentialGroup()
+                .addGap(85, 85, 85)
+                .addComponent(botonRegistrarSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(69, 69, 69)
+                .addComponent(botonSalidaExtraordinaria, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(59, 59, 59)
+                .addComponent(botonRegistrarIngreso, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(61, 61, 61)
+                .addComponent(botonOnus, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelSuperiorLayout.setVerticalGroup(
             panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelSuperiorLayout.createSequentialGroup()
-                .addContainerGap(22, Short.MAX_VALUE)
-                .addComponent(botonCobrarOtraSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addContainerGap(18, Short.MAX_VALUE)
+                .addGroup(panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSuperiorLayout.createSequentialGroup()
+                        .addComponent(botonCobrarOtraSucursal, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(22, 22, 22))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelSuperiorLayout.createSequentialGroup()
+                        .addComponent(botonCancelarContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)))
                 .addGroup(panelSuperiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(botonRegistrarSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(botonRegistrarIngreso, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botonCancelarContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botonSalidaExtraordinaria, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(botonSalidaExtraordinaria, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(botonOnus, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -427,20 +477,27 @@ public class MenuPanel extends javax.swing.JPanel {
 
         etiquetaLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagen_menu.png"))); // NOI18N
 
-        botonCobrarServicio.setBackground(new java.awt.Color(163, 73, 164));
-        botonCobrarServicio.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        botonCobrarServicio.setForeground(new java.awt.Color(255, 255, 255));
-        botonCobrarServicio.setText("Cobrar Servicio");
-        botonCobrarServicio.setPreferredSize(new java.awt.Dimension(75, 25));
+        botonBusquedaContratos.setBackground(new java.awt.Color(163, 73, 164));
+        botonBusquedaContratos.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        botonBusquedaContratos.setForeground(new java.awt.Color(255, 255, 255));
+        botonBusquedaContratos.setText("Contratos");
+        botonBusquedaContratos.setMaximumSize(new java.awt.Dimension(75, 25));
+        botonBusquedaContratos.setMinimumSize(new java.awt.Dimension(75, 25));
+        botonBusquedaContratos.setPreferredSize(new java.awt.Dimension(75, 25));
+        botonBusquedaContratos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonBusquedaContratosActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelCentralLayout = new javax.swing.GroupLayout(panelCentral);
         panelCentral.setLayout(panelCentralLayout);
         panelCentralLayout.setHorizontalGroup(
             panelCentralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelCentralLayout.createSequentialGroup()
-                .addContainerGap(82, Short.MAX_VALUE)
-                .addComponent(botonCobrarServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32)
+                .addGap(83, 83, 83)
+                .addComponent(botonBusquedaContratos, javax.swing.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE)
+                .addGap(31, 31, 31)
                 .addComponent(etiquetaLogo)
                 .addGap(40, 40, 40)
                 .addComponent(botonReimpresion, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -451,14 +508,15 @@ public class MenuPanel extends javax.swing.JPanel {
             .addGroup(panelCentralLayout.createSequentialGroup()
                 .addGroup(panelCentralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelCentralLayout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(etiquetaLogo))
-                    .addGroup(panelCentralLayout.createSequentialGroup()
-                        .addGap(40, 40, 40)
-                        .addComponent(botonCobrarServicio, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panelCentralLayout.createSequentialGroup()
                         .addGap(34, 34, 34)
-                        .addComponent(botonReimpresion, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(botonReimpresion, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelCentralLayout.createSequentialGroup()
+                        .addGap(17, 17, 17)
+                        .addGroup(panelCentralLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(etiquetaLogo)
+                            .addGroup(panelCentralLayout.createSequentialGroup()
+                                .addGap(16, 16, 16)
+                                .addComponent(botonBusquedaContratos, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
 
@@ -466,16 +524,6 @@ public class MenuPanel extends javax.swing.JPanel {
         panelInferior.setMaximumSize(new java.awt.Dimension(1500, 250));
         panelInferior.setMinimumSize(new java.awt.Dimension(1500, 250));
         panelInferior.setPreferredSize(new java.awt.Dimension(1500, 250));
-
-        botonSalir.setBackground(new java.awt.Color(255, 51, 0));
-        botonSalir.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        botonSalir.setForeground(new java.awt.Color(255, 255, 255));
-        botonSalir.setText("Salir");
-        botonSalir.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonSalirActionPerformed(evt);
-            }
-        });
 
         botonAbrirCaja.setBackground(new java.awt.Color(163, 73, 164));
         botonAbrirCaja.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -494,21 +542,6 @@ public class MenuPanel extends javax.swing.JPanel {
         botonCorteCaja.setText("Hacer Corte");
         botonCorteCaja.setPreferredSize(new java.awt.Dimension(75, 25));
 
-        botonCobrarOrden.setBackground(new java.awt.Color(227, 176, 75));
-        botonCobrarOrden.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        botonCobrarOrden.setForeground(new java.awt.Color(255, 255, 255));
-        botonCobrarOrden.setText("Cobrar Ordenes");
-        botonCobrarOrden.setPreferredSize(new java.awt.Dimension(75, 25));
-
-        botonCobroProvisional.setBackground(new java.awt.Color(163, 73, 164));
-        botonCobroProvisional.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        botonCobroProvisional.setForeground(new java.awt.Color(255, 255, 255));
-        botonCobroProvisional.setText("Cobros Provisionales");
-        botonCobroProvisional.setAutoscrolls(true);
-        botonCobroProvisional.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        botonCobroProvisional.setPreferredSize(new java.awt.Dimension(75, 25));
-        botonCobroProvisional.setVerifyInputWhenFocusTarget(false);
-
         botonEstatusOperaciones.setBackground(new java.awt.Color(153, 153, 255));
         botonEstatusOperaciones.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         botonEstatusOperaciones.setForeground(new java.awt.Color(255, 255, 255));
@@ -520,34 +553,33 @@ public class MenuPanel extends javax.swing.JPanel {
             panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelInferiorLayout.createSequentialGroup()
                 .addGap(86, 86, 86)
-                .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(botonEstatusOperaciones, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botonAbrirCaja, javax.swing.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE))
+                .addComponent(botonAbrirCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(66, 66, 66)
-                .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelInferiorLayout.createSequentialGroup()
-                        .addComponent(botonCorteCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(54, 54, 54)
-                        .addComponent(botonCobroProvisional, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(64, 64, 64)
-                        .addComponent(botonCobrarOrden, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(botonSalir, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(botonCorteCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(60, 60, 60)
+                .addComponent(botonEstatusOperaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelInferiorLayout.setVerticalGroup(
             panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelInferiorLayout.createSequentialGroup()
-                .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(botonCobrarOrden, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(botonAbrirCaja, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(botonCorteCaja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botonCobroProvisional, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addGroup(panelInferiorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(botonSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(botonEstatusOperaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(botonEstatusOperaciones, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(109, 109, 109))
         );
+
+        botonSalir.setBackground(new java.awt.Color(255, 51, 0));
+        botonSalir.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        botonSalir.setForeground(new java.awt.Color(255, 255, 255));
+        botonSalir.setText("Salir");
+        botonSalir.setPreferredSize(new java.awt.Dimension(72, 25));
+        botonSalir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonSalirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -555,27 +587,29 @@ public class MenuPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addComponent(etiquetaNumeroCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(488, 488, 488)
-                        .addComponent(jLabel2)
-                        .addGap(18, 18, 18)
-                        .addComponent(etiquetaSucursal)
-                        .addGap(457, 457, 457)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(etiquetaUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(48, 48, 48))
-                    .addComponent(panelSuperior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addComponent(panelSuperior, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(panelCentral, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(panelInferior, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(botonSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(81, 81, 81))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(103, 103, 103)
+                .addComponent(jLabel1)
+                .addGap(18, 18, 18)
+                .addComponent(etiquetaNumeroCaja, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addGap(18, 18, 18)
+                .addComponent(etiquetaSucursal)
+                .addGap(457, 457, 457)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(etiquetaUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(48, 48, 48))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -593,7 +627,11 @@ public class MenuPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelCentral, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelInferior, javax.swing.GroupLayout.PREFERRED_SIZE, 244, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelInferior, javax.swing.GroupLayout.PREFERRED_SIZE, 244, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(botonSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -624,16 +662,23 @@ public class MenuPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_botonSalidaExtraordinariaActionPerformed
 
+    private void botonBusquedaContratosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBusquedaContratosActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_botonBusquedaContratosActionPerformed
+
+    private void botonOnusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonOnusActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_botonOnusActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonAbrirCaja;
+    private javax.swing.JButton botonBusquedaContratos;
     private javax.swing.JButton botonCancelarContrato;
-    private javax.swing.JButton botonCobrarOrden;
     private javax.swing.JButton botonCobrarOtraSucursal;
-    private javax.swing.JButton botonCobrarServicio;
-    private javax.swing.JButton botonCobroProvisional;
     private javax.swing.JButton botonCorteCaja;
     private javax.swing.JButton botonEstatusOperaciones;
+    private javax.swing.JButton botonOnus;
     private javax.swing.JButton botonRegistrarIngreso;
     private javax.swing.JButton botonRegistrarSalida;
     private javax.swing.JButton botonReimpresion;

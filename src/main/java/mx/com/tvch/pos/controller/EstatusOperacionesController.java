@@ -9,17 +9,14 @@ import java.util.List;
 import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.dao.AperturaCajaDao;
 import mx.com.tvch.pos.dao.CancelacionDao;
-import mx.com.tvch.pos.dao.CobroProvisionalDao;
+import mx.com.tvch.pos.dao.ContratoDao;
+import mx.com.tvch.pos.dao.ContratoxSuscriptorDao;
 import mx.com.tvch.pos.dao.CorteCajaDao;
-import mx.com.tvch.pos.dao.DetalleCobroTransaccionDao;
-import mx.com.tvch.pos.dao.DetalleDescuentoTransaccionDao;
-import mx.com.tvch.pos.dao.DetalleDiferenciaCorteCajaDao;
-import mx.com.tvch.pos.dao.DetallePromocionTransaccionDao;
 import mx.com.tvch.pos.dao.IngresoCajaDao;
 import mx.com.tvch.pos.dao.SalidaCajaDao;
 import mx.com.tvch.pos.dao.SalidaExtraordinariaDao;
+import mx.com.tvch.pos.dao.SuscriptorDao;
 import mx.com.tvch.pos.dao.TransaccionDao;
-import mx.com.tvch.pos.entity.AperturaCajaEntity;
 import mx.com.tvch.pos.mapper.PosMapper;
 import mx.com.tvch.pos.model.OperacionPendiente;
 import mx.com.tvch.pos.model.TipoOperacion;
@@ -36,6 +33,9 @@ public class EstatusOperacionesController {
     
     private static EstatusOperacionesController controller;
     
+    private final ContratoDao contratoDao;
+    private final SuscriptorDao suscriptorDao;
+    private final ContratoxSuscriptorDao contratoxSuscriptorDao;
     private final AperturaCajaDao aperturaCajaDao;
     private final CorteCajaDao corteCajaDao;
     private final TransaccionDao transaccionDao;
@@ -43,7 +43,6 @@ public class EstatusOperacionesController {
     private final IngresoCajaDao ingresoCajaDao;
     private final SalidaExtraordinariaDao salidaExtraordinariaDao;
     private final CancelacionDao cancelacionDao;
-    private final CobroProvisionalDao cobroProvisionalDao;
     private final Sesion sesion;
     private final Utilerias util;
     private final PosMapper mapper;
@@ -58,6 +57,9 @@ public class EstatusOperacionesController {
     }
 
     public EstatusOperacionesController() {
+        contratoDao = ContratoDao.getContratoDao();
+        suscriptorDao = SuscriptorDao.getSuscriptorDao();
+        contratoxSuscriptorDao = ContratoxSuscriptorDao.getContratoxSuscriptorDao();
         aperturaCajaDao = AperturaCajaDao.getAperturaCajaDao();
         corteCajaDao = CorteCajaDao.getCorteCajaDao();
         transaccionDao = TransaccionDao.getTransaccionDao();
@@ -65,7 +67,6 @@ public class EstatusOperacionesController {
         ingresoCajaDao = IngresoCajaDao.getIngresoCajaDao();
         salidaExtraordinariaDao = SalidaExtraordinariaDao.getSalidaExtraordinariaDao();
         cancelacionDao = CancelacionDao.getCancelacionDao();
-        cobroProvisionalDao = CobroProvisionalDao.getCobroProvisionalDao();
         sesion = Sesion.getSesion();
         util = Utilerias.getUtilerias();
         mapper = PosMapper.getPosMapper();
@@ -81,12 +82,12 @@ public class EstatusOperacionesController {
         List<OperacionPendiente> list = new ArrayList<>();
         
         switch (tipo.getTipo()) {
+            case Constantes.OPERACION_NUEVO_CONTRATO:
+                return mapper.contratos2OperacionPendientes(contratoxSuscriptorDao.obtenerContratosPendientesRegistroServer(), tipo);
             case Constantes.OPERACION_COBRO_SERVICIO:
                 return mapper.transacciones2OperacionPendientes(transaccionDao.obtenerTransacciones(), tipo);
             case Constantes.OPERACION_CANCELACION:
                 return mapper.cancelaciones2OperacionPendientes(cancelacionDao.obtenerCancelaciones(), tipo);
-            case Constantes.OPERACION_COBRO_PROVISIONAL:
-                return mapper.cobrosProvisionales2OperacionPendientes(cobroProvisionalDao.obtenerCobrosProvisionales(), tipo);
             case Constantes.OPERACION_CORTE:
                 return mapper.cortes2OperacionPendientes(corteCajaDao.obtenerCortesCaja(), tipo);
             case Constantes.OPERACION_APERTURA:

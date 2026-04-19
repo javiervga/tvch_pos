@@ -10,20 +10,20 @@ package mx.com.tvch.pos.model;
  */
 public class TipoOrdenServicio {
 
-    private Integer tipoId;
+    private Long tipoId;
 
     private String descripcion;
 
-    public TipoOrdenServicio(Integer subTipoOrdenId, String descripcion) {
+    public TipoOrdenServicio(Long subTipoOrdenId, String descripcion) {
         this.tipoId = subTipoOrdenId;
         this.descripcion = descripcion;
     }
 
-    public Integer getTipoId() {
+    public Long getTipoId() {
         return tipoId;
     }
 
-    public void setTipoId(Integer tipoId) {
+    public void setTipoId(Long tipoId) {
         this.tipoId = tipoId;
     }
 

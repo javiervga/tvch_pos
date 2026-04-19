@@ -56,7 +56,7 @@ public class DbConfig {
     public boolean existeConectorMySql() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-            logger.info("Driver encontrado, se continua con la operación");
+            logger.debug("Driver encontrado, se continua con la operación");
             return true;
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();

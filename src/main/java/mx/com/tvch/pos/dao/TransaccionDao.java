@@ -16,7 +16,7 @@ import java.util.List;
 import mx.com.tvch.pos.config.DbConfig;
 
 import mx.com.tvch.pos.entity.TransaccionEntity;
-import mx.com.tvch.pos.entity.TransaccionTicketEntity;
+import mx.com.tvch.pos.model.TransaccionTicket;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.Utilerias;
 import org.slf4j.Logger;
@@ -49,9 +49,9 @@ public class TransaccionDao {
      * @return
      * @throws Exception 
      */
-    public List<TransaccionTicketEntity> obtenerTransaccionesxTipoCobro(Integer tipoCobroId, String fechaInicio, String fechaFin) throws Exception{
+    public List<TransaccionTicket> obtenerTransaccionesxTipoCobro(Integer tipoCobroId, String fechaInicio, String fechaFin) throws Exception{
 
-        List<TransaccionTicketEntity> list = new ArrayList<>();
+        List<TransaccionTicket> list = new ArrayList<>();
 
         Connection conn = null;
         Statement stmt = null;
@@ -63,8 +63,10 @@ public class TransaccionDao {
 
             StringBuilder query = new StringBuilder();
             
-            query.append("select t.fecha_transaccion, t.id_transaccion, t.id_transaccion_server, tc.id_tipo_cobro, tc.descripcion AS tipoCobro, c.id_contrato, c.folio_contrato, c.fecha_proximo_pago, \n" +
-"		       t.id_apertura_caja, s.nombre, s.apellido_paterno, s.apellido_materno, d.calle, d.numero_calle, d.colonia, ser.nombre as servicio, s.telefono, t.monto \n" +
+            query.append("select t.fecha_transaccion, t.id_transaccion, t.id_transaccion_server, tc.id_tipo_cobro, "
+                    + "tc.descripcion AS tipoCobro, c.id_contrato, c.folio_contrato, c.fecha_proximo_pago, \n" +
+"		       t.id_apertura_caja, s.nombre, s.apellido_paterno, s.apellido_materno, d.calle, d.numero_calle, "
+                    + "d.colonia, ser.nombre as servicio, s.telefono, t.monto, dct.descripcion_orden, dct.monto as montoDetalle \n" +
 "		  from transacciones t \n" +
 "		 inner\n" +
 "		  join detalle_cobro_transaccion dct \n" +
@@ -95,6 +97,8 @@ public class TransaccionDao {
 "		    on d.id_domicilio = dxc.id_domicilio \n" +
 "		 where tc.id_tipo_cobro =");
             query.append(tipoCobroId);
+            query.append(" and sxc.estatus = 1");
+            query.append(" and d.estatus = 1");
             query.append(" and t.fecha_transaccion BETWEEN '");
             query.append(fechaInicio);
             query.append("' AND '");
@@ -103,7 +107,7 @@ public class TransaccionDao {
             System.out.println("query: ".concat(query.toString()));
             ResultSet rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
-                TransaccionTicketEntity entity = new TransaccionTicketEntity();
+                TransaccionTicket entity = new TransaccionTicket();
                 entity.setApellidoMaterno(rs.getString("apellido_materno"));
                 entity.setApellidoPaterno(rs.getString("apellido_paterno"));
                 entity.setCalle(rs.getString("calle"));
@@ -122,6 +126,8 @@ public class TransaccionDao {
                 entity.setTipoCobroId(rs.getInt("id_tipo_cobro"));
                 entity.setTransaccionId(rs.getLong("id_transaccion"));
                 entity.setTransaccionServerId(rs.getLong("id_transaccion_server"));
+                entity.setDescripcionOrden(rs.getString("descripcion_orden"));
+                entity.setMontoDetalle(rs.getDouble("montoDetalle"));
                 list.add(entity);
             }
 
@@ -300,6 +306,78 @@ public class TransaccionDao {
             query.append("SELECT id_transaccion, id_transaccion_server, id_apertura_caja, ");
             query.append("id_contrato, monto, observaciones, periodo, fecha_transaccion, actual_fecha_corte, nueva_fecha_corte ");
             query.append("FROM transacciones WHERE id_transaccion_server is null ");
+            query.append("order by id_transaccion asc");
+            
+            ResultSet rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                TransaccionEntity entity = new TransaccionEntity();
+                entity.setTransaccionId(rs.getLong("id_transaccion"));
+                entity.setTransaccionServerId(null);
+                entity.setAperturaCajaId(rs.getLong("id_apertura_caja"));
+                entity.setContratoId(rs.getLong("id_contrato"));
+                entity.setMonto(rs.getDouble("monto"));
+                entity.setObservaciones(rs.getString("observaciones"));
+                entity.setPeriodo(rs.getString("periodo"));
+                entity.setActualFechaCorte(String.valueOf(rs.getDate("actual_fecha_corte")));
+                entity.setNuevaFechaCorte(String.valueOf(rs.getDate("nueva_fecha_corte")));
+                entity.setFechaTransaccion(String.valueOf(rs.getDate("fecha_transaccion")));
+                list.add(entity);
+            }
+
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error("Error al consultar transacciones de caja en bd: \n" + sw.toString());
+            throw new Exception(ex.getMessage());
+        } finally {
+            try {
+                if (stmt != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+
+        return list;
+
+        
+    }
+    
+    /**
+     * 
+     * @param fechaInicio
+     * @param fechaFin
+     * @return
+     * @throws Exception 
+     */
+    public List<TransaccionEntity> obtenerTransaccionesPorFecha(String fechaInicio, String fechaFin) throws Exception{
+
+        List<TransaccionEntity> list = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+
+        try {
+            DbConfig dbConfig = DbConfig.getdDbConfig();
+            conn = dbConfig.getConnection();
+            stmt = conn.createStatement();
+
+            StringBuilder query = new StringBuilder();
+            
+            query.append("SELECT id_transaccion, id_transaccion_server, id_apertura_caja, ");
+            query.append("id_contrato, monto, observaciones, periodo, fecha_transaccion, actual_fecha_corte, nueva_fecha_corte ");
+            query.append("FROM transacciones ");
+            query.append("where fecha_transaccion between '").append(fechaInicio).append("' ");
+            query.append("and '").append(fechaFin).append("' ");
             query.append("order by id_transaccion asc");
             
             ResultSet rs = stmt.executeQuery(query.toString());
