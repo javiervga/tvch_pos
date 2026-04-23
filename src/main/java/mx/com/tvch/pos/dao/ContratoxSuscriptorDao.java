@@ -399,6 +399,14 @@ public class ContratoxSuscriptorDao {
         
     }
 
+    /**
+     * consulta suscriptores en bd
+     * @param contratoId
+     * @param tipoBusquedaCobro
+     * @param cadenaBusqueda
+     * @return
+     * @throws Exception 
+     */
     public List<ContratoxSuscriptorDetalleEntity> obtenerContratosSuscriptor(Long contratoId, int tipoBusquedaCobro, String cadenaBusqueda) throws Exception {
 
         List<ContratoxSuscriptorDetalleEntity> list = new ArrayList<>();
@@ -507,30 +515,6 @@ public class ContratoxSuscriptorDao {
         StringBuilder builder = new StringBuilder();
 
         switch (tipoBusquedaCobro) {
-            /*case Constantes.TIPO_BUSQUEDA_CONTRATO:
-                builder.append("SELECT c.id_contrato, c.folio_contrato, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n" +
-"               sus.apellido_paterno, sus.apellido_materno, sus.telefono, sus.id_estatus as estatus_suscriptor, d.id_domicilio, d.colonia, d.calle,\n" +
-"               d.numero_calle, d.referencia, s.id_servicio, s.nombre as nombre_servicio, s.costo as costo_servicio\n" +
-"          FROM contratos c\n" +
-"    INNER JOIN contratos_x_suscriptor cs\n" +
-"            ON c.id_contrato = cs.id_contrato\n" +
-"    INNER JOIN domicilios_x_contrato dc\n" +
-"            ON c.id_contrato = dc.id_contrato\n" +
-"    INNER JOIN domicilios d \n" +
-"            ON dc.id_domicilio = d.id_domicilio\n" +
-"    INNER JOIN servicios_x_contrato sc \n" +
-"            ON sc.id_contrato = c.id_contrato\n" +
-"    INNER JOIN servicios s \n" +
-"            ON s.id_servicio = sc.id_servicio\n" +
-"    INNER JOIN suscriptores sus\n" +
-"            ON cs.id_suscriptor = sus.id_suscriptor\n" +
-"    INNER JOIN estatus_contrato ec\n" +
-"            ON c.id_estatus = ec.id_estatus\n" +
-"         WHERE c.id_contrato = ");
-                builder.append(contratoId);
-                builder.append(" and sc.estatus = 1 and d.estatus = 1");
-                //builder.append(" AND sus.id_estatus = 2");
-                break;*/
             case Constantes.TIPO_BUSQUEDA_FOLIO_CONTRATO:
                 builder.append("SELECT c.id_contrato, c.folio_contrato, c.id_estatus as id_estatus_contrato, ec.descripcion as estatus_contrato, c.tvs_contratadas, c.fecha_registro, c.fecha_proximo_pago, sus.id_suscriptor, sus.nombre,\n"
                         + "               sus.apellido_paterno, sus.apellido_materno, sus.telefono, sus.id_estatus as estatus_suscriptor, d.id_domicilio, d.colonia, d.calle, d.ciudad, d.calle1, d.calle2, d.estatus as estatus_domicilio,\n"
@@ -647,12 +631,12 @@ public class ContratoxSuscriptorDao {
                         + "            ON cs.id_suscriptor = sus.id_suscriptor\n"
                         + "    INNER JOIN estatus_contrato ec\n"
                         + "            ON c.id_estatus = ec.id_estatus\n"
-                        + "         WHERE d.calle like '%");
+                        + "         WHERE (d.calle like '%");
                 builder.append(cadenaBusqueda);
                 builder.append("%'  OR d.colonia like '%");
                 builder.append(cadenaBusqueda);
                 builder.append("%'");
-                builder.append(" and sc.estatus = 1 and d.estatus = 1");
+                builder.append(") and sc.estatus = 1 and d.estatus = 1");
                 break;
             default:
                 break;
