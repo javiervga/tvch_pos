@@ -169,7 +169,7 @@ public class LoginPanel extends javax.swing.JPanel {
 
         campoPassword.setToolTipText("");
 
-        jLabel4.setText("V - 2.0.1 ");
+        jLabel4.setText("V - 2.0.2");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
