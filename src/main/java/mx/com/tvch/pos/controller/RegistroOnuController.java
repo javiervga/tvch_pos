@@ -4,16 +4,9 @@
  */
 package mx.com.tvch.pos.controller;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.List;
-import java.util.NoSuchElementException;
 import mx.com.tvch.pos.config.Sesion;
-import mx.com.tvch.pos.dao.IngresoCajaDao;
 import mx.com.tvch.pos.dao.OnuDao;
-import mx.com.tvch.pos.dao.TipoIngresoDao;
 import mx.com.tvch.pos.entity.OnuEntity;
-import mx.com.tvch.pos.entity.TipoIngresoEntity;
 import mx.com.tvch.pos.util.Constantes;
 import mx.com.tvch.pos.util.TvchException;
 import mx.com.tvch.pos.util.Utilerias;

@@ -204,8 +204,8 @@ public class OnusPanel extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 
-                if(!campoSerieOnuBusqueda.getText().trim().isEmpty()){
-                    if(campoSerieOnuBusqueda.getText().trim().length() <= 50){
+                if(!campoNumeroSerieOnu.getText().trim().isEmpty()){
+                    if(campoNumeroSerieOnu.getText().trim().length() <= 50){
                         
                         
                         StringBuilder sbReconexion = new StringBuilder();
@@ -230,16 +230,28 @@ public class OnusPanel extends javax.swing.JPanel {
                         }
                         
                         if(seConfirmaActualizacion){
-                            controller.actualizarSerieOnu(onuSeleccionada, campoNumeroSerieOnu.getText().trim().toUpperCase());
-                            campoSerieOnuBusqueda.setText(campoNumeroSerieOnu.getText().trim().toUpperCase());
-                            limpiarCamposInfoOnu();
-                            limpiarCamposAsociacion();
-                            habilitarCamposAsociacion(false);
-                            comboEstatusOnu.setSelectedIndex(0); 
-                            onuSeleccionada = null;
-                            contratoPorAsociarSeleccionado = null;
-                            contratoAsignadoSeleccionado = null;
-                            buscarOnus();
+                            
+                            try{
+                            
+                                controller.actualizarSerieOnu(onuSeleccionada, campoNumeroSerieOnu.getText().trim().toUpperCase());
+                                campoSerieOnuBusqueda.setText(campoNumeroSerieOnu.getText().trim().toUpperCase());
+                                limpiarCamposInfoOnu();
+                                limpiarCamposAsociacion();
+                                habilitarCamposAsociacion(false);
+                                comboEstatusOnu.setSelectedIndex(0); 
+                                onuSeleccionada = null;
+                                contratoPorAsociarSeleccionado = null;
+                                contratoAsignadoSeleccionado = null;
+                                buscarOnus();
+                            
+                            }catch(TvchException ex){
+                                JOptionPane.showMessageDialog(onusPanel, ex.getMessage()
+                                    ,"", JOptionPane.WARNING_MESSAGE);
+                            }catch(Exception ex){
+                                JOptionPane.showMessageDialog(onusPanel, "Ocurrió un error al actualizar número de serie, por favor reintente. ,\n"
+                                        + " Si el problema persiste contacte a soporte"
+                                    ,"", JOptionPane.WARNING_MESSAGE);
+                            }
                         }
                     
                     }else{
