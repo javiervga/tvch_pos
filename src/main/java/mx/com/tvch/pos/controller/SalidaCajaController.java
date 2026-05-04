@@ -12,6 +12,9 @@ import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.dao.SalidaCajaDao;
 import mx.com.tvch.pos.dao.TipoSalidaDao;
 import mx.com.tvch.pos.entity.TipoSalidaEntity;
+import mx.com.tvch.pos.model.DetalleCorte;
+import mx.com.tvch.pos.util.Constantes;
+import mx.com.tvch.pos.util.TvchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +29,7 @@ public class SalidaCajaController {
     private final TipoSalidaDao tipoSalidaDao;
     private final SalidaCajaDao dao;
     private final Sesion sesion;
+    private final CorteCajaController corteCajaController;
 
     Logger logger = LoggerFactory.getLogger(SalidaCajaController.class);
 
@@ -40,6 +44,7 @@ public class SalidaCajaController {
         tipoSalidaDao = TipoSalidaDao.getTipoSalidaDao();
         dao = SalidaCajaDao.getSalidaCajaDao();
         sesion = Sesion.getSesion();
+        corteCajaController = CorteCajaController.getCorteCajaController();
     }
 
     public List<TipoSalidaEntity> consultarTiposSalida() throws Exception {
@@ -63,8 +68,20 @@ public class SalidaCajaController {
 
     }
     
-    public void registrarSalidacaja(Double montoSalida, Long tipoSalidaId, String observaciones) throws Exception {
+    public void registrarSalidacaja(Double montoSalida, Long tipoSalidaId, String observaciones) 
+            throws TvchException, Exception {
                  
+        //primero validar que haya saldo
+        List<DetalleCorte> detallesCorte = corteCajaController.consultarInformacionCorte();
+        DetalleCorte detalleMontoEnCaja = detallesCorte
+                .stream()
+                .filter(d -> d.getTipoDetalle() == Constantes.TIPO_DETALLE_CORTE_MONTO_SOLICITADO)
+                .findFirst()
+                .orElseThrow(() -> new TvchException("No fue posible obtener monto registrado en caja. Por favor contacte a soporte"));
+        
+        if(montoSalida > detalleMontoEnCaja.getMonto())
+            throw new TvchException("No se cuenta con el suficiente efectivo en caja para realizar la salida de efectivo");
+        
         dao.registrarSalidaCaja(sesion, montoSalida, tipoSalidaId, observaciones);
              
     }

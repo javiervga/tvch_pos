@@ -76,7 +76,13 @@ public class OnuController {
      * @param onuEntity
      * @param nuevaSerie 
      */
-    public void actualizarSerieOnu(ContratoJoinOnuEntity onuEntity, String nuevaSerie){
+    public void actualizarSerieOnu(ContratoJoinOnuEntity onuEntity, String nuevaSerie) 
+            throws TvchException, Exception{
+        
+        //primero validar que la serie capurada no exista
+        OnuEntity onuExistente = onuDao.consultarOnuPorSerie(nuevaSerie);
+        if(onuExistente != null)
+            throw new TvchException("Ya existe una Onu con el número de Serie solicitado. Por favor verifique.");     
         
         onuDao.actualizarOnu(onuEntity.getOnuId(), nuevaSerie, onuEntity.getEstatusOnuId());
         
