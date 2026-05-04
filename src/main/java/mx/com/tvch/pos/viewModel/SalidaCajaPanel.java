@@ -16,6 +16,7 @@ import mx.com.tvch.pos.config.Sesion;
 import mx.com.tvch.pos.controller.SalidaCajaController;
 import mx.com.tvch.pos.entity.AperturaCajaEntity;
 import mx.com.tvch.pos.entity.TipoSalidaEntity;
+import mx.com.tvch.pos.util.TvchException;
 import mx.com.tvch.pos.util.Utilerias;
 import mx.com.tvch.pos.util.VentanaEnum;
 import org.slf4j.Logger;
@@ -81,9 +82,16 @@ public final class SalidaCajaPanel extends javax.swing.JPanel {
                                 TipoSalidaEntity tipoSalida = (TipoSalidaEntity) comboTipoSalida.getModel().getSelectedItem();
                                 controller.registrarSalidacaja(Double.parseDouble(campoMontoSalida.getText()), 
                                         tipoSalida.getTipoSalidaId(), areaObservaciones.getText());
+                                limpiarPantalla();
                                 posFrame.cambiarPantalla(salidaCajaPanel, VentanaEnum.MENU);
                                 JOptionPane.showMessageDialog(salidaCajaPanel, "Su salida se ha registrado exitosamente", "", JOptionPane.INFORMATION_MESSAGE);
 
+                            } catch (TvchException ex) {
+                                StringWriter sw = new StringWriter();
+                                PrintWriter pw = new PrintWriter(sw);
+                                ex.printStackTrace(pw);
+                                logger.error("Error controlado al registrar salida de caja: " + sw.toString());
+                                JOptionPane.showMessageDialog(salidaCajaPanel, ex.getMessage(), "", JOptionPane.WARNING_MESSAGE);
                             } catch (Exception ex) {
                                 StringWriter sw = new StringWriter();
                                 PrintWriter pw = new PrintWriter(sw);
@@ -134,6 +142,11 @@ public final class SalidaCajaPanel extends javax.swing.JPanel {
         areaObservaciones.setRows(4);
         cargarComboTiposSalida();
         //campoFondoFijo.setText("0");
+    }
+    
+    private void limpiarPantalla(){
+        campoMontoSalida.setText("");
+        areaObservaciones.setText("");
     }
 
     /**
