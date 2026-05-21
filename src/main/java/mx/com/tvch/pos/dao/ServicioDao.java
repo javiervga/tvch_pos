@@ -53,7 +53,7 @@ public class ServicioDao {
 
             StringBuilder query = new StringBuilder();
             
-            query.append("SELECT id_servicio, nombre, descripcion, costo, id_zona, estatus, id_tipo_servicio, costo_instalacion ");
+            query.append("SELECT id_servicio, nombre, descripcion, costo, id_sucursal, estatus, id_tipo_servicio, costo_instalacion ");
             query.append("FROM servicios where id_servicio = ");
             query.append(id);
             
@@ -64,7 +64,7 @@ public class ServicioDao {
                 entity.setNombre(rs.getString("nombre"));
                 entity.setDescripcion(rs.getString("descripcion"));
                 entity.setCosto(rs.getDouble("costo"));
-                entity.setZonaId(rs.getLong("id_zona"));
+                entity.setSucursalId(rs.getLong("id_sucursal"));
                 entity.setEstatus(rs.getInt("estatus"));
                 entity.setTipoServicioId(rs.getLong("id_tipo_servicio"));
                 entity.setCostoInstalacion(rs.getDouble("costo_instalacion"));
@@ -115,7 +115,7 @@ public class ServicioDao {
 
             StringBuilder query = new StringBuilder();
             
-            query.append("SELECT id_servicio, nombre, descripcion, costo, id_zona, estatus, id_tipo_servicio, costo_instalacion ");
+            query.append("SELECT id_servicio, nombre, descripcion, costo, id_sucursal, estatus, id_tipo_servicio, costo_instalacion ");
             query.append("FROM servicios where estatus = 1");
             
             ResultSet rs = stmt.executeQuery(query.toString());
@@ -125,7 +125,7 @@ public class ServicioDao {
                 entity.setNombre(rs.getString("nombre"));
                 entity.setDescripcion(rs.getString("descripcion"));
                 entity.setCosto(rs.getDouble("costo"));
-                entity.setZonaId(rs.getLong("id_zona"));
+                entity.setSucursalId(rs.getLong("id_sucursal"));
                 entity.setEstatus(rs.getInt("estatus"));
                 entity.setTipoServicioId(rs.getLong("id_tipo_servicio"));
                 entity.setCostoInstalacion(rs.getDouble("costo_instalacion"));
@@ -222,12 +222,12 @@ public class ServicioDao {
 
             StringBuilder query = new StringBuilder();
 
-            query.append("insert into servicios (id_servicio, nombre, descripcion, costo, id_zona, estatus, id_tipo_servicio, costo_instalacion) values (");
+            query.append("insert into servicios (id_servicio, nombre, descripcion, costo, id_sucursal, estatus, id_tipo_servicio, costo_instalacion) values (");
             query.append(servicio.getServicioId()).append(",'");
             query.append(servicio.getNombre()).append("','");
             query.append(servicio.getDescripcion()).append("',");
             query.append(servicio.getCosto()).append(",");
-            query.append(servicio.getZonaId()).append(",");
+            query.append(servicio.getSucursalId()).append(",");
             query.append(servicio.getEstatus()).append(",");
             query.append(servicio.getTipoServicioId()).append(",");
             query.append(servicio.getCostoInstalacion()).append(")");
