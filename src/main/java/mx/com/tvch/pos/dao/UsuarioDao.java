@@ -8,9 +8,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -41,17 +41,16 @@ public class UsuarioDao {
     public UsuarioEntity autenticarUsuario(String usuario, String password) throws Exception {
 
         Connection conn = null;
-        Statement stmt = null;
+        PreparedStatement stmt = null;
 
         try {
 
             DbConfig dbConfig = DbConfig.getdDbConfig();
             conn = dbConfig.getConnection();
-            stmt = conn.createStatement();
-
-            StringBuilder query = new StringBuilder();
-            query.append("select * from usuarios where usuario = \'").append(usuario).append("\'");
-            ResultSet rs = stmt.executeQuery(query.toString());
+            //consulta parametrizada: el usuario escrito en pantalla no se concatena al SQL
+            stmt = conn.prepareStatement("select * from usuarios where usuario = ?");
+            stmt.setString(1, usuario);
+            ResultSet rs = stmt.executeQuery();
             List<UsuarioEntity> list = new ArrayList<>();
             while (rs.next()) {
                 UsuarioEntity entity = new UsuarioEntity();
@@ -99,7 +98,7 @@ public class UsuarioDao {
         } finally {
             try {
                 if (stmt != null) {
-                    conn.close();
+                    stmt.close();
                 }
             } catch (SQLException se) {
                 se.printStackTrace();
