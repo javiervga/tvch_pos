@@ -80,4 +80,18 @@ public class UsuarioEntity {
         this.password = password;
     }
 
+    /**
+     * Columna usuarios.acceso_sucursal: 1 puede operar en la sucursal de la
+     * caja, 0 ya no tiene la sucursal asignada.
+     */
+    private Integer accesoSucursal;
+
+    public Integer getAccesoSucursal() {
+        return accesoSucursal;
+    }
+
+    public void setAccesoSucursal(Integer accesoSucursal) {
+        this.accesoSucursal = accesoSucursal;
+    }
+
 }

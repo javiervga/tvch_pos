@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.NoSuchElementException;
 import javax.naming.AuthenticationException;
 import mx.com.tvch.pos.config.DbConfig;
 import mx.com.tvch.pos.entity.UsuarioEntity;
+import mx.com.tvch.pos.util.Constantes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -61,6 +63,7 @@ public class UsuarioDao {
                 entity.setPassword(rs.getString("password"));
                 entity.setUsuario(rs.getString("usuario"));
                 entity.setUsuarioId(rs.getLong("id_usuario"));
+                entity.setAccesoSucursal(obtenerAccesoSucursal(rs));
                 list.add(entity);
             }
 
@@ -112,6 +115,22 @@ public class UsuarioDao {
             }
         }
 
+    }
+
+    /**
+     * Lee usuarios.acceso_sucursal. Si la caja aun no tiene la columna (no se
+     * ha ejecutado el script de la liberacion) se considera con acceso, como
+     * en la version anterior, y se deja aviso en el log.
+     */
+    private Integer obtenerAccesoSucursal(ResultSet rs) throws SQLException {
+        ResultSetMetaData metaData = rs.getMetaData();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            if ("acceso_sucursal".equalsIgnoreCase(metaData.getColumnLabel(i))) {
+                return rs.getInt(i);
+            }
+        }
+        logger.warn("La tabla usuarios no tiene la columna acceso_sucursal; ejecute el script usuarios_acceso_sucursal.sql");
+        return Constantes.ESTATUS_ACTIVO;
     }
 
     private boolean validarPassword(String passwordRecibido, String passwordEncriptadoDB) throws NoSuchAlgorithmException {

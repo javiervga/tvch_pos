@@ -44,6 +44,10 @@ public class LoginController {
             throw new Exception("Su usuario esta bloqueado. Contacte a Soporte Técnico");
         if(entity.getEstatus() == Constantes.ESTATUS_USUARIO_INACTIVO)
             throw new Exception("El usuario ha sido dado de baja");
+        //el usuario existe en la caja (puede ser autor de suscriptores o contratos) pero ya no
+        //tiene asignada la sucursal en servidor
+        if(entity.getAccesoSucursal() != null && entity.getAccesoSucursal() != Constantes.ESTATUS_ACTIVO)
+            throw new Exception("Su usuario no tiene acceso a esta sucursal. Contacte a su supervisor");
             
         return entity; 
 
