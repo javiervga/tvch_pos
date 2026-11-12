@@ -157,7 +157,7 @@ public class CobrosPanel extends javax.swing.JPanel {
                         actualizarInformacionPago(null, mesSeleccionado, anioSeleccionado, suscriptorSeleccionado, false);
                     }else{
                         comboMeses.setSelectedItem(mesGuardado);
-                        comboAnios.setSelectedItem(anioGuardado);
+                        seleccionarAnio(anioGuardado);
                         JOptionPane.showMessageDialog(cobroPanel, "La fecha de próximo pago debe ser de al menos un mes posterior al mes en curso \n. Por favor seleccione una fecha válida", "", JOptionPane.WARNING_MESSAGE);  
                     }
                 }
@@ -360,7 +360,7 @@ public class CobrosPanel extends javax.swing.JPanel {
                     
                     }else{
                         comboMeses.setSelectedItem(mesGuardado);
-                        comboAnios.setSelectedItem(anioGuardado);
+                        seleccionarAnio(anioGuardado);
                         JOptionPane.showMessageDialog(cobroPanel, "La fecha de próximo pago debe ser de al menos un mes posterior al mes en curso \n. Por favor seleccione una fecha válida", "", JOptionPane.WARNING_MESSAGE);  
                     }
                 }
@@ -1114,7 +1114,7 @@ public class CobrosPanel extends javax.swing.JPanel {
             anioCorte = anioCorte + 1;
         }
             
-        comboAnios.setSelectedItem(anioCorte);
+        seleccionarAnio(anioCorte);
         etiquetaPromocionAplicada.setVisible(false);
         
         etiquetaImporte.setText("0.00");
@@ -1139,7 +1139,7 @@ public class CobrosPanel extends javax.swing.JPanel {
         fechaPromocion.add(Calendar.MONTH, mesesPromo);
         int mesPromocion = fechaPromocion.get(Calendar.MONTH);
         comboMeses.setSelectedIndex(mesPromocion);
-        comboAnios.setSelectedItem(fechaPromocion.get(Calendar.YEAR));
+        seleccionarAnio(fechaPromocion.get(Calendar.YEAR));
         
         etiquetaPromocionAplicada.setVisible(false);
         
@@ -1161,16 +1161,45 @@ public class CobrosPanel extends javax.swing.JPanel {
         List<Integer> anios = new ArrayList<>();
         LocalDate ld = LocalDate.now();
         Integer anio = ld.getYear();
-        anios.add(anio);
-        anios.add(anio+1);
+        //hasta el anio siguiente al de la fecha de proximo pago: un contrato pagado por adelantado
+        //puede adelantar otros 12 meses (antes solo se mostraban el anio actual y el siguiente)
+        int anioMaximo = anio + 1;
         if(mesEnCurso.getNumero() == 12){
-            anios.add(anio+2);
+            anioMaximo = anio + 2;
+        }
+        if(fechaCorte != null){
+            Calendar cFechaCorte = Calendar.getInstance();
+            cFechaCorte.setTime(fechaCorte);
+            anioMaximo = Math.max(anioMaximo, cFechaCorte.get(Calendar.YEAR) + 1);
+        }
+        for(int a = anio; a <= anioMaximo; a++){
+            anios.add(a);
         }
         anios.forEach(a -> comboAnios.addItem(a));
         if(mesEnCurso.getNumero() == 12){
-            comboAnios.setSelectedItem(anio+1);
+            seleccionarAnio(anio+1);
         }
         
+    }
+    
+    /**
+     * Selecciona el anio en el combo. Si no existe se agrega en orden: antes,
+     * setSelectedItem con un anio fuera de la lista no hacia nada y el combo
+     * conservaba otro anio, de modo que el periodo y la nueva fecha de proximo
+     * pago se calculaban con el anio equivocado (por ejemplo, una promocion de
+     * 12 meses desde enero 2027 dejaba la fecha en enero 2027).
+     *
+     * @param anio
+     */
+    private void seleccionarAnio(int anio){
+        int indice = 0;
+        while(indice < comboAnios.getItemCount() && comboAnios.getItemAt(indice) < anio){
+            indice++;
+        }
+        if(indice >= comboAnios.getItemCount() || comboAnios.getItemAt(indice) != anio){
+            comboAnios.insertItemAt(anio, indice);
+        }
+        comboAnios.setSelectedItem(anio);
     }
     
     private void cargarComboTiposDescuento() {
