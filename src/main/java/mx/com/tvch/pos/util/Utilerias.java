@@ -110,11 +110,9 @@ public class Utilerias {
         fechaPago.set(Calendar.DAY_OF_MONTH, sesion.getDiaCorte());
         fechaPago.set(Calendar.MONTH, mesSeleccionado.getNumero()-1);
         fechaPago.set(Calendar.YEAR, anioSeleccionado);
-        //HOUR_OF_DAY: con HOUR (12 horas) la fecha quedaba a las 12:00 si el cobro era por la tarde
-        fechaPago.set(Calendar.HOUR_OF_DAY, 0);
+        fechaPago.set(Calendar.HOUR, 0);
         fechaPago.set(Calendar.MINUTE, 0);
         fechaPago.set(Calendar.SECOND, 0);
-        fechaPago.set(Calendar.MILLISECOND, 0);
 
         return fechaPago.getTime();
     }

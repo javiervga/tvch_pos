@@ -208,21 +208,6 @@ public class CobrosPanel extends javax.swing.JPanel {
                             if(montoPorCobrar < 0)
                                 throw new TvchException("El monto a cobrar no puede ser menor a cero");
 
-                            //el cobro capturado debe corresponder al mes y anio que se muestran en pantalla:
-                            //agregar o quitar ordenes recalculaba el cobro sin validar la fecha, y cambiar el
-                            //anio no recalcula; se podia cobrar con meses y montos negativos de una
-                            //seleccion anterior (por ejemplo ENERO del anio en curso)
-                            if(checkServicio.isSelected() && promocionSeleccionada == null
-                                    && (mesGuardado == null || mesGuardado.getNumero() != mesSeleccionado.getNumero()
-                                        || anioGuardado != anioSeleccionado)){
-                                throw new TvchException("La fecha de próximo pago cambió después de calcular el monto. \n"
-                                        + "Por favor presione Calcular Monto Pago antes de cobrar.");
-                            }
-                            if(cobroCapturado.getMesesPagados() != null && cobroCapturado.getMesesPagados() < 0){
-                                throw new TvchException("El número de meses a cobrar no es válido. \n"
-                                        + "Por favor seleccione nuevamente la fecha de próximo pago y presione Calcular Monto Pago.");
-                            }
-
                             //que haya una promocion capturada, en ese caso se obtienen los datos 
                             if(promocionSeleccionada != null){
                                 PromocionCobro promocion = new PromocionCobro();
